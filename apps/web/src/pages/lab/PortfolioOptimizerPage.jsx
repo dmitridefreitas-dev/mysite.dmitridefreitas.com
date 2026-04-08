@@ -338,7 +338,7 @@ export default function PortfolioOptimizerPage() {
                     {result.tickers.map((t, i) => (
                       <div key={t} className="flex items-center gap-2">
                         <span className="font-mono text-[10px] text-muted-foreground w-14 shrink-0">{t}</span>
-                        <div className="flex-1 h-1.5 bg-muted/40 relative">
+                        <div className="flex-1 h-1.5 bg-muted/40 relative overflow-hidden">
                           <div
                             className="absolute inset-y-0 left-0 bg-terminal-green"
                             style={{ width: `${Math.max(0, result.tangency.weights[i]) * 100}%` }}
@@ -374,7 +374,7 @@ export default function PortfolioOptimizerPage() {
                     {result.tickers.map((t, i) => (
                       <div key={t} className="flex items-center gap-2">
                         <span className="font-mono text-[10px] text-muted-foreground w-14 shrink-0">{t}</span>
-                        <div className="flex-1 h-1.5 bg-muted/40 relative">
+                        <div className="flex-1 h-1.5 bg-muted/40 relative overflow-hidden">
                           <div
                             className="absolute inset-y-0 left-0 bg-primary"
                             style={{ width: `${Math.max(0, result.minVar.weights[i]) * 100}%` }}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TrendingUp, BarChart2, Activity, Waves, BookOpen, GitBranch, FileText, HelpCircle, Cpu } from 'lucide-react';
+import { TrendingUp, BarChart2, Activity, Waves, BookOpen, GitBranch, FileText, HelpCircle, Cpu, PieChart, FlaskConical, Zap } from 'lucide-react';
 
 const tools = [
   {
@@ -59,6 +59,24 @@ const tools = [
     desc: 'Full GBM + Merton Jump-Diffusion simulator with option pricing vs closed-form Black-Scholes.',
     tags: ['OPTIONS', 'SIMULATION'],
   },
+  {
+    num: 'O', path: '/lab/optimizer', icon: PieChart,
+    label: 'PORTFOLIO OPTIMIZER',
+    desc: 'Mean-variance optimization via Monte Carlo. Input any tickers — plots efficient frontier, tangency portfolio weights and Sharpe ratio.',
+    tags: ['PORTFOLIO', 'OPTIMIZATION'],
+  },
+  {
+    num: 'F', path: '/lab/factors', icon: FlaskConical,
+    label: 'FACTOR EXPOSURE',
+    desc: 'Fama-French 3-factor OLS regression on any portfolio. Shows α, β loadings, t-stats, R², and cumulative return vs FF3-fitted.',
+    tags: ['FACTOR MODEL', 'REGRESSION'],
+  },
+  {
+    num: 'P', path: '/lab/pead', icon: Zap,
+    label: 'PEAD EVENT STUDY',
+    desc: 'Post-Earnings Announcement Drift. Market-model adjusted cumulative abnormal returns from −20 to +60 days around any earnings date.',
+    tags: ['EVENT STUDY', 'ALPHA'],
+  },
 ];
 
 const containerVariants = {
@@ -91,7 +109,7 @@ export default function LabHomePage() {
             <p className="font-mono text-xs text-muted-foreground max-w-2xl leading-relaxed">
               Interactive financial mathematics tools built from scratch — no libraries, no shortcuts.
               Each instrument implements the underlying math directly in the browser.
-              Press <span className="text-primary">[1]–[9]</span> to navigate.
+              Press <span className="text-primary">[1]–[9]</span> or <span className="text-primary">[O] [F] [P]</span> to navigate.
               Press <span className="text-primary">[ESC]</span> to return to main site.
             </p>
           </div>

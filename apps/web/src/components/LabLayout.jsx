@@ -14,6 +14,7 @@ const labLinks = [
   { num: '6', label: 'REGIMES',     path: '/lab/regimes'        },
   { num: '7', label: 'NOTES',       path: '/lab/notes'          },
   { num: '8', label: 'QUIZ',        path: '/lab/quiz'           },
+  { num: '9', label: 'SIM',         path: '/lab/sim'            },
   { num: 'O', label: 'OPTIMIZER',   path: '/lab/optimizer'      },
   { num: 'F', label: 'FACTORS',     path: '/lab/factors'        },
   { num: 'P', label: 'PEAD',        path: '/lab/pead'           },
@@ -43,6 +44,7 @@ export default function LabLayout() {
         '3': '/lab/distributions', '4': '/lab/stochastic',
         '5': '/lab/order-book',   '6': '/lab/regimes',
         '7': '/lab/notes',        '8': '/lab/quiz',
+        '9': '/lab/sim',
         'o': '/lab/optimizer',    'f': '/lab/factors',
         'p': '/lab/pead',
       };

@@ -72,10 +72,10 @@ export default function LabLayout() {
             ESC
           </Link>
 
-          <span className="text-border hidden xl:inline mx-1">|</span>
+          <span className="text-border hidden 2xl:inline mx-1">|</span>
 
           {/* Desktop nav */}
-          <nav className="hidden xl:flex items-center border border-border divide-x divide-border overflow-hidden">
+          <nav className="hidden 2xl:flex items-center border border-border divide-x divide-border overflow-hidden">
             {labLinks.map(link => (
               <Link
                 key={link.path}
@@ -108,7 +108,7 @@ export default function LabLayout() {
         </div>
 
         {/* Mobile / tablet scrollable nav row */}
-        <div className="xl:hidden border-t border-border overflow-x-auto">
+        <div className="2xl:hidden border-t border-border overflow-x-auto">
           <div className="flex min-w-max divide-x divide-border">
             {labLinks.map(link => (
               <Link
@@ -128,7 +128,7 @@ export default function LabLayout() {
       </header>
 
       {/* pt accounts for: 48px main bar + ~28px mobile nav row on small screens */}
-      <main className="flex-grow pt-20 xl:pt-12 relative z-10">
+      <main className="flex-grow pt-20 2xl:pt-12 relative z-10">
         <Outlet />
       </main>
 

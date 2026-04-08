@@ -85,4 +85,141 @@ router.get('/quote', async (req, res) => {
   });
 });
 
+// ── Historical data caches ────────────────────────────────────────────────────────
+const MONTHLY_CACHE = new Map();
+const DAILY_CACHE   = new Map();
+let   FF_CACHE = null, FF_CACHE_TIME = 0;
+const MONTHLY_TTL = 60 * 60 * 1000;    // 1 h
+const DAILY_TTL   = 30 * 60 * 1000;    // 30 min
+const FF_TTL      =  6 * 60 * 60 * 1000; // 6 h
+
+function dateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+// GET /market-data/monthly?tickers=AAPL,MSFT,SPY&months=36
+router.get('/monthly', async (req, res) => {
+  const tickers = (req.query.tickers || '')
+    .split(',').map(t => t.trim().toUpperCase()).filter(Boolean).slice(0, 10);
+  if (!tickers.length) return res.status(400).json({ error: 'tickers required' });
+
+  const months  = Math.min(parseInt(req.query.months) || 36, 120);
+  const cacheKey = `${tickers.join(',')}_${months}`;
+  const now = Date.now();
+  const cached = MONTHLY_CACHE.get(cacheKey);
+  if (cached && now - cached.time < MONTHLY_TTL) return res.json(cached.data);
+
+  const period2 = new Date();
+  const period1 = new Date(); period1.setMonth(period1.getMonth() - months - 3);
+
+  const results = {}, errors = {};
+  await Promise.allSettled(tickers.map(async (ticker) => {
+    try {
+      const rows = await yf.historical(ticker, {
+        period1: period1.toISOString().slice(0, 10),
+        period2: period2.toISOString().slice(0, 10),
+        interval: '1mo',
+      });
+      const pr = rows.filter(r => r.adjClose != null)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (pr.length < 3) { errors[ticker] = 'Insufficient data'; return; }
+      const out = [];
+      for (let i = 1; i < pr.length; i++) {
+        out.push({
+          date: dateKey(new Date(pr[i].date)),
+          adjClose: +pr[i].adjClose.toFixed(4),
+          ret: +(pr[i].adjClose / pr[i - 1].adjClose - 1).toFixed(6),
+        });
+      }
+      results[ticker] = out;
+    } catch (err) { errors[ticker] = err.message; }
+  }));
+
+  const data = { data: results, errors };
+  MONTHLY_CACHE.set(cacheKey, { data, time: now });
+  res.json(data);
+});
+
+// GET /market-data/daily?tickers=AAPL,SPY&start=2023-01-01&end=2024-06-01
+router.get('/daily', async (req, res) => {
+  const tickers = (req.query.tickers || '')
+    .split(',').map(t => t.trim().toUpperCase()).filter(Boolean).slice(0, 5);
+  if (!tickers.length) return res.status(400).json({ error: 'tickers required' });
+  const start = req.query.start;
+  if (!start) return res.status(400).json({ error: 'start date required' });
+  const end = req.query.end || new Date().toISOString().slice(0, 10);
+
+  const cacheKey = `${tickers.join(',')}_${start}_${end}`;
+  const now = Date.now();
+  const cached = DAILY_CACHE.get(cacheKey);
+  if (cached && now - cached.time < DAILY_TTL) return res.json(cached.data);
+
+  const results = {}, errors = {};
+  await Promise.allSettled(tickers.map(async (ticker) => {
+    try {
+      const rows = await yf.historical(ticker, {
+        period1: start, period2: end, interval: '1d',
+      });
+      const pr = rows.filter(r => r.adjClose != null)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (pr.length < 5) { errors[ticker] = 'Insufficient data'; return; }
+      results[ticker] = pr.map(r => ({
+        date: new Date(r.date).toISOString().slice(0, 10),
+        adjClose: +r.adjClose.toFixed(4),
+      }));
+    } catch (err) { errors[ticker] = err.message; }
+  }));
+
+  const data = { data: results, errors };
+  DAILY_CACHE.set(cacheKey, { data, time: now });
+  res.json(data);
+});
+
+// GET /market-data/ff-proxy?months=60
+// Returns FF3 factor proxies: MKT=SPY-BIL, SMB=IWM-SPY, HML=SPYV-SPYG
+router.get('/ff-proxy', async (req, res) => {
+  const months = Math.min(parseInt(req.query.months) || 60, 120);
+  const now = Date.now();
+  if (FF_CACHE && now - FF_CACHE_TIME < FF_TTL && FF_CACHE.length >= months)
+    return res.json(FF_CACHE.slice(-months));
+
+  const TICKERS = ['SPY', 'IWM', 'SPYV', 'SPYG', 'BIL'];
+  const period2 = new Date();
+  const period1 = new Date(); period1.setMonth(period1.getMonth() - months - 3);
+
+  const allData = {};
+  await Promise.all(TICKERS.map(async (t) => {
+    const rows = await yf.historical(t, {
+      period1: period1.toISOString().slice(0, 10),
+      period2: period2.toISOString().slice(0, 10),
+      interval: '1mo',
+    });
+    const pr = rows.filter(r => r.adjClose != null)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    const rets = [];
+    for (let i = 1; i < pr.length; i++) {
+      rets.push({ date: dateKey(new Date(pr[i].date)), ret: pr[i].adjClose / pr[i - 1].adjClose - 1 });
+    }
+    allData[t] = rets;
+  }));
+
+  const spyDates = (allData['SPY'] || []).map(r => r.date);
+  const factors = spyDates
+    .filter(d => TICKERS.every(t => allData[t]?.some(r => r.date === d)))
+    .map(date => {
+      const g = (t) => allData[t].find(r => r.date === date)?.ret ?? 0;
+      const spy = g('SPY'), iwm = g('IWM'), spyv = g('SPYV'), spyg = g('SPYG'), bil = g('BIL');
+      return {
+        date,
+        rf:  +bil.toFixed(6),
+        mkt: +(spy  - bil).toFixed(6),
+        smb: +(iwm  - spy).toFixed(6),
+        hml: +(spyv - spyg).toFixed(6),
+      };
+    });
+
+  FF_CACHE = factors; FF_CACHE_TIME = now;
+  res.json(factors.slice(-months));
+});
+
 export default router;

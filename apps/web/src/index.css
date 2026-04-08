@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 216 28% 7%;
+    --primary: 213 80% 15%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 15% 95%;
+    --secondary-foreground: 216 28% 7%;
+    --accent: 213 80% 15%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 214 15% 95%;
+    --muted-foreground: 215 14% 40%;
+    --card: 0 0% 100%;
+    --card-foreground: 216 28% 7%;
+    --border: 214 18% 86%;
+    --input: 214 18% 86%;
+    --ring: 213 80% 15%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 28% 7%;
+    --radius: 0.25rem;
+
+    /* Terminal palette */
+    --terminal-green: 142 70% 45%;
+    --terminal-red: 0 72% 51%;
+    --terminal-amber: 38 92% 50%;
+  }
+
+  .dark {
+    --background: 220 20% 5%;
+    --foreground: 210 17% 90%;
+    --primary: 213 65% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 216 20% 12%;
+    --secondary-foreground: 210 17% 90%;
+    --accent: 213 65% 50%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 216 20% 11%;
+    --muted-foreground: 215 12% 58%;
+    --card: 220 18% 8%;
+    --card-foreground: 210 17% 90%;
+    --border: 220 15% 16%;
+    --input: 220 15% 16%;
+    --ring: 213 65% 50%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --popover: 220 18% 8%;
+    --popover-foreground: 210 17% 90%;
+
+    /* Terminal palette — brighter in dark mode */
+    --terminal-green: 142 70% 49%;
+    --terminal-red: 0 72% 55%;
+    --terminal-amber: 38 92% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  p {
+    line-height: 1.55;
+  }
+
+  /* Terminal text selection */
+  ::selection {
+    background: hsl(var(--primary) / 0.25);
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Grid background — visible only in dark mode */
+.grid-bg {
+  background-image: none;
+}
+
+.dark .grid-bg {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.18) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Blink animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}

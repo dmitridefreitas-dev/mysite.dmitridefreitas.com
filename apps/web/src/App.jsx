@@ -20,6 +20,7 @@ import { useTheme } from './contexts/ThemeContext.jsx';
 import { useReadingMode } from './contexts/ReadingModeContext.jsx';
 
 import CourseworkPage from './pages/CourseworkPage.jsx';
+import ChatbotWidget from './components/ChatbotWidget.jsx';
 
 // Lab pages
 import LabHomePage     from './pages/lab/LabHomePage.jsx';
@@ -74,6 +75,7 @@ function App() {
         <Router>
           <ScrollToTop />
           <GridBackground />
+          <ChatbotWidget />
           <Routes>
             {/* Coursework — own layout, no main header/footer */}
             <Route path="/coursework" element={<CourseworkPage />} />

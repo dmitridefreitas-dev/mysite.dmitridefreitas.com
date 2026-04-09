@@ -233,6 +233,17 @@ export default function IVSurfacePage() {
           {status === 'done' && result && surfaceTrace && (
             <div className="space-y-6">
 
+              {/* Market closed warning */}
+              {result.marketState !== 'REGULAR' && (
+                <div className="border border-yellow-600/50 bg-yellow-500/5 px-4 py-3">
+                  <p className="font-mono text-[10px] text-yellow-600 tracking-wide">
+                    ⚠ MARKET {result.marketState} — IV values are computed from stale closing prices.
+                    Absolute levels are unreliable. The <strong>shape</strong> of the surface (vol skew, smile) is still informative.
+                    Live IV data is available during US market hours (9:30–16:00 ET Mon–Fri).
+                  </p>
+                </div>
+              )}
+
               {/* Key metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
@@ -295,8 +306,8 @@ export default function IVSurfacePage() {
                 />
               </div>
 
-              {/* ATM term structure */}
-              {termData.length > 1 && (
+              {/* ATM term structure — only meaningful when market is live */}
+              {termData.length > 1 && result.marketState === 'REGULAR' && (
                 <div className="border border-border p-4">
                   <p className="font-mono text-[9px] text-muted-foreground tracking-widest mb-1">ATM IV TERM STRUCTURE</p>
                   <p className="font-mono text-[8px] text-muted-foreground/60 mb-3">

@@ -295,7 +295,7 @@ router.get('/options', async (req, res) => {
       surface.push({ expiry: expiryStr, dte, strikes });
     });
 
-    res.json({ ticker, spot, surface });
+    res.json({ ticker, spot, marketState: spotQuote.marketState ?? 'CLOSED', surface });
   } catch (err) {
     console.error('[market-data /options]', ticker, err.message);
     res.status(500).json({ error: err.message });

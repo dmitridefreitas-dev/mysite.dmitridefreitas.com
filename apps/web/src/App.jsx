@@ -34,7 +34,7 @@ import QuizPage               from './pages/QuizPage.jsx';
 import PortfolioOptimizerPage from './pages/lab/PortfolioOptimizerPage.jsx';
 import FactorExposurePage     from './pages/lab/FactorExposurePage.jsx';
 import PEADPage               from './pages/lab/PEADPage.jsx';
-import IVSurfacePage          from './pages/lab/IVSurfacePage.jsx';
+const IVSurfacePage = React.lazy(() => import('./pages/lab/IVSurfacePage.jsx'));
 import DCFPage                from './pages/lab/DCFPage.jsx';
 
 // ── Main site layout ──────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ function App() {
               <Route path="optimizer"     element={<PortfolioOptimizerPage />} />
               <Route path="factors"       element={<FactorExposurePage />} />
               <Route path="pead"          element={<PEADPage />} />
-              <Route path="iv-surface"    element={<IVSurfacePage />} />
+              <Route path="iv-surface"    element={<React.Suspense fallback={<div className="flex items-center justify-center min-h-screen font-mono text-xs text-muted-foreground">LOADING...</div>}><IVSurfacePage /></React.Suspense>} />
               <Route path="dcf"           element={<DCFPage />} />
               <Route path="sim"           element={<Navigate to="/lab/stochastic" replace />} />
             </Route>

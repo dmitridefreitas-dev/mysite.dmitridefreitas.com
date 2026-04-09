@@ -1,21 +1,24 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
+import Plotly from 'plotly.js-dist-min';
+import createPlotlyComponent from 'react-plotly.js/factory';
 import {
-  ScatterChart, Scatter, XAxis, YAxis, Tooltip,
-  CartesianGrid, ResponsiveContainer, Legend, ReferenceLine,
-  LineChart, Line,
+  LineChart, Line, XAxis, YAxis, Tooltip,
+  CartesianGrid, ResponsiveContainer, Legend,
 } from 'recharts';
+import { useTheme } from '@/contexts/ThemeContext.jsx';
+
+const Plot = createPlotlyComponent(Plotly);
 
 const API_BASE = window.location.hostname === 'localhost'
   ? '/hcgi/api'
   : 'https://newsapi-xspv.onrender.com';
 
-// ── Colour scheme per expiry ──────────────────────────────────────────────────
-const COLORS = ['#22c55e','#6366f1','#f97316','#06b6d4','#ec4899','#a855f7','#eab308','#ef4444'];
+// ── Moneyness grid for the surface ───────────────────────────────────────────
+const MONEYNESS_STEPS = [75, 80, 85, 90, 95, 97.5, 100, 102.5, 105, 110, 115, 120, 125];
 
-// ── IV → background colour for heatmap cells ─────────────────────────────────
+// ── IV colour for the 2D heatmap table ───────────────────────────────────────
 function ivBg(iv) {
-  // iv is 0–1 (e.g. 0.20 = 20 %)
   const t = Math.min(iv / 0.6, 1);
   if (t < 0.33) {
     const s = t / 0.33;
@@ -29,20 +32,31 @@ function ivBg(iv) {
   }
 }
 
-// ── Custom tooltip ─────────────────────────────────────────────────────────────
-const SmileTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  const d = payload[0]?.payload;
-  if (!d) return null;
-  return (
-    <div className="bg-card border border-border p-2 font-mono text-[10px] space-y-0.5">
-      <p className="text-muted-foreground">Moneyness: {d.x.toFixed(1)}%</p>
-      <p>IV: <span style={{ color: payload[0].fill }}>{d.y.toFixed(2)}%</span></p>
-      {d.type && <p className="text-muted-foreground/60">{d.type.toUpperCase()}</p>}
-    </div>
-  );
-};
+// ── Interpolate IV to a regular moneyness grid ────────────────────────────────
+function interpolateIV(strikes, spot, moneynessSteps) {
+  return moneynessSteps.map(m => {
+    const target = spot * m / 100;
+    const nearby = strikes
+      .filter(s => Math.abs(s.strike / target - 1) < 0.05)
+      .sort((a, b) => Math.abs(a.strike - target) - Math.abs(b.strike - target));
+    return nearby[0]?.iv != null ? +(nearby[0].iv * 100).toFixed(3) : null;
+  });
+}
 
+// ── ATM IV (closest strike to spot) ─────────────────────────────────────────
+function atmIV(strikes, spot) {
+  const sorted = [...strikes].sort((a, b) => Math.abs(a.strike - spot) - Math.abs(b.strike - spot));
+  return sorted[0]?.iv ?? null;
+}
+
+// ── Skew: IV at a given moneyness ────────────────────────────────────────────
+function skewIV(strikes, spot, pct) {
+  const target = spot * pct;
+  const sorted = [...strikes].sort((a, b) => Math.abs(a.strike - target) - Math.abs(b.strike - target));
+  return sorted[0]?.iv ?? null;
+}
+
+// ── Term structure tooltip ────────────────────────────────────────────────────
 const TermTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
@@ -53,94 +67,18 @@ const TermTooltip = ({ active, payload, label }) => {
   );
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function computeSmileData(surface, spot) {
-  return surface.map(exp => ({
-    label: `${exp.dte}d`,
-    expiry: exp.expiry,
-    dte: exp.dte,
-    data: exp.strikes
-      .map(s => ({
-        x: +(s.strike / spot * 100).toFixed(2),
-        y: +(s.iv * 100).toFixed(3),
-        type: s.type,
-      }))
-      .filter(s => s.x >= 75 && s.x <= 130)
-      .sort((a, b) => a.x - b.x),
-  }));
-}
-
-function atmIV(strikes, spot) {
-  if (!strikes.length) return null;
-  const sorted = [...strikes].sort((a, b) => Math.abs(a.strike - spot) - Math.abs(b.strike - spot));
-  return sorted[0]?.iv ?? null;
-}
-
-function skewIV(strikes, spot, pct) {
-  // Find IV closest to given moneyness %
-  const target = spot * pct;
-  const sorted = [...strikes].sort((a, b) => Math.abs(a.strike - target) - Math.abs(b.strike - target));
-  return sorted[0]?.iv ?? null;
-}
-
-// ── Heatmap ───────────────────────────────────────────────────────────────────
-function IVHeatmap({ surface, spot }) {
-  // Build moneyness buckets: 80, 85, 90, 95, 100, 105, 110, 115, 120
-  const buckets = [0.80, 0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15, 1.20];
-
-  function getIV(strikes, pct) {
-    const target = spot * pct;
-    const nearby = strikes
-      .filter(s => Math.abs(s.strike / target - 1) < 0.04)
-      .sort((a, b) => Math.abs(a.strike - target) - Math.abs(b.strike - target));
-    return nearby[0]?.iv ?? null;
-  }
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full font-mono text-[9px] border-collapse">
-        <thead>
-          <tr>
-            <th className="text-left text-muted-foreground px-2 py-1 border border-border">EXPIRY / DTE</th>
-            {buckets.map(b => (
-              <th key={b} className={`text-center px-1.5 py-1 border border-border ${b === 1.00 ? 'text-primary' : 'text-muted-foreground'}`}>
-                {b === 1.00 ? 'ATM' : `${Math.round(b * 100)}%`}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {surface.map(exp => (
-            <tr key={exp.expiry}>
-              <td className="text-muted-foreground px-2 py-1 border border-border whitespace-nowrap">
-                {exp.expiry} <span className="opacity-50">({exp.dte}d)</span>
-              </td>
-              {buckets.map(b => {
-                const iv = getIV(exp.strikes, b);
-                return (
-                  <td
-                    key={b}
-                    className="text-center px-1.5 py-1 border border-border"
-                    style={iv != null ? { backgroundColor: ivBg(iv), color: '#fff' } : {}}
-                  >
-                    {iv != null ? (iv * 100).toFixed(1) + '%' : '—'}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function IVSurfacePage() {
-  const [ticker,  setTicker]  = useState('QQQ');
-  const [status,  setStatus]  = useState('idle');
-  const [errorMsg,setErrorMsg]= useState('');
-  const [result,  setResult]  = useState(null);
+  const { theme } = useTheme();
+  const [ticker,   setTicker]   = useState('QQQ');
+  const [status,   setStatus]   = useState('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [result,   setResult]   = useState(null);
+
+  const isDark = theme === 'dark';
+  const paperBg   = isDark ? '#09090b' : '#ffffff';
+  const textColor = isDark ? '#a1a1aa' : '#71717a';
+  const gridColor = isDark ? '#27272a' : '#e4e4e7';
 
   const run = useCallback(async () => {
     const t = ticker.trim().toUpperCase();
@@ -159,19 +97,79 @@ export default function IVSurfacePage() {
     }
   }, [ticker]);
 
-  const smileData  = result ? computeSmileData(result.surface, result.spot) : [];
+  // ── Build 3D surface data ─────────────────────────────────────────────────
+  const { surfaceTrace, termData, nearExp } = useMemo(() => {
+    if (!result) return { surfaceTrace: null, termData: [], nearExp: null };
 
-  const termData = result
-    ? result.surface.map(exp => ({
-        dte: exp.dte,
-        atm: +(( atmIV(exp.strikes, result.spot) ?? 0) * 100).toFixed(2),
-      })).sort((a, b) => a.dte - b.dte)
-    : [];
+    const { surface, spot } = result;
+    const sortedExp = [...surface].sort((a, b) => a.dte - b.dte);
 
-  // Skew metrics for nearest expiry with enough data
-  const nearExp   = result?.surface?.find(e => e.dte >= 7);
-  const skew25    = nearExp ? (skewIV(nearExp.strikes, result.spot, 0.95) ?? 0) - (skewIV(nearExp.strikes, result.spot, 1.05) ?? 0) : null;
-  const atmNear   = nearExp ? atmIV(nearExp.strikes, result.spot) : null;
+    // Z matrix: rows = expirations, cols = moneyness
+    const z = sortedExp.map(exp => interpolateIV(exp.strikes, spot, MONEYNESS_STEPS));
+    const y = sortedExp.map(e => e.dte);   // DTE axis
+    const x = MONEYNESS_STEPS;              // moneyness axis
+
+    const surfaceTrace = {
+      type: 'surface',
+      x, y, z,
+      colorscale: [
+        [0.0, '#22c55e'],
+        [0.3, '#84cc16'],
+        [0.5, '#eab308'],
+        [0.7, '#f97316'],
+        [1.0, '#ef4444'],
+      ],
+      colorbar: {
+        title: { text: 'IV %', font: { family: 'IBM Plex Mono', size: 10, color: textColor } },
+        tickfont: { family: 'IBM Plex Mono', size: 9, color: textColor },
+        len: 0.6,
+      },
+      contours: {
+        z: { show: true, usecolormap: true, highlightcolor: '#ffffff', project: { z: false } },
+      },
+      hovertemplate: 'Moneyness: %{x}%<br>DTE: %{y}<br>IV: %{z:.2f}%<extra></extra>',
+    };
+
+    const termData = sortedExp.map(exp => ({
+      dte: exp.dte,
+      atm: +((atmIV(exp.strikes, spot) ?? 0) * 100).toFixed(2),
+    }));
+
+    const nearExp = sortedExp.find(e => e.dte >= 7) || sortedExp[0];
+    return { surfaceTrace, termData, nearExp };
+  }, [result, textColor]);
+
+  const spot = result?.spot;
+  const atmNear = nearExp ? atmIV(nearExp.strikes, spot) : null;
+  const skew25  = nearExp
+    ? (skewIV(nearExp.strikes, spot, 0.95) ?? 0) - (skewIV(nearExp.strikes, spot, 1.05) ?? 0)
+    : null;
+
+  const plotLayout = {
+    paper_bgcolor: paperBg,
+    plot_bgcolor:  paperBg,
+    font: { family: 'IBM Plex Mono', size: 9, color: textColor },
+    margin: { t: 30, b: 10, l: 10, r: 10 },
+    scene: {
+      bgcolor: paperBg,
+      xaxis: {
+        title: { text: 'MONEYNESS (%)', font: { size: 9, color: textColor } },
+        tickfont: { size: 8, color: textColor },
+        gridcolor: gridColor, zeroline: false,
+      },
+      yaxis: {
+        title: { text: 'DTE', font: { size: 9, color: textColor } },
+        tickfont: { size: 8, color: textColor },
+        gridcolor: gridColor, zeroline: false,
+      },
+      zaxis: {
+        title: { text: 'IV (%)', font: { size: 9, color: textColor } },
+        tickfont: { size: 8, color: textColor },
+        gridcolor: gridColor, zeroline: false,
+      },
+      camera: { eye: { x: 1.6, y: -1.6, z: 0.8 } },
+    },
+  };
 
   return (
     <>
@@ -185,7 +183,7 @@ export default function IVSurfacePage() {
             <p className="font-mono text-[9px] text-primary tracking-widest mb-1">[V] IV SURFACE</p>
             <h1 className="font-mono text-xl font-bold tracking-tight text-foreground">Implied Volatility Surface</h1>
             <p className="font-mono text-[10px] text-muted-foreground mt-1">
-              Vol smile per expiry · ATM term structure · 25Δ skew · OTM put/call IV across the chain
+              Interactive 3D vol surface · ATM term structure · 25Δ skew · Drag to rotate
             </p>
           </div>
 
@@ -212,7 +210,7 @@ export default function IVSurfacePage() {
               </button>
             </div>
             <p className="font-mono text-[9px] text-muted-foreground/60 mt-3">
-              · Up to 8 expirations · OTM puts for K &lt; spot, OTM calls for K ≥ spot · IV from Yahoo Finance
+              · Up to 8 expirations · OTM convention (puts for K &lt; spot, calls for K ≥ spot) · Drag to rotate · Scroll to zoom
             </p>
             {status === 'error' && (
               <p className="font-mono text-[10px] text-destructive mt-2">ERROR: {errorMsg}</p>
@@ -232,15 +230,15 @@ export default function IVSurfacePage() {
             </div>
           )}
 
-          {status === 'done' && result && (
+          {status === 'done' && result && surfaceTrace && (
             <div className="space-y-6">
 
               {/* Key metrics */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  ['TICKER',       result.ticker],
-                  ['SPOT',         `$${result.spot?.toFixed(2) ?? '—'}`],
-                  ['EXPIRATIONS',  result.surface.length],
+                  ['TICKER',        result.ticker],
+                  ['SPOT',          `$${result.spot?.toFixed(2) ?? '—'}`],
+                  ['EXPIRATIONS',   result.surface.length],
                   ['ATM IV (NEAR)', atmNear != null ? (atmNear * 100).toFixed(1) + '%' : '—'],
                 ].map(([k, v]) => (
                   <div key={k} className="border border-border px-3 py-2">
@@ -258,73 +256,43 @@ export default function IVSurfacePage() {
                     <p className="font-mono text-xs font-bold text-foreground mt-0.5">{nearExp.expiry} ({nearExp.dte}d)</p>
                   </div>
                   <div>
-                    <p className="font-mono text-[8px] text-muted-foreground tracking-widest">25Δ SKEW (95/105)</p>
-                    <p className={`font-mono text-xs font-bold mt-0.5 ${skew25 != null && skew25 > 0 ? 'text-primary' : 'text-foreground'}`}>
+                    <p className="font-mono text-[8px] text-muted-foreground tracking-widest">25Δ SKEW (95%−105%)</p>
+                    <p className={`font-mono text-xs font-bold mt-0.5 ${skew25 > 0 ? 'text-primary' : 'text-foreground'}`}>
                       {skew25 != null ? (skew25 > 0 ? '+' : '') + (skew25 * 100).toFixed(2) + ' vols' : '—'}
                     </p>
                   </div>
                   <div>
                     <p className="font-mono text-[8px] text-muted-foreground tracking-widest">95% PUT IV</p>
                     <p className="font-mono text-xs font-bold text-foreground mt-0.5">
-                      {skewIV(nearExp.strikes, result.spot, 0.95) != null
-                        ? (skewIV(nearExp.strikes, result.spot, 0.95) * 100).toFixed(2) + '%' : '—'}
+                      {skewIV(nearExp.strikes, spot, 0.95) != null
+                        ? (skewIV(nearExp.strikes, spot, 0.95) * 100).toFixed(2) + '%' : '—'}
                     </p>
                   </div>
                   <div>
                     <p className="font-mono text-[8px] text-muted-foreground tracking-widest">105% CALL IV</p>
                     <p className="font-mono text-xs font-bold text-foreground mt-0.5">
-                      {skewIV(nearExp.strikes, result.spot, 1.05) != null
-                        ? (skewIV(nearExp.strikes, result.spot, 1.05) * 100).toFixed(2) + '%' : '—'}
+                      {skewIV(nearExp.strikes, spot, 1.05) != null
+                        ? (skewIV(nearExp.strikes, spot, 1.05) * 100).toFixed(2) + '%' : '—'}
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Vol smile chart */}
+              {/* 3D Surface */}
               <div className="border border-border p-4">
-                <p className="font-mono text-[9px] text-muted-foreground tracking-widest mb-1">VOLATILITY SMILE</p>
-                <p className="font-mono text-[8px] text-muted-foreground/60 mb-3">
-                  {result.ticker} · X = strike / spot · Y = implied volatility %
+                <p className="font-mono text-[9px] text-muted-foreground tracking-widest mb-1">
+                  3D IMPLIED VOLATILITY SURFACE
                 </p>
-                <ResponsiveContainer width="100%" height={320}>
-                  <ScatterChart margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
-                    <CartesianGrid strokeDasharray="2 4" stroke="hsl(var(--border))" opacity={0.4} />
-                    <XAxis
-                      dataKey="x"
-                      type="number"
-                      name="Moneyness"
-                      domain={[80, 125]}
-                      tick={{ fontFamily: 'IBM Plex Mono', fontSize: 9 }}
-                      tickFormatter={v => v + '%'}
-                      label={{ value: 'MONEYNESS (%)', position: 'insideBottom', offset: -12, fontFamily: 'IBM Plex Mono', fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
-                    />
-                    <YAxis
-                      dataKey="y"
-                      type="number"
-                      name="IV"
-                      tick={{ fontFamily: 'IBM Plex Mono', fontSize: 9 }}
-                      tickFormatter={v => v.toFixed(0) + '%'}
-                      label={{ value: 'IV (%)', angle: -90, position: 'insideLeft', fontFamily: 'IBM Plex Mono', fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
-                    />
-                    <ReferenceLine x={100} stroke="hsl(var(--primary))" strokeDasharray="3 2" opacity={0.6}
-                      label={{ value: 'ATM', position: 'top', fontFamily: 'IBM Plex Mono', fontSize: 8, fill: 'hsl(var(--primary))' }}
-                    />
-                    <Tooltip content={<SmileTooltip />} />
-                    <Legend wrapperStyle={{ fontFamily: 'IBM Plex Mono', fontSize: 9, paddingTop: 16 }} />
-                    {smileData.map((exp, i) => (
-                      <Scatter
-                        key={exp.label}
-                        name={exp.label}
-                        data={exp.data}
-                        fill={COLORS[i % COLORS.length]}
-                        line={{ stroke: COLORS[i % COLORS.length], strokeWidth: 1.5 }}
-                        lineType="joint"
-                        shape="circle"
-                        r={2}
-                      />
-                    ))}
-                  </ScatterChart>
-                </ResponsiveContainer>
+                <p className="font-mono text-[8px] text-muted-foreground/60 mb-2">
+                  {result.ticker} · X = moneyness (%) · Y = DTE · Z = IV (%) · Drag to rotate · Green = low IV · Red = high IV
+                </p>
+                <Plot
+                  data={[surfaceTrace]}
+                  layout={plotLayout}
+                  config={{ responsive: true, displayModeBar: true, displaylogo: false, modeBarButtonsToRemove: ['sendDataToCloud'] }}
+                  style={{ width: '100%', height: '520px' }}
+                  useResizeHandler
+                />
               </div>
 
               {/* ATM term structure */}
@@ -332,7 +300,7 @@ export default function IVSurfacePage() {
                 <div className="border border-border p-4">
                   <p className="font-mono text-[9px] text-muted-foreground tracking-widest mb-1">ATM IV TERM STRUCTURE</p>
                   <p className="font-mono text-[8px] text-muted-foreground/60 mb-3">
-                    At-the-money implied volatility vs. days to expiry
+                    At-the-money implied vol vs. days to expiry — upward slope = normal contango
                   </p>
                   <ResponsiveContainer width="100%" height={200}>
                     <LineChart data={termData} margin={{ top: 5, right: 20, bottom: 20, left: 10 }}>
@@ -353,13 +321,44 @@ export default function IVSurfacePage() {
                 </div>
               )}
 
-              {/* Heatmap */}
+              {/* Heatmap matrix */}
               <div className="border border-border p-4">
                 <p className="font-mono text-[9px] text-muted-foreground tracking-widest mb-3">IV SURFACE HEATMAP</p>
-                <IVHeatmap surface={result.surface} spot={result.spot} />
-                <p className="font-mono text-[8px] text-muted-foreground/40 mt-2">
-                  · Values interpolated to nearest available strike within ±4% of target moneyness
-                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full font-mono text-[9px] border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="text-left text-muted-foreground px-2 py-1 border border-border">EXPIRY / DTE</th>
+                        {MONEYNESS_STEPS.map(m => (
+                          <th key={m} className={`text-center px-1.5 py-1 border border-border ${m === 100 ? 'text-primary' : 'text-muted-foreground'}`}>
+                            {m === 100 ? 'ATM' : `${m}%`}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.surface.slice().sort((a, b) => a.dte - b.dte).map(exp => {
+                        const ivRow = interpolateIV(exp.strikes, spot, MONEYNESS_STEPS);
+                        return (
+                          <tr key={exp.expiry}>
+                            <td className="text-muted-foreground px-2 py-1 border border-border whitespace-nowrap">
+                              {exp.expiry} <span className="opacity-50">({exp.dte}d)</span>
+                            </td>
+                            {ivRow.map((iv, i) => (
+                              <td
+                                key={i}
+                                className="text-center px-1.5 py-1 border border-border"
+                                style={iv != null ? { backgroundColor: ivBg(iv / 100), color: '#fff' } : {}}
+                              >
+                                {iv != null ? iv.toFixed(1) + '%' : '—'}
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               <p className="font-mono text-[8px] text-muted-foreground/40">

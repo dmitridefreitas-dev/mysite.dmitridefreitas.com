@@ -4,6 +4,7 @@ import contactRouter from './contact.js';
 import marketDataRouter from './market-data.js';
 import newsRouter from './news.js';
 import tickerRouter from './ticker.js';
+import chatRouter from './chat.js';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ export default () => {
     router.use('/market-data', marketDataRouter);
     router.use('/news', newsRouter);
     router.use('/ticker', tickerRouter);
+    router.use('/chat', chatRouter);
 
     return router;
 };

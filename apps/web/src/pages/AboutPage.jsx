@@ -471,6 +471,66 @@ const AboutPage = () => {
                 </Link>
               </div>
 
+              <div className="flex items-start gap-4 px-4 py-3 hover:bg-muted/10 transition-colors group">
+                <span className="font-mono text-[8px] border border-border text-muted-foreground px-1.5 py-0.5 shrink-0 mt-0.5">DATA</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    Damodaran, A. · Stern School of Business, NYU
+                  </p>
+                  <p className="font-mono text-xs text-foreground/90 mt-0.5 font-medium">
+                    Aswath Damodaran Data Archive (Valuation &amp; Corporate Finance)
+                  </p>
+                </div>
+                <a
+                  href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[10px] text-primary hover:text-primary/80 tracking-widest shrink-0 self-center opacity-60 group-hover:opacity-100 transition-opacity"
+                >
+                  [↗]
+                </a>
+              </div>
+
+              <div className="flex items-start gap-4 px-4 py-3 hover:bg-muted/10 transition-colors group">
+                <span className="font-mono text-[8px] border border-border text-muted-foreground px-1.5 py-0.5 shrink-0 mt-0.5">DATA</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    Shiller, R.J. · Yale University Department of Economics
+                  </p>
+                  <p className="font-mono text-xs text-foreground/90 mt-0.5 font-medium">
+                    Robert Shiller Online Data (Market History &amp; CAPE)
+                  </p>
+                </div>
+                <a
+                  href="http://www.econ.yale.edu/~shiller/data.htm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[10px] text-primary hover:text-primary/80 tracking-widest shrink-0 self-center opacity-60 group-hover:opacity-100 transition-opacity"
+                >
+                  [↗]
+                </a>
+              </div>
+
+              <div className="flex items-start gap-4 px-4 py-3 hover:bg-muted/10 transition-colors group">
+                <span className="font-mono text-[8px] border border-border text-muted-foreground px-1.5 py-0.5 shrink-0 mt-0.5">DATA</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    Federal Reserve Bank of St. Louis
+                  </p>
+                  <p className="font-mono text-xs text-foreground/90 mt-0.5 font-medium">
+                    FRED — Federal Reserve Economic Data (Macroeconomics)
+                  </p>
+                </div>
+                <a
+                  href="https://fred.stlouisfed.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-[10px] text-primary hover:text-primary/80 tracking-widest shrink-0 self-center opacity-60 group-hover:opacity-100 transition-opacity"
+                >
+                  [↗]
+                </a>
+              </div>
+
             </div>
             <p className="font-mono text-[9px] text-muted-foreground/50 mt-3 pl-1">
               · Full annotations and data links in <Link to="/lab/notes" className="text-primary hover:text-primary/80">LAB → NOTES</Link>

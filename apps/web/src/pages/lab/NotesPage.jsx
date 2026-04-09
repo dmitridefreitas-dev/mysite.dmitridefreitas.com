@@ -44,6 +44,68 @@ All data is updated monthly. Used as the benchmark factor source in virtually al
       { label: 'DATA LIBRARY [SITE]', href: 'https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html' },
     ],
   },
+  {
+    id: 'damodaran-archive',
+    type: 'DATA',
+    authors: 'Damodaran, A.',
+    year: 'Ongoing',
+    title: 'Aswath Damodaran Data Archive',
+    venue: 'Stern School of Business, New York University',
+    tags: ['VALUATION', 'CORPORATE FINANCE', 'DATA'],
+    summary: `Comprehensive data archive maintained by NYU Stern's Aswath Damodaran covering valuation inputs and corporate finance metrics across industries and geographies. Key datasets include:
+
+· Industry-level betas (levered and unlevered), debt/equity ratios, tax rates
+· Cost of capital by sector (WACC, cost of equity, cost of debt)
+· EV multiples (EV/EBITDA, EV/Sales, P/E) by industry
+· Historical equity risk premiums (ERP) and country risk premiums
+· Dividend yields, payout ratios, and growth rates
+
+Updated annually (January). Used heavily in DCF modeling, comparables analysis, and teaching corporate finance. Damodaran also publishes detailed model spreadsheets (DCF, DDM, FCFF) alongside the data.`,
+    links: [
+      { label: 'DATA ARCHIVE [SITE]', href: 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/data.html' },
+    ],
+  },
+  {
+    id: 'shiller-online-data',
+    type: 'DATA',
+    authors: 'Shiller, R.J.',
+    year: 'Ongoing',
+    title: 'Robert Shiller Online Data',
+    venue: 'Yale University Department of Economics',
+    tags: ['CAPE', 'MARKET HISTORY', 'MACRO', 'DATA'],
+    summary: `Historical financial and macroeconomic dataset maintained by Nobel laureate Robert Shiller. Most widely cited for the CAPE ratio (Cyclically Adjusted Price-to-Earnings), also known as the Shiller P/E:
+
+CAPE = Price / (10-year moving average of real earnings)
+
+The dataset extends back to 1871 and includes monthly S&P 500 price, earnings, dividends, CPI, 10-year Treasury yields, and the CAPE ratio itself. Also contains housing price data (Case-Shiller Home Price Index) and the Irrational Exuberance dataset used in Shiller's book.
+
+CAPE above long-run average (~17) is often cited as a signal of overvaluation; below as undervaluation — though the ratio can stay elevated for extended periods. Shiller's 2013 Nobel Prize was awarded alongside Fama and Hansen for empirical analysis of asset prices.`,
+    links: [
+      { label: 'ONLINE DATA [SITE]', href: 'http://www.econ.yale.edu/~shiller/data.htm' },
+    ],
+  },
+  {
+    id: 'fred-stlouisfed',
+    type: 'DATA',
+    authors: 'Federal Reserve Bank of St. Louis',
+    year: 'Ongoing',
+    title: 'FRED — Federal Reserve Economic Data',
+    venue: 'Federal Reserve Bank of St. Louis',
+    tags: ['MACRO', 'RATES', 'ECONOMIC DATA', 'FED'],
+    summary: `The Federal Reserve's primary public database for macroeconomic and financial time series. Contains over 800,000 series from 100+ sources including:
+
+· Interest rates: Fed Funds Rate, SOFR, Treasury yields (all maturities), TIPS
+· Inflation: CPI, PCE, Core PCE, breakeven inflation rates
+· Employment: unemployment rate, nonfarm payrolls, labor force participation
+· GDP and output: real GDP, GDP deflator, industrial production
+· Credit and financial conditions: credit spreads, bank lending, monetary aggregates (M2)
+· Foreign exchange rates and international trade data
+
+All data is freely accessible via web, API, or download. Indispensable for macro research, yield curve analysis, and factor construction requiring risk-free rates (e.g., T-bill series for Fama-French).`,
+    links: [
+      { label: 'FRED [SITE]', href: 'https://fred.stlouisfed.org/' },
+    ],
+  },
 ];
 
 const NOTES = [

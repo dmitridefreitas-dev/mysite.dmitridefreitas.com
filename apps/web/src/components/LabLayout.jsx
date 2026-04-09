@@ -18,6 +18,8 @@ const labLinks = [
   { num: 'O', label: 'OPTIMIZER',   path: '/lab/optimizer'      },
   { num: 'F', label: 'FACTORS',     path: '/lab/factors'        },
   { num: 'P', label: 'PEAD',        path: '/lab/pead'           },
+  { num: 'V', label: 'IV SURF',    path: '/lab/iv-surface'     },
+  { num: 'M', label: 'DCF',        path: '/lab/dcf'            },
 ];
 
 const isInputActive = () => {
@@ -47,6 +49,7 @@ export default function LabLayout() {
         '9': '/lab/sim',
         'o': '/lab/optimizer',    'f': '/lab/factors',
         'p': '/lab/pead',
+        'v': '/lab/iv-surface',   'm': '/lab/dcf',
       };
       if (routes[e.key]) navigate(routes[e.key]);
     };

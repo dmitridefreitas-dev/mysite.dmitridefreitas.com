@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { TrendingUp, BarChart2, Activity, Waves, BookOpen, GitBranch, FileText, HelpCircle, Cpu, PieChart, FlaskConical, Zap } from 'lucide-react';
+import { TrendingUp, BarChart2, Activity, Waves, BookOpen, GitBranch, FileText, HelpCircle, Cpu, PieChart, FlaskConical, Zap, LineChart, Calculator } from 'lucide-react';
 
 const tools = [
   {
@@ -77,6 +77,18 @@ const tools = [
     desc: 'Post-Earnings Announcement Drift. Market-model adjusted cumulative abnormal returns from −20 to +60 days around any earnings date.',
     tags: ['EVENT STUDY', 'ALPHA'],
   },
+  {
+    num: 'V', path: '/lab/iv-surface', icon: LineChart,
+    label: 'IV SURFACE',
+    desc: 'Implied Volatility Surface for any optionable ticker. Vol smile per expiry, ATM term structure, and skew metrics across the entire options chain.',
+    tags: ['OPTIONS', 'VOLATILITY', 'DERIVATIVES'],
+  },
+  {
+    num: 'M', path: '/lab/dcf', icon: Calculator,
+    label: 'DCF MODELER',
+    desc: 'Automated 3-statement model + 5-year DCF for any ticker. Pulls live fundamentals, lets you tweak WACC, growth, and margins to see implied price in real time.',
+    tags: ['VALUATION', 'IB', 'DCF'],
+  },
 ];
 
 const containerVariants = {
@@ -109,7 +121,7 @@ export default function LabHomePage() {
             <p className="font-mono text-xs text-muted-foreground max-w-2xl leading-relaxed">
               Interactive financial mathematics tools built from scratch — no libraries, no shortcuts.
               Each instrument implements the underlying math directly in the browser.
-              Press <span className="text-primary">[1]–[9]</span> or <span className="text-primary">[O] [F] [P]</span> to navigate.
+              Press <span className="text-primary">[1]–[9]</span> or <span className="text-primary">[O] [F] [P] [V] [M]</span> to navigate.
               Press <span className="text-primary">[ESC]</span> to return to main site.
             </p>
           </div>

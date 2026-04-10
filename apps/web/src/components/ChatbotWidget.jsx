@@ -11,19 +11,22 @@ const starterMessage = {
 // Determine if a URL is internal (same-origin path) or external
 const isInternal = (url) => url.startsWith('/') && !url.startsWith('//');
 
-// Parse markdown-style links [label](url) and render as styled anchor chips.
-// Everything else renders as plain text spans.
+// Parse **bold** and [label](url) markdown, render bold as <strong> and links as chips.
 function MessageContent({ text }) {
-  const LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g;
+  const SEGMENT_RE = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g;
   const parts = [];
   let last = 0;
   let match;
 
-  while ((match = LINK_RE.exec(text)) !== null) {
+  while ((match = SEGMENT_RE.exec(text)) !== null) {
     if (match.index > last) {
       parts.push({ type: 'text', value: text.slice(last, match.index) });
     }
-    parts.push({ type: 'link', label: match[1], url: match[2] });
+    if (match[1] !== undefined) {
+      parts.push({ type: 'bold', value: match[1] });
+    } else {
+      parts.push({ type: 'link', label: match[2], url: match[3] });
+    }
     last = match.index + match[0].length;
   }
   if (last < text.length) {
@@ -34,6 +37,7 @@ function MessageContent({ text }) {
     <>
       {parts.map((p, i) => {
         if (p.type === 'text') return <span key={i}>{p.value}</span>;
+        if (p.type === 'bold') return <strong key={i} style={{ color: '#e8f4ff', fontWeight: 650 }}>{p.value}</strong>;
         return isInternal(p.url) ? (
           <a key={i} href={p.url} className="chatbot-link-chip">
             {p.label} ↗

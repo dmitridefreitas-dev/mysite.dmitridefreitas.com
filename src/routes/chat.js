@@ -147,7 +147,7 @@ router.post('/', async (req, res) => {
     if (!groqResp.ok) {
       const errBody = await groqResp.json().catch(() => ({}));
       console.error('[chat] Groq error:', groqResp.status, JSON.stringify(errBody));
-      return res.status(502).json({ error: 'upstream_error' });
+      return res.status(502).json({ error: 'upstream_error', status: groqResp.status, detail: errBody });
     }
 
     const data = await groqResp.json();

@@ -123,10 +123,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ── Single quote — Yahoo Finance ──────────────────────────────────────────────
+// ── Single quote — Alpha Vantage GLOBAL_QUOTE ─────────────────────────────────
+// (Yahoo Finance is rate-limited by IP on Render's shared infrastructure)
 // GET /market-data/quote?symbol=SPY
 const QUOTE_CACHE = new Map();
-const QUOTE_TTL = 5 * 60 * 1000;
+const QUOTE_TTL = 10 * 60 * 1000; // 10 min
 
 router.get('/quote', async (req, res) => {
   const symbol = (req.query.symbol || 'SPY').toUpperCase();
@@ -135,30 +136,39 @@ router.get('/quote', async (req, res) => {
   if (cached && now - cached.time < QUOTE_TTL) return res.json(cached.data);
 
   try {
-    const quote = await yf.quote(symbol, {}, { validateResult: false });
+    const raw = await avFetch({ function: 'GLOBAL_QUOTE', symbol });
+    const q = raw['Global Quote'] || {};
+    if (!q['05. price']) throw new Error(`No quote data for ${symbol}`);
+
+    const price         = parseNum(q['05. price']);
+    const previousClose = parseNum(q['08. previous close']);
+    const change        = parseNum(q['09. change']);
+    const changePct     = parseNum((q['10. change percent'] || '').replace('%', ''));
+    const volume        = parseNum(q['06. volume']);
+
     const data = {
       symbol,
-      price:                   quote.regularMarketPrice          ?? null,
-      previousClose:           quote.regularMarketPreviousClose  ?? null,
-      change:                  quote.regularMarketChange         ?? null,
-      changePercent:           quote.regularMarketChangePercent  ?? null,
-      bid:                     quote.bid                         ?? null,
-      ask:                     quote.ask                         ?? null,
-      volume:                  quote.regularMarketVolume         ?? null,
-      dayHigh:                 quote.regularMarketDayHigh        ?? null,
-      dayLow:                  quote.regularMarketDayLow         ?? null,
-      fiftyTwoWeekHigh:        quote.fiftyTwoWeekHigh            ?? null,
-      fiftyTwoWeekLow:         quote.fiftyTwoWeekLow             ?? null,
-      marketState:             quote.marketState                 ?? 'CLOSED',
-      shortName:               quote.shortName                   ?? symbol,
-      postMarketPrice:         quote.postMarketPrice             ?? null,
-      postMarketChange:        quote.postMarketChange            ?? null,
-      postMarketChangePercent: quote.postMarketChangePercent     ?? null,
-      postMarketTime:          quote.postMarketTime              ?? null,
-      preMarketPrice:          quote.preMarketPrice              ?? null,
-      preMarketChange:         quote.preMarketChange             ?? null,
-      preMarketChangePercent:  quote.preMarketChangePercent      ?? null,
-      preMarketTime:           quote.preMarketTime               ?? null,
+      price,
+      previousClose,
+      change,
+      changePercent:           changePct,
+      bid:                     null,
+      ask:                     null,
+      volume,
+      dayHigh:                 null,
+      dayLow:                  null,
+      fiftyTwoWeekHigh:        null,
+      fiftyTwoWeekLow:         null,
+      marketState:             null,
+      shortName:               symbol,
+      postMarketPrice:         null,
+      postMarketChange:        null,
+      postMarketChangePercent: null,
+      postMarketTime:          null,
+      preMarketPrice:          null,
+      preMarketChange:         null,
+      preMarketChangePercent:  null,
+      preMarketTime:           null,
     };
 
     QUOTE_CACHE.set(symbol, { data, time: now });

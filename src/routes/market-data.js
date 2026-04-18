@@ -5,9 +5,9 @@ const router = express.Router();
 const yf = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
 
 // ── Request queues — serialize external calls to avoid burst rate-limits ───────
-// AV free tier: 25 req/DAY total (not 5/min — the per-minute cap no longer applies).
-// We keep a gentle gap between AV calls so concurrent requests from the frontend
-// don't double-hit the daily cap in a single burst.
+// Yahoo Finance has no explicit quota, but hammering their endpoints can lead to
+// temporary IP bans or crumb failures. 350ms spacing spreads bursts so concurrent
+// frontend requests don't all hit Yahoo at once.
 const delay = (ms) => new Promise(r => setTimeout(r, ms));
 
 function makeQueue(gapMs) {
@@ -19,42 +19,8 @@ function makeQueue(gapMs) {
   };
 }
 
-// 1 AV call every 1.5s — gentle pacing for the 25/day tier
-const avQueue  = makeQueue(1500);
 // 1 Yahoo call every 350ms — spreads burst, avoids crumb hammering
 const yfQueue  = makeQueue(350);
-
-// ── Alpha Vantage helpers ──────────────────────────────────────────────────────
-const AV_BASE = 'https://www.alphavantage.co/query';
-
-function getAvKey() {
-  const k = process.env.ALPHA_VANTAGE_KEY;
-  if (!k) throw new Error('ALPHA_VANTAGE_KEY environment variable is not set');
-  return k;
-}
-
-// Custom error class so callers can distinguish rate-limit from other failures
-class AVRateLimitError extends Error {
-  constructor(msg) { super(msg); this.code = 'rate_limited'; }
-}
-
-async function avFetch(params) {
-  return avQueue(async () => {
-    const url = new URL(AV_BASE);
-    url.searchParams.set('apikey', getAvKey());
-    for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-    const res = await fetch(url.toString());
-    if (!res.ok) throw new Error(`Alpha Vantage HTTP ${res.status}`);
-    const data = await res.json();
-    if (data.Note || data.Information) {
-      throw new AVRateLimitError(
-        'Alpha Vantage daily limit reached (25 requests/day on the free tier). Try again tomorrow or set a paid ALPHA_VANTAGE_KEY.'
-      );
-    }
-    if (data['Error Message']) throw new Error(`Alpha Vantage: ${data['Error Message']}`);
-    return data;
-  });
-}
 
 async function yfQuote(symbol) {
   return yfQueue(() => yf.quote(symbol, {}, { validateResult: false }));
@@ -95,26 +61,6 @@ function parseNum(v) {
   if (v == null || v === 'None' || v === '-' || v === '') return null;
   const n = parseFloat(v);
   return isNaN(n) ? null : n;
-}
-
-// Fetch full monthly adjusted series from AV; [{date:'YYYY-MM-DD', adjClose}]
-async function avMonthly(symbol) {
-  const data = await avFetch({ function: 'TIME_SERIES_MONTHLY_ADJUSTED', symbol });
-  const series = data['Monthly Adjusted Time Series'] || {};
-  return Object.entries(series)
-    .map(([date, v]) => ({ date, adjClose: parseNum(v['5. adjusted close']) }))
-    .filter(r => r.adjClose != null)
-    .sort((a, b) => a.date.localeCompare(b.date));
-}
-
-// Fetch full daily adjusted series from AV
-async function avDaily(symbol) {
-  const data = await avFetch({ function: 'TIME_SERIES_DAILY_ADJUSTED', symbol, outputsize: 'full' });
-  const series = data['Time Series (Daily)'] || {};
-  return Object.entries(series)
-    .map(([date, v]) => ({ date, adjClose: parseNum(v['5. adjusted close']) }))
-    .filter(r => r.adjClose != null)
-    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 function dateKey(dateStr) {
@@ -238,26 +184,16 @@ router.get('/quote', async (req, res) => {
   }
 });
 
-// ── Monthly historical — Yahoo Finance primary, Alpha Vantage fallback ────────
+// ── Monthly historical — Yahoo Finance ────────────────────────────────────────
 // GET /market-data/monthly?tickers=AAPL,MSFT,SPY&months=36
-// Previously this hit Alpha Vantage directly and returned {} silently whenever
-// the daily cap was exceeded. Now we use Yahoo Finance (yf.historical, 1mo bars)
-// as the primary source and only fall back to AV if Yahoo fails for a ticker.
+// Yahoo Finance (yf.historical, 1mo bars) is the sole source — no Alpha Vantage.
 const MONTHLY_CACHE = new Map();
 const MONTHLY_TTL = 60 * 60 * 1000;
 
 async function monthlySeries(ticker) {
-  // Primary: Yahoo Finance (no rate limit, supports ETFs and index tickers)
-  try {
-    const rows = await yfHistorical(ticker, { months: 120, interval: '1mo' });
-    const series = yfRowsToSeries(rows);
-    if (series.length >= 3) return { series, source: 'yahoo' };
-  } catch (err) {
-    console.warn(`[monthlySeries/yf] ${ticker}: ${err.message}`);
-  }
-  // Fallback: Alpha Vantage
-  const series = await avMonthly(ticker);
-  return { series, source: 'alpha_vantage' };
+  const rows = await yfHistorical(ticker, { months: 120, interval: '1mo' });
+  const series = yfRowsToSeries(rows);
+  return { series, source: 'yahoo' };
 }
 
 router.get('/monthly', async (req, res) => {
@@ -298,7 +234,7 @@ router.get('/monthly', async (req, res) => {
   res.json(data);
 });
 
-// ── Yahoo-first monthly alias — explicitly bypasses AV ────────────────────────
+// ── Yahoo-first monthly alias — explicitly Yahoo-only ─────────────────────────
 // GET /market-data/yf-monthly?tickers=SPY,GLD,TLT&months=72
 // Used by Strategy, Live Signal, and Backtest Stats pages.
 router.get('/yf-monthly', async (req, res) => {
@@ -377,21 +313,14 @@ router.get('/yf-quotes', async (req, res) => {
   res.json(data);
 });
 
-// ── Daily historical — Yahoo primary, AV fallback ──────────────────────────────
+// ── Daily historical — Yahoo Finance ──────────────────────────────────────────
 // GET /market-data/daily?tickers=AAPL,SPY&start=2023-01-01&end=2024-06-01
 const DAILY_CACHE = new Map();
 const DAILY_TTL   = 30 * 60 * 1000;
 
 async function dailySeries(ticker, start, end) {
-  try {
-    const rows = await yfHistoricalDaily(ticker, start, end);
-    const series = yfRowsToSeries(rows);
-    if (series.length >= 5) return series;
-  } catch (err) {
-    console.warn(`[dailySeries/yf] ${ticker}: ${err.message}`);
-  }
-  const rows = await avDaily(ticker);
-  return rows.filter(r => r.date >= start && r.date <= end);
+  const rows = await yfHistoricalDaily(ticker, start, end);
+  return yfRowsToSeries(rows);
 }
 
 router.get('/daily', async (req, res) => {

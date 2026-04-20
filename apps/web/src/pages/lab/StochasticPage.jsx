@@ -253,7 +253,7 @@ function drawPaths(canvas, simResult, extra, theme) {
   const hsl =v=>`hsl(${cs.getPropertyValue(v).trim()})`;
   const hsla=(v,a)=>`hsla(${cs.getPropertyValue(v).trim()},${a})`;
 
-  ctx.fillStyle=hsl('--background'); ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=hsl('--card'); ctx.fillRect(0,0,W,H);
 
   let minP=Infinity,maxP=-Infinity;
   p5Band.forEach(v=>{if(v<minP)minP=v});
@@ -291,12 +291,9 @@ function drawPaths(canvas, simResult, extra, theme) {
 
   // paths
   const disp=paths.length>200?paths.slice(0,200):paths;
-  const alpha=paths.length>500?0.04:paths.length>100?0.07:0.12;
+  const alpha=paths.length>500?0.10:paths.length>100?0.18:0.28;
   disp.forEach(path=>{
-    const fin=path[steps];
-    ctx.strokeStyle=fin>=S0
-      ?`hsla(${cs.getPropertyValue('--terminal-green').trim()},${alpha})`
-      :`hsla(${cs.getPropertyValue('--destructive').trim()},${alpha})`;
+    ctx.strokeStyle=`rgba(180,180,180,${alpha})`;
     ctx.lineWidth=0.8; ctx.beginPath();
     for(let t=0;t<=steps;t++) t===0?ctx.moveTo(xP(t),yP(path[t])):ctx.lineTo(xP(t),yP(path[t]));
     ctx.stroke();

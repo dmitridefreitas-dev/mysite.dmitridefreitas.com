@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, ChevronDown, ChevronUp, RefreshCw, Search, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import apiServerClient from '@/lib/apiServerClient.js';
-import SectionHeader from '@/components/SectionHeader.jsx';
 import WavePageTransition from '@/components/WavePageTransition.jsx';
 
 // ─── Shared helpers ────────────────────────────────────────────────────────────
@@ -451,6 +451,13 @@ const NewsPage = () => {
             : 'News — Dmitri De Freitas'}
         </title>
         <meta name="description" content="Live financial and market news feed with SEC EDGAR filing search." />
+        <meta property="og:type"   content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image:width"  content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta name="twitter:card"        content="summary" />
+        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">
@@ -458,7 +465,24 @@ const NewsPage = () => {
         {/* ── Hero ─────────────────────────────────────────────────────────── */}
         <section className="py-10 border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="05" title="LIVE NEWS FEED" />
+            {/* Section header with REGIME button on same line */}
+            <div className="mb-10">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <span className="font-mono text-xs text-muted-foreground tracking-widest uppercase block">05</span>
+                  <h2 className="font-mono text-2xl md:text-3xl font-bold tracking-tight mt-1 uppercase text-foreground">
+                    LIVE NEWS FEED
+                  </h2>
+                </div>
+                <Link
+                  to="/regime"
+                  className="font-mono text-[10px] tracking-widest border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors px-3 h-7 flex items-center gap-1.5 shrink-0 mb-1"
+                >
+                  REGIME →
+                </Link>
+              </div>
+              <div className="h-px bg-border mt-3 w-full" />
+            </div>
 
             {/* Ticker search bar */}
             <div className="flex gap-2 mb-5 max-w-sm">

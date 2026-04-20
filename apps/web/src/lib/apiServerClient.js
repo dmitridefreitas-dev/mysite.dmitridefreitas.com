@@ -1,4 +1,6 @@
-const API_SERVER_URL = "https://newsapi-xspv.onrender.com";
+const API_SERVER_URL = window.location.hostname === 'localhost'
+    ? '/hcgi/api'
+    : "https://newsapi-xspv.onrender.com";
 
 const apiServerClient = {
     fetch: async (url, options = {}) => {

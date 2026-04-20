@@ -183,7 +183,9 @@ export default function PortfolioOptimizerPage() {
     }
   }, [tickerInput, period, rfRate]);
 
-  const mcColor = '#333';
+  const mcColor = getComputedStyle(document.documentElement).getPropertyValue('--muted-foreground').trim()
+    ? `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--muted-foreground').trim()})`
+    : '#aaa';
   const cloudPts = result?.mcPts ?? [];
 
   return (
@@ -290,7 +292,7 @@ export default function PortfolioOptimizerPage() {
                     <Tooltip content={<CustomTooltip />} />
 
                     {/* Cloud of random portfolios */}
-                    <Scatter name="Random Portfolios" data={cloudPts} fill={mcColor} opacity={0.15} r={2} />
+                    <Scatter name="Random Portfolios" data={cloudPts} fill={mcColor} opacity={0.45} r={2} />
 
                     {/* Tangency portfolio */}
                     <Scatter

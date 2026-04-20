@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import ChainRow from '@/components/ChainRow.jsx';
+import TerminalBadge from '@/components/TerminalBadge.jsx';
 
 const TABS = [
   { key: 'ALL',       label: 'ALL'           },
@@ -17,14 +9,55 @@ const TABS = [
   { key: 'VIZ',       label: 'VISUALIZATION' },
 ];
 
+function SkillCell({ skill, onClick, side }) {
+  if (!skill) return <div className="flex-1" />;
+
+  const isCall = side === 'call';
+  const keyUses = skill.technicalUsedFor.slice(0, 2).map(s => s.toUpperCase()).join(' · ');
+
+  if (isCall) {
+    return (
+      <div onClick={() => onClick(skill)} className="flex-1 flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors group bg-terminal-green/5 hover:bg-terminal-green/10">
+        <span className="font-mono text-xs font-bold w-20 shrink-0 text-left text-terminal-green">
+          <span className="text-terminal-green/60 mr-1 text-[10px]">◆</span>
+          {skill.name}
+        </span>
+        <div className="w-14 shrink-0 flex items-center justify-start">
+          <TerminalBadge variant="complete">{skill.typeCode}</TerminalBadge>
+        </div>
+        <span className="font-mono text-[10px] text-muted-foreground tracking-wide hidden md:block flex-1 text-left">{keyUses}</span>
+        <span className="font-mono text-[10px] text-muted-foreground/60 tracking-widest w-20 shrink-0 hidden lg:block text-right">{skill.context}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div onClick={() => onClick(skill)} className="flex-1 flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors group hover:bg-muted/40">
+      <span className="font-mono text-[10px] text-muted-foreground/60 tracking-widest w-20 shrink-0 hidden lg:block text-left">{skill.context}</span>
+      <span className="font-mono text-[10px] text-muted-foreground tracking-wide hidden md:block flex-1 text-right">{keyUses}</span>
+      <div className="w-14 shrink-0 flex items-center justify-end">
+        <TerminalBadge variant="date">{skill.typeCode}</TerminalBadge>
+      </div>
+      <span className="font-mono text-xs font-bold w-20 shrink-0 text-right text-foreground group-hover:text-primary transition-colors">
+        {skill.name}
+      </span>
+    </div>
+  );
+}
+
 const OptionsChain = ({ skillsData, onSkillClick }) => {
   const [activeTab, setActiveTab] = useState('ALL');
 
   const filtered =
-    activeTab === 'ALL' ? skillsData : skillsData.filter((s) => s.category === activeTab);
+    activeTab === 'ALL' ? skillsData : skillsData.filter(s => s.category === activeTab);
 
-  const itmRows = filtered.filter((s) => s.itm);
-  const otmRows = filtered.filter((s) => !s.itm);
+  const itmRows = filtered.filter(s => s.itm);
+  const otmRows = filtered.filter(s => !s.itm);
+  const rowCount = Math.max(itmRows.length, otmRows.length);
+  const rows = Array.from({ length: rowCount }, (_, i) => ({
+    call: itmRows[i] ?? null,
+    put:  otmRows[i] ?? null,
+  }));
 
   return (
     <motion.div
@@ -40,11 +73,10 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
           SKILL CHAIN
         </span>
         <div className="flex divide-x divide-border border border-border">
-          {TABS.map((tab) => {
-            const count =
-              tab.key === 'ALL'
-                ? skillsData.length
-                : skillsData.filter((s) => s.category === tab.key).length;
+          {TABS.map(tab => {
+            const count = tab.key === 'ALL'
+              ? skillsData.length
+              : skillsData.filter(s => s.category === tab.key).length;
             return (
               <button
                 key={tab.key}
@@ -63,46 +95,41 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
         </div>
       </div>
 
-      {/* Table */}
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/40 border-b border-border hover:bg-muted/40">
-            <TableHead className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest py-2 pl-5">
-              STRIKE
-            </TableHead>
-            <TableHead className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest py-2 px-3">
-              TYPE
-            </TableHead>
-            <TableHead className="hidden md:table-cell font-mono text-[10px] text-muted-foreground uppercase tracking-widest py-2 px-4">
-              KEY USES
-            </TableHead>
-            <TableHead className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest py-2 pr-5 text-right">
-              STATUS
-            </TableHead>
-          </TableRow>
-        </TableHeader>
+      {/* Column headers */}
+      <div className="flex border-b border-border bg-muted/40">
+        {/* Calls header — w-20 matches data row name column; text-right puts label flush against TYPE */}
+        <div className="flex-1 flex items-center gap-3 px-4 py-2">
+          <span className="font-mono text-[9px] text-terminal-green tracking-widest font-bold w-20 shrink-0 text-left">
+            ◆ CALLS
+          </span>
+          <span className="font-mono text-[9px] text-muted-foreground/50 w-14 shrink-0 text-left">TYPE</span>
+          <span className="font-mono text-[9px] text-muted-foreground/50 hidden md:block flex-1 text-left">KEY USES</span>
+          <span className="font-mono text-[9px] text-muted-foreground/50 w-20 shrink-0 hidden lg:block text-right">CTX</span>
+        </div>
 
-        <TableBody>
-          {itmRows.map((skill) => (
-            <ChainRow key={skill.name} skill={skill} onClick={onSkillClick} />
-          ))}
+        <div className="w-px bg-border" />
 
-          {itmRows.length > 0 && otmRows.length > 0 && (
-            <TableRow className="bg-muted/20 border-y border-border/40 hover:bg-muted/20">
-              <TableCell
-                colSpan={4}
-                className="font-mono text-[10px] text-muted-foreground/50 tracking-widest text-center py-1.5"
-              >
-                ── AT THE MONEY ──
-              </TableCell>
-            </TableRow>
-          )}
+        {/* Puts header — w-20 matches data row name column; text-left puts label flush against TYPE */}
+        <div className="flex-1 flex items-center gap-3 px-4 py-2">
+          <span className="font-mono text-[9px] text-muted-foreground/50 w-20 shrink-0 hidden lg:block text-left">CTX</span>
+          <span className="font-mono text-[9px] text-muted-foreground/50 hidden md:block flex-1 text-right">KEY USES</span>
+          <span className="font-mono text-[9px] text-muted-foreground/50 w-14 shrink-0 text-right">TYPE</span>
+          <span className="font-mono text-[9px] text-muted-foreground/70 tracking-widest font-bold w-20 shrink-0 text-right">
+            PUTS
+          </span>
+        </div>
+      </div>
 
-          {otmRows.map((skill) => (
-            <ChainRow key={skill.name} skill={skill} onClick={onSkillClick} />
-          ))}
-        </TableBody>
-      </Table>
+      {/* Rows */}
+      <div className="divide-y divide-border/60">
+        {rows.map((row, i) => (
+          <div key={i} className="flex">
+            <SkillCell skill={row.call} onClick={onSkillClick} side="call" />
+            <div className="w-px bg-border/60 shrink-0" />
+            <SkillCell skill={row.put} onClick={onSkillClick} side="put" />
+          </div>
+        ))}
+      </div>
 
       {/* Footer */}
       <div className="bg-muted/20 border-t border-border px-5 py-2 flex items-center justify-between">

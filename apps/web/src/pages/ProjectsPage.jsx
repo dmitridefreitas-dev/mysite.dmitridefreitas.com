@@ -275,11 +275,19 @@ const ProjectsPage = () => {
   return (
     <>
       <Helmet>
-        <title>Projects - Dmitri De Freitas</title>
-        <meta
-          name="description"
-          content="Explore Dmitri De Freitas's portfolio of quantitative finance, data engineering, and statistical modeling projects including trading systems, predictive models, and data pipelines."
-        />
+        <title>Research &amp; Projects — Dmitri De Freitas</title>
+        <meta name="description"        content="Quantitative research portfolio of Dmitri De Freitas — PEAD market efficiency analysis, institutional ETL pipelines, cryptocurrency trading systems, predictive ML models." />
+        <link rel="canonical"           href="https://findmitridefreitas.com/projects" />
+        <meta property="og:url"         content="https://findmitridefreitas.com/projects" />
+        <meta property="og:title"       content="Research & Projects — Dmitri De Freitas" />
+        <meta property="og:description" content="PEAD market efficiency study, institutional data pipelines, crypto trading systems, ML predictive models. Full methodology, data sources, and performance metrics." />
+        <meta property="og:type"   content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image:width"  content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta name="twitter:card"        content="summary" />
+        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">

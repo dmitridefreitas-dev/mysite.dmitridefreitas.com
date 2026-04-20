@@ -3,7 +3,9 @@ import { Helmet } from 'react-helmet';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer, Cell } from 'recharts';
 import { Search, Clock, RefreshCw } from 'lucide-react';
 
-const API_BASE = 'https://newsapi-xspv.onrender.com';
+const API_BASE = window.location.hostname === 'localhost'
+  ? '/hcgi/api'
+  : 'https://newsapi-xspv.onrender.com';
 
 // ── Market hours (ET) ─────────────────────────────────────────────────────────────
 

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Receptionist — Terra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0d0a;
+    --bg-2: #111411;
+    --fg: #ecece4;
+    --fg-dim: #8a8d82;
+    --line: rgba(236,236,228,0.14);
+    --lime: #d4ff3a;
+    --sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .t-video-host {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg);
+    overflow: hidden;
+    contain: layout paint;
+  }
+  .t-stage-inner {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .t-stage-canvas {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: center center;
+    translate: -50% -50%;
+  }
+  .t-video-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 56px; background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.15em;
+    color: var(--fg-dim);
+  }
+  .t-video-bar .t-vb-mid { color: var(--fg); }
+  .t-vb-dot {
+    width: 8px; height: 8px; border-radius: 4px; background: var(--lime);
+    display: inline-block; margin-right: 10px;
+    box-shadow: 0 0 12px var(--lime);
+    animation: pulse 1.8s infinite;
+  }
+  @media (max-width: 767px) {
+    .t-video-bar { padding: 14px 20px; font-size: 10px; letter-spacing: 0.12em; gap: 12px; }
+    .t-video-bar .t-vb-mid { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+// ── Easing & helpers ────────────────────────────────────────────────────────
+const Easing = {
+  easeOutExpo: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  easeInCubic: (t) => t * t * t,
+  easeOutCubic: (t) => (--t) * t * t + 1,
+};
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+// ── Timeline context ────────────────────────────────────────────────────────
+const TimelineContext = React.createContext({ time: 0, duration: 21 });
+const useTime = () => React.useContext(TimelineContext).time;
+const useTimeline = () => React.useContext(TimelineContext);
+
+// ── Sprite ──────────────────────────────────────────────────────────────────
+const SpriteContext = React.createContext({ localTime: 0, progress: 0, duration: 0 });
+function Sprite({ start = 0, end = Infinity, children }) {
+  const { time } = useTimeline();
+  if (time < start || time > end) return null;
+  const duration = end - start;
+  const localTime = Math.max(0, time - start);
+  const progress = duration > 0 ? clamp(localTime / duration, 0, 1) : 0;
+  const value = { localTime, progress, duration };
+  return (
+    <SpriteContext.Provider value={value}>
+      {typeof children === 'function' ? children(value) : children}
+    </SpriteContext.Provider>
+  );
+}
+
+// ── VideoCanvas ─────────────────────────────────────────────────────────────
+function VideoCanvas({ width, height, duration, persistKey, children }) {
+  const hostRef = React.useRef(null);
+  const [scale, setScale] = React.useState(1);
+  const [time, setTime] = React.useState(0);
+  const [playing] = React.useState(true);
+  const [visible, setVisible] = React.useState(true);
+  const rafRef = React.useRef(null);
+  const lastTs = React.useRef(null);
+
+  React.useEffect(() => {
+    if (!hostRef.current) return;
+    const measure = () => {
+      const r = hostRef.current.getBoundingClientRect();
+      setScale(Math.max(r.width / width, r.height / height));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(hostRef.current);
+    window.addEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [width, height]);
+
+  React.useEffect(() => {
+    if (!hostRef.current) return;
+    const io = new IntersectionObserver(
+      (entries) => setVisible(entries[0].isIntersecting),
+      { threshold: 0.05 }
+    );
+    io.observe(hostRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  React.useEffect(() => {
+    if (!playing || !visible) { lastTs.current = null; return; }
+    const step = (ts) => {
+      if (lastTs.current == null) lastTs.current = ts;
+      const dt = Math.min(0.1, (ts - lastTs.current) / 1000);
+      lastTs.current = ts;
+      setTime(t => { let n = t + dt; if (n >= duration) n = n % duration; return n; });
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); lastTs.current = null; };
+  }, [playing, visible, duration]);
+
+  const ctx = React.useMemo(() => ({ time, duration, playing }), [time, duration, playing]);
+
+  return (
+    <div ref={hostRef} className="t-stage-inner">
+      <div className="t-stage-canvas" style={{
+        width, height,
+        transform: `translateZ(0) scale(${scale})`,
+        transformOrigin: 'center',
+        background: '#0b0d0a',
+        overflow: 'hidden',
+        willChange: 'transform',
+      }}>
+        <TimelineContext.Provider value={ctx}>
+          {children}
+        </TimelineContext.Provider>
+      </div>
+    </div>
+  );
+}
+
+// ── Mobile detector ─────────────────────────────────────────────────────────
+function useIsMobile() {
+  const [mobile, setMobile] = React.useState(window.innerWidth <= 767);
+  React.useEffect(() => {
+    const fn = () => setMobile(window.innerWidth <= 767);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return mobile;
+}
+
+// ── Design tokens ───────────────────────────────────────────────────────────
+const TERRA = {
+  bg: '#0b0d0a', bgAlt: '#111411', fg: '#ecece4',
+  dim: '#8a8d82', line: 'rgba(236,236,228,0.14)',
+  lime: '#d4ff3a', rust: '#ff5a1f',
+};
+const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+const MONO = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
+
+// ── HUD overlay ─────────────────────────────────────────────────────────────
+function HUD({ sceneLabel, sceneNum, totalScenes }) {
+  const time = useTime();
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: 48, bottom: 40, fontFamily: MONO, fontSize: 12, letterSpacing: '0.08em', color: TERRA.dim }}>
+        ● REC  T+{time.toFixed(2).padStart(5, '0')}s
+      </div>
+      <div style={{ position: 'absolute', right: 48, bottom: 40, fontFamily: MONO, fontSize: 12, letterSpacing: '0.08em', color: TERRA.dim, textTransform: 'uppercase' }}>
+        real people · real results · no bs
+      </div>
+      {[
+        { left: 24, top: 24, bw: '2px 0 0 2px' },
+        { right: 24, top: 24, bw: '2px 2px 0 0' },
+        { left: 24, bottom: 24, bw: '0 0 2px 2px' },
+        { right: 24, bottom: 24, bw: '0 2px 2px 0' },
+      ].map((s, i) => (
+        <div key={i} style={{ position: 'absolute', width: 22, height: 22, borderStyle: 'solid', borderColor: TERRA.lime, borderWidth: s.bw, ...s }}/>
+      ))}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════
+// DESKTOP SCENES
+// ════════════════════════════════════════════════════════
+
+function SceneRinging({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const ringT = localTime % 1.0;
+        const ringScale = 1 + Math.exp(-ringT * 4) * 0.3;
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: op }}>
+            <div style={{ position: 'absolute', left: 140, top: '50%', transform: 'translateY(-50%)', textAlign: 'left' }}>
+              <div style={{ fontFamily: MONO, fontSize: 12, color: TERRA.dim, letterSpacing: '0.2em', marginBottom: 16 }}>INCOMING CALL</div>
+              <div style={{ fontFamily: SANS, fontSize: 64, fontWeight: 900, color: TERRA.fg, letterSpacing: '-0.03em', lineHeight: 1 }}>+1 (314) 555<br/>0 1 8 4</div>
+              <div style={{ marginTop: 20, fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.1em' }}>ST. LOUIS · MO · 11:47 PM</div>
+            </div>
+            <div style={{ position: 'relative', width: 400, height: 400 }}>
+              {[0, 0.3, 0.6].map((offset, i) => {
+                const t = (localTime - offset) % 1.2;
+                if (t < 0) return null;
+                const s = 0.4 + t * 1.4;
+                const o = Math.max(0, 1 - t * 0.9);
+                return <div key={i} style={{ position: 'absolute', inset: 0, border: `2px solid ${TERRA.lime}`, borderRadius: '50%', transform: `scale(${s})`, opacity: o }}/>;
+              })}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${ringScale})` }}>
+                <div style={{ width: 160, height: 160, borderRadius: '50%', background: TERRA.lime, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 60px ${TERRA.lime}66` }}>
+                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 012-2h2l2 5-3 2a14 14 0 006 6l2-3 5 2v2a2 2 0 01-2 2A17 17 0 013 5z" fill={TERRA.bg}/></svg>
+                </div>
+              </div>
+            </div>
+            <div style={{ position: 'absolute', right: 140, top: '50%', transform: 'translateY(-50%)', textAlign: 'right' }}>
+              <div style={{ fontFamily: MONO, fontSize: 12, color: TERRA.dim, letterSpacing: '0.2em', marginBottom: 16 }}>OLD WAY</div>
+              <div style={{ fontFamily: SANS, fontSize: 140, fontWeight: 900, color: TERRA.rust, letterSpacing: '-0.05em', lineHeight: 1, textDecoration: 'line-through', textDecorationThickness: 4 }}>VOICEMAIL</div>
+              <div style={{ marginTop: 16, fontFamily: MONO, fontSize: 14, color: TERRA.dim, letterSpacing: '0.1em' }}>15 CALLS LOST/DAY → $0</div>
+            </div>
+            <HUD sceneLabel="INBOUND" sceneNum={1} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+function SceneCallInProgress({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const transcript = [
+          { at: 0.3,  who: 'AI', text: "Good evening, Prestige Home Services. How can I help?" },
+          { at: 2.0,  who: 'HU', text: "Hey — my water heater just burst, I need someone tonight." },
+          { at: 4.0,  who: 'AI', text: "Got it. I can book an emergency tech. What's the address?" },
+          { at: 5.8,  who: 'HU', text: "4412 Maple Grove Ave, St. Louis." },
+          { at: 7.3,  who: 'AI', text: "Logging that. Nearest available technician: Marcus — ETA 34 minutes." },
+          { at: 9.2,  who: 'AI', text: "You'll get a text confirmation. Anything else?" },
+        ];
+        const headerP = clamp(localTime / 0.5, 0, 1);
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        const barCount = 48;
+        const talking = transcript.some(m => localTime > m.at && localTime < m.at + 1.5);
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.bg, padding: '0 120px', display: 'flex', flexDirection: 'column', justifyContent: 'center', opacity: op }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 40, opacity: headerP }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                <div style={{ width: 12, height: 12, borderRadius: 6, background: TERRA.lime, boxShadow: `0 0 20px ${TERRA.lime}`, opacity: 0.6 + Math.sin(localTime * 6) * 0.4 }}/>
+                <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.lime, letterSpacing: '0.2em', textTransform: 'uppercase' }}>LIVE — AI RECEPTIONIST ACTIVE</div>
+              </div>
+              <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.1em', fontVariantNumeric: 'tabular-nums' }}>CALL DURATION {Math.floor(localTime * 10) / 10}s</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 64, alignItems: 'stretch', borderTop: `1px solid ${TERRA.line}`, borderBottom: `1px solid ${TERRA.line}`, padding: '56px 0', minHeight: 560 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+                <div style={{ fontFamily: MONO, fontSize: 14, color: TERRA.dim, letterSpacing: '0.2em' }}>AUDIO STREAM · 16KHZ</div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: 200 }}>
+                  {Array.from({ length: barCount }, (_, i) => {
+                    const seed = Math.sin(i * 12.9898) * 43758.5453;
+                    const base = seed - Math.floor(seed);
+                    const phase = localTime * 8 + i * 0.4;
+                    const amp = talking ? (0.3 + base * 0.7) : 0.08;
+                    const h = (0.3 + Math.abs(Math.sin(phase)) * 0.7) * amp * 180;
+                    return <div key={i} style={{ flex: 1, height: Math.max(4, h), background: talking ? TERRA.lime : TERRA.dim, opacity: talking ? 1 : 0.3 }}/>;
+                  })}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginTop: 'auto' }}>
+                  {[{ l: 'RESPONSE TIME', v: '0.2s' }, { l: 'LANGUAGE', v: 'EN-US' }, { l: 'INTENT', v: 'BOOKING' }, { l: 'SENTIMENT', v: 'URGENT' }].map((s, i) => (
+                    <div key={i} style={{ border: `1px solid ${TERRA.line}`, padding: '18px 22px' }}>
+                      <div style={{ fontFamily: MONO, fontSize: 12, color: TERRA.dim, letterSpacing: '0.15em', marginBottom: 10 }}>{s.l}</div>
+                      <div style={{ fontFamily: SANS, fontSize: 26, fontWeight: 800, color: TERRA.fg, letterSpacing: '-0.01em' }}>{s.v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ borderLeft: `1px solid ${TERRA.line}`, paddingLeft: 48, display: 'flex', flexDirection: 'column', gap: 20, overflow: 'hidden' }}>
+                <div style={{ fontFamily: MONO, fontSize: 14, color: TERRA.dim, letterSpacing: '0.2em', marginBottom: 8 }}>LIVE TRANSCRIPT</div>
+                {transcript.map((m, i) => {
+                  const p = clamp((localTime - m.at) / 0.4, 0, 1);
+                  if (p <= 0) return null;
+                  const isAI = m.who === 'AI';
+                  return (
+                    <div key={i} style={{ opacity: p, transform: `translateY(${(1 - p) * 8}px)`, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ fontFamily: MONO, fontSize: 13, color: isAI ? TERRA.lime : TERRA.dim, letterSpacing: '0.15em' }}>{isAI ? '● TERRA AI' : '○ CALLER'}</div>
+                      <div style={{ fontFamily: SANS, fontSize: 26, fontWeight: 500, color: isAI ? TERRA.fg : TERRA.dim, lineHeight: 1.35, letterSpacing: '-0.005em', maxWidth: 620 }}>{m.text}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <HUD sceneLabel="LIVE CALL" sceneNum={2} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+function SceneBooked({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const p1 = clamp(localTime / 0.5, 0, 1);
+        const p2 = clamp((localTime - 0.5) / 0.5, 0, 1);
+        const p3 = clamp((localTime - 1.2) / 0.6, 0, 1);
+        const p4 = clamp((localTime - 2.0) / 0.6, 0, 1);
+        const p5 = clamp((localTime - 2.8) / 0.5, 0, 1);
+        const p6 = clamp((localTime - 3.6) / 0.5, 0, 1);
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        const checkDraw = Easing.easeOutExpo(p2);
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.lime, padding: '0 140px', display: 'flex', flexDirection: 'column', justifyContent: 'center', opacity: op }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 56, opacity: p1 }}>
+              <div style={{ width: 48, height: 2, background: TERRA.bg }}/>
+              <div style={{ fontFamily: MONO, fontSize: 14, color: TERRA.bg, letterSpacing: '0.2em', textTransform: 'uppercase' }}>CALL COMPLETE · 00:11 · OUTCOME → BOOKED</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+              <div>
+                <div style={{ width: 120, height: 120, borderRadius: 60, background: TERRA.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 40, transform: `scale(${0.6 + p2 * 0.4})`, opacity: p2 }}>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12l4 4L19 6" stroke={TERRA.lime} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ strokeDasharray: 30, strokeDashoffset: 30 * (1 - checkDraw) }}/>
+                  </svg>
+                </div>
+                <div style={{ fontFamily: SANS, fontSize: 120, fontWeight: 900, color: TERRA.bg, letterSpacing: '-0.05em', lineHeight: 0.95, clipPath: `inset(0 ${(1 - Easing.easeOutExpo(p3)) * 100}% 0 0)` }}>LEAD<br/>CAPTURED.</div>
+                <div style={{ marginTop: 24, fontFamily: SANS, fontSize: 22, fontWeight: 500, color: TERRA.bg, opacity: p4 * 0.85, letterSpacing: '0.01em', maxWidth: 520, lineHeight: 1.4 }}>Booked, confirmed, routed to your tech — in 11 seconds. While you were sleeping.</div>
+              </div>
+              <div style={{ background: TERRA.bg, color: TERRA.fg, padding: 40, opacity: p5, transform: `translateY(${(1 - p5) * 20}px)`, border: `2px solid ${TERRA.bg}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 18, borderBottom: `1px dashed ${TERRA.dim}`, marginBottom: 26 }}>
+                  <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.lime, letterSpacing: '0.2em' }}>WORK ORDER</div>
+                  <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.1em' }}>#WO-41829</div>
+                </div>
+                {[{ k: 'CUSTOMER', v: 'J. Chen' }, { k: 'ISSUE', v: 'Water heater burst' }, { k: 'ADDRESS', v: '4412 Maple Grove Ave' }, { k: 'PRIORITY', v: 'EMERGENCY', accent: true }, { k: 'ASSIGNED', v: 'Marcus R. · Van 03' }, { k: 'ETA', v: '34 minutes' }].map((r, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < 5 ? `1px solid ${TERRA.line}` : 'none' }}>
+                    <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.15em' }}>{r.k}</div>
+                    <div style={{ fontFamily: SANS, fontSize: 17, fontWeight: 600, color: r.accent ? TERRA.lime : TERRA.fg, letterSpacing: '0.01em' }}>{r.v}</div>
+                  </div>
+                ))}
+                <div style={{ marginTop: 26, padding: '16px 0 0', borderTop: `1px dashed ${TERRA.dim}`, display: 'flex', justifyContent: 'space-between' }}>
+                  <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.15em' }}>SMS SENT</div>
+                  <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.lime, letterSpacing: '0.15em' }}>✓ 11:47 PM</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 80, opacity: p6, display: 'flex', alignItems: 'baseline', gap: 24, flexWrap: 'wrap' }}>
+              <div style={{ fontFamily: SANS, fontSize: 56, fontWeight: 900, color: TERRA.bg, letterSpacing: '-0.03em' }}>YOUR FRONT DESK. UPGRADED.</div>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.bg, letterSpacing: '0.15em', opacity: 0.7 }}>— 24/7 · ZERO MISSED CALLS</div>
+            </div>
+            <HUD sceneLabel="OUTCOME" sceneNum={3} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+// ════════════════════════════════════════════════════════
+// PORTRAIT (MOBILE) SCENES
+// ════════════════════════════════════════════════════════
+
+function SceneRingingP({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const ringT = localTime % 1.0;
+        const ringScale = 1 + Math.exp(-ringT * 4) * 0.3;
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 60px', gap: 80, opacity: op }}>
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.25em', marginBottom: 20 }}>INCOMING CALL</div>
+              <div style={{ fontFamily: SANS, fontSize: 84, fontWeight: 900, color: TERRA.fg, letterSpacing: '-0.03em', lineHeight: 1, textAlign: 'center' }}>+1 (314) 555<br/>0 1 8 4</div>
+              <div style={{ marginTop: 22, fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.15em' }}>ST. LOUIS · MO · 11:47 PM</div>
+            </div>
+            <div style={{ position: 'relative', width: 500, height: 500 }}>
+              {[0, 0.3, 0.6].map((offset, i) => {
+                const t = (localTime - offset) % 1.2;
+                if (t < 0) return null;
+                const s = 0.4 + t * 1.4;
+                const o = Math.max(0, 1 - t * 0.9);
+                return <div key={i} style={{ position: 'absolute', inset: 0, border: `2px solid ${TERRA.lime}`, borderRadius: '50%', transform: `scale(${s})`, opacity: o }}/>;
+              })}
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${ringScale})` }}>
+                <div style={{ width: 200, height: 200, borderRadius: '50%', background: TERRA.lime, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 80px ${TERRA.lime}66` }}>
+                  <svg width="96" height="96" viewBox="0 0 24 24" fill="none"><path d="M3 5a2 2 0 012-2h2l2 5-3 2a14 14 0 006 6l2-3 5 2v2a2 2 0 01-2 2A17 17 0 013 5z" fill={TERRA.bg}/></svg>
+                </div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.25em', marginBottom: 20 }}>OLD WAY</div>
+              <div style={{ fontFamily: SANS, fontSize: 150, fontWeight: 900, color: TERRA.rust, letterSpacing: '-0.05em', lineHeight: 1, textDecoration: 'line-through', textDecorationThickness: 6 }}>VOICEMAIL</div>
+              <div style={{ marginTop: 22, fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.15em' }}>15 CALLS LOST/DAY → $0</div>
+            </div>
+            <HUD sceneLabel="INBOUND" sceneNum={1} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+function SceneCallInProgressP({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const transcript = [
+          { at: 0.3,  who: 'AI', text: "Good evening, Prestige Home Services. How can I help?" },
+          { at: 2.0,  who: 'HU', text: "Hey — my water heater just burst, I need someone tonight." },
+          { at: 4.0,  who: 'AI', text: "Got it. I can book an emergency tech. What's the address?" },
+          { at: 5.8,  who: 'HU', text: "4412 Maple Grove Ave, St. Louis." },
+          { at: 7.3,  who: 'AI', text: "Logging that. Nearest available technician: Marcus — ETA 34 minutes." },
+          { at: 9.2,  who: 'AI', text: "You'll get a text confirmation. Anything else?" },
+        ];
+        const headerP = clamp(localTime / 0.5, 0, 1);
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        const barCount = 40;
+        const talking = transcript.some(m => localTime > m.at && localTime < m.at + 1.5);
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.bg, padding: '0 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', opacity: op }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, opacity: headerP, flexWrap: 'wrap', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                <div style={{ width: 14, height: 14, borderRadius: 7, background: TERRA.lime, boxShadow: `0 0 20px ${TERRA.lime}`, opacity: 0.6 + Math.sin(localTime * 6) * 0.4 }}/>
+                <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.lime, letterSpacing: '0.2em' }}>LIVE — AI RECEPTIONIST</div>
+              </div>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.1em', fontVariantNumeric: 'tabular-nums' }}>{Math.floor(localTime * 10) / 10}s</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 40, borderTop: `1px solid ${TERRA.line}`, borderBottom: `1px solid ${TERRA.line}`, padding: '40px 0' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.2em' }}>AUDIO STREAM · 16KHZ</div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center', height: 160 }}>
+                  {Array.from({ length: barCount }, (_, i) => {
+                    const seed = Math.sin(i * 12.9898) * 43758.5453;
+                    const base = seed - Math.floor(seed);
+                    const phase = localTime * 8 + i * 0.4;
+                    const amp = talking ? (0.3 + base * 0.7) : 0.08;
+                    const h = (0.3 + Math.abs(Math.sin(phase)) * 0.7) * amp * 150;
+                    return <div key={i} style={{ flex: 1, height: Math.max(4, h), background: talking ? TERRA.lime : TERRA.dim, opacity: talking ? 1 : 0.3 }}/>;
+                  })}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginTop: 12 }}>
+                  {[{ l: 'RESPONSE TIME', v: '0.2s' }, { l: 'LANGUAGE', v: 'EN-US' }, { l: 'INTENT', v: 'BOOKING' }, { l: 'SENTIMENT', v: 'URGENT' }].map((s, i) => (
+                    <div key={i} style={{ border: `1px solid ${TERRA.line}`, padding: '16px 20px' }}>
+                      <div style={{ fontFamily: MONO, fontSize: 13, color: TERRA.dim, letterSpacing: '0.15em', marginBottom: 8 }}>{s.l}</div>
+                      <div style={{ fontFamily: SANS, fontSize: 28, fontWeight: 800, color: TERRA.fg, letterSpacing: '-0.01em' }}>{s.v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ borderTop: `1px solid ${TERRA.line}`, paddingTop: 28, display: 'flex', flexDirection: 'column', gap: 18, overflow: 'hidden' }}>
+                <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.dim, letterSpacing: '0.2em', marginBottom: 4 }}>LIVE TRANSCRIPT</div>
+                {transcript.map((m, i) => {
+                  const p = clamp((localTime - m.at) / 0.4, 0, 1);
+                  if (p <= 0) return null;
+                  const isAI = m.who === 'AI';
+                  return (
+                    <div key={i} style={{ opacity: p, transform: `translateY(${(1 - p) * 8}px)`, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ fontFamily: MONO, fontSize: 14, color: isAI ? TERRA.lime : TERRA.dim, letterSpacing: '0.15em' }}>{isAI ? '● TERRA AI' : '○ CALLER'}</div>
+                      <div style={{ fontFamily: SANS, fontSize: 26, fontWeight: 500, color: isAI ? TERRA.fg : TERRA.dim, lineHeight: 1.35, letterSpacing: '-0.005em' }}>{m.text}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <HUD sceneLabel="LIVE CALL" sceneNum={2} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+function SceneBookedP({ start, end }) {
+  return (
+    <Sprite start={start} end={end}>
+      {({ localTime, duration }) => {
+        const p1 = clamp(localTime / 0.5, 0, 1);
+        const p2 = clamp((localTime - 0.5) / 0.5, 0, 1);
+        const p3 = clamp((localTime - 1.2) / 0.6, 0, 1);
+        const p4 = clamp((localTime - 2.0) / 0.6, 0, 1);
+        const p5 = clamp((localTime - 2.8) / 0.5, 0, 1);
+        const p6 = clamp((localTime - 3.6) / 0.5, 0, 1);
+        const exitP = clamp((localTime - (duration - 0.5)) / 0.45, 0, 1);
+        const op = 1 - exitP;
+        const checkDraw = Easing.easeOutExpo(p2);
+        return (
+          <div style={{ position: 'absolute', inset: 0, background: TERRA.lime, padding: '0 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', opacity: op }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32, opacity: p1, alignSelf: 'flex-start' }}>
+              <div style={{ width: 48, height: 2, background: TERRA.bg }}/>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.bg, letterSpacing: '0.2em', textTransform: 'uppercase' }}>CALL COMPLETE · 00:11 · BOOKED</div>
+            </div>
+            <div style={{ width: 140, height: 140, borderRadius: 70, background: TERRA.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32, transform: `scale(${0.6 + p2 * 0.4})`, opacity: p2 }}>
+              <svg width="76" height="76" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l4 4L19 6" stroke={TERRA.lime} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ strokeDasharray: 30, strokeDashoffset: 30 * (1 - checkDraw) }}/>
+              </svg>
+            </div>
+            <div style={{ fontFamily: SANS, fontSize: 140, fontWeight: 900, color: TERRA.bg, letterSpacing: '-0.05em', lineHeight: 0.95, textAlign: 'center', clipPath: `inset(0 ${(1 - Easing.easeOutExpo(p3)) * 100}% 0 0)` }}>LEAD<br/>CAPTURED.</div>
+            <div style={{ marginTop: 24, fontFamily: SANS, fontSize: 26, fontWeight: 500, color: TERRA.bg, opacity: p4 * 0.85, letterSpacing: '0.01em', maxWidth: 880, lineHeight: 1.4, textAlign: 'center' }}>Booked, confirmed, routed to your tech — in 11 seconds.</div>
+            <div style={{ marginTop: 40, background: TERRA.bg, color: TERRA.fg, padding: 36, opacity: p5, transform: `translateY(${(1 - p5) * 20}px)`, border: `2px solid ${TERRA.bg}`, width: '100%', maxWidth: 920 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 16, borderBottom: `1px dashed ${TERRA.dim}`, marginBottom: 22 }}>
+                <div style={{ fontFamily: MONO, fontSize: 15, color: TERRA.lime, letterSpacing: '0.2em' }}>WORK ORDER</div>
+                <div style={{ fontFamily: MONO, fontSize: 15, color: TERRA.dim, letterSpacing: '0.1em' }}>#WO-41829</div>
+              </div>
+              {[{ k: 'CUSTOMER', v: 'J. Chen' }, { k: 'ISSUE', v: 'Water heater burst' }, { k: 'ADDRESS', v: '4412 Maple Grove Ave' }, { k: 'PRIORITY', v: 'EMERGENCY', accent: true }, { k: 'ASSIGNED', v: 'Marcus R. · Van 03' }, { k: 'ETA', v: '34 minutes' }].map((r, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 5 ? `1px solid ${TERRA.line}` : 'none', gap: 16 }}>
+                  <div style={{ fontFamily: MONO, fontSize: 15, color: TERRA.dim, letterSpacing: '0.15em' }}>{r.k}</div>
+                  <div style={{ fontFamily: SANS, fontSize: 20, fontWeight: 600, color: r.accent ? TERRA.lime : TERRA.fg, letterSpacing: '0.01em', textAlign: 'right' }}>{r.v}</div>
+                </div>
+              ))}
+              <div style={{ marginTop: 22, padding: '16px 0 0', borderTop: `1px dashed ${TERRA.dim}`, display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ fontFamily: MONO, fontSize: 15, color: TERRA.dim, letterSpacing: '0.15em' }}>SMS SENT</div>
+                <div style={{ fontFamily: MONO, fontSize: 15, color: TERRA.lime, letterSpacing: '0.15em' }}>✓ 11:47 PM</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 40, opacity: p6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
+              <div style={{ fontFamily: SANS, fontSize: 46, fontWeight: 900, color: TERRA.bg, letterSpacing: '-0.03em' }}>YOUR FRONT DESK.<br/>UPGRADED.</div>
+              <div style={{ fontFamily: MONO, fontSize: 16, color: TERRA.bg, letterSpacing: '0.15em', opacity: 0.7 }}>— 24/7 · ZERO MISSED CALLS</div>
+            </div>
+            <HUD sceneLabel="OUTCOME" sceneNum={3} totalScenes={3} />
+          </div>
+        );
+      }}
+    </Sprite>
+  );
+}
+
+// ════════════════════════════════════════════════════════
+// PAGE
+// ════════════════════════════════════════════════════════
+
+const REC_T = { ringing: [0.0, 4.0], call: [4.0, 15.0], booked: [15.0, 21.0] };
+
+function App() {
+  const mobile = useIsMobile();
+  const W = mobile ? 1080 : 1920;
+  const H = mobile ? 1920 : 1080;
+  return (
+    <section id="receptionist">
+      <div className="t-video-bar">
+        <span><span className="t-vb-dot"/>NOW SHOWING</span>
+        <span className="t-vb-mid" style={{ marginLeft: '7ch' }}>YOUR FRONT DESK, UPGRADED WITH AI</span>
+        <span>TERRA · VOICE AI · 00:21 LOOP</span>
+      </div>
+      <div className="t-video-host">
+        <VideoCanvas width={W} height={H} duration={21} persistKey="receptionist">
+          {mobile ? (
+            <>
+              <SceneRingingP        start={REC_T.ringing[0]} end={REC_T.ringing[1]} />
+              <SceneCallInProgressP start={REC_T.call[0]}    end={REC_T.call[1]} />
+              <SceneBookedP         start={REC_T.booked[0]}  end={REC_T.booked[1]} />
+            </>
+          ) : (
+            <>
+              <SceneRinging        start={REC_T.ringing[0]} end={REC_T.ringing[1]} />
+              <SceneCallInProgress start={REC_T.call[0]}    end={REC_T.call[1]} />
+              <SceneBooked         start={REC_T.booked[0]}  end={REC_T.booked[1]} />
+            </>
+          )}
+        </VideoCanvas>
+      </div>
+      <div className="t-video-bar">
+        <span>Stop losing leads to voicemail.</span>
+        <span className="t-vb-mid">Never miss a lead again.</span>
+        <span>24/7 · 98% UPTIME</span>
+      </div>
+    </section>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

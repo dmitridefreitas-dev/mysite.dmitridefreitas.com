@@ -171,11 +171,19 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-        <title>Profile — Dmitri De Freitas</title>
-        <meta
-          name="description"
-          content="Dmitri De Freitas — quantitative finance and data science practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis."
-        />
+        <title>About — Dmitri De Freitas</title>
+        <meta name="description"      content="About Dmitri De Freitas — quantitative finance practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis. GPA 3.7. Available May 2026." />
+        <link rel="canonical"         href="https://findmitridefreitas.com/about" />
+        <meta property="og:url"       content="https://findmitridefreitas.com/about" />
+        <meta property="og:title"     content="About — Dmitri De Freitas" />
+        <meta property="og:description" content="Quantitative finance practitioner. BS Data Science & Financial Engineering, WashU. GPA 3.7. Amphora Investment Management intern. Available May 2026." />
+        <meta property="og:type"   content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image:width"  content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta name="twitter:card"        content="summary" />
+        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">
@@ -187,9 +195,9 @@ const AboutPage = () => {
             <div className="flex items-start gap-5">
               <div className="w-16 h-16 rounded-full overflow-hidden border border-border shrink-0">
                 <img
-                  src="https://horizons-cdn.hostinger.com/21974f96-abad-40ec-bff7-0adadb1dfab0/f4feb6c64fe322280c7ed8d4608b1f8a.png"
+                  src="/IMG_1948.jpeg"
                   alt="Dmitri De Freitas"
-                  className="w-full h-full object-cover object-top scale-[1.35] translate-y-1"
+                  className="w-full h-full object-cover object-top scale-[1.8] -translate-y-4 translate-x-[3px]"
                 />
               </div>
               <div className="space-y-3">
@@ -387,7 +395,7 @@ const AboutPage = () => {
               className="max-w-5xl"
             >
               <SectionHeader number="05" title="TECHNICAL STACK" />
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="divide-y divide-border border-y border-border">
                 {skillCategories.map((category, index) => (
                   <motion.div
                     key={index}
@@ -395,8 +403,9 @@ const AboutPage = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.06, duration: 0.3 }}
+                    className="grid grid-cols-[160px_1fr] gap-6 py-3 items-start"
                   >
-                    <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-2">
+                    <p className="font-mono text-[10px] text-primary uppercase tracking-widest pt-0.5">
                       {category.title}
                     </p>
                     <div className="flex flex-wrap gap-1.5">

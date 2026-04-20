@@ -20,7 +20,7 @@ const ChainRow = ({ skill, onClick }) => {
       {/* STRIKE — skill name is the hero */}
       <TableCell className="py-3 pl-5 min-w-[140px]">
         <span
-          className={`font-mono text-sm ${
+          className={`font-mono text-xs ${
             skill.itm
               ? 'text-terminal-green font-bold'
               : 'text-foreground font-bold group-hover:text-primary transition-colors'

@@ -10,6 +10,7 @@ const navLinks = [
   { num: '4', label: 'CONTACT',   path: '/contact' },
   { num: '5', label: 'NEWS',      path: '/news'    },
   { num: '6', label: 'LAB',       path: '/lab'     },
+  { num: '7', label: 'AI',        path: '/ai'      },
 ];
 
 const Footer = () => {
@@ -43,6 +44,13 @@ const Footer = () => {
           {/* Right: meters + social + copyright */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <FooterMeters />
+            <span className="text-border hidden md:inline">|</span>
+            <Link
+              to="/disclaimers"
+              className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
+            >
+              DISCLAIMERS
+            </Link>
             <span className="text-border hidden md:inline">|</span>
             <button
               onClick={() => window.open('https://www.linkedin.com/in/dmitri-de-freitas-16a540347/', '_blank')}

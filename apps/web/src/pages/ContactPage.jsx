@@ -87,10 +87,18 @@ const ContactPage = () => {
     <>
       <Helmet>
         <title>Contact — Dmitri De Freitas</title>
-        <meta
-          name="description"
-          content="Contact Dmitri De Freitas. Available May 2026 for full-time opportunities in quantitative finance and data science."
-        />
+        <meta name="description"        content="Contact Dmitri De Freitas. Available May 2026 for full-time roles in quantitative research, financial engineering, and data science." />
+        <link rel="canonical"           href="https://findmitridefreitas.com/contact" />
+        <meta property="og:url"         content="https://findmitridefreitas.com/contact" />
+        <meta property="og:title"       content="Contact — Dmitri De Freitas" />
+        <meta property="og:description" content="Available May 2026 for quantitative research and financial engineering roles. Get in touch." />
+        <meta property="og:type"   content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image:width"  content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta name="twitter:card"        content="summary" />
+        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">

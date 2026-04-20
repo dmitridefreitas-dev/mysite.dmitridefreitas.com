@@ -285,14 +285,16 @@ function json(res, status, data) {
   res.end(JSON.stringify(data))
 }
 
-function readBody(req) {
+function readBody(req, maxBytes = 20_000) {
   return new Promise((resolve, reject) => {
-    let body = ''
+    const chunks = []
+    let total = 0
     req.on('data', (chunk) => {
-      body += chunk
-      if (body.length > 20_000) reject(new Error('payload_too_large'))
+      total += chunk.length
+      if (total > maxBytes) reject(new Error('payload_too_large'))
+      else chunks.push(chunk)
     })
-    req.on('end', () => resolve(body))
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')))
     req.on('error', reject)
   })
 }
@@ -322,6 +324,37 @@ function buildSystemPrompt() {
 IMPORTANT — LINKS: Whenever it is useful, embed relevant clickable links using markdown format [Label](url). Internal site pages use relative paths like /projects, /about, /contact, /lab, /coursework, /news, /lab/yield-curve, etc. External links use full URLs. Always include a link when someone asks for the resume/CV, LinkedIn, a project report, or a specific page. Examples: [View Projects](/projects), [Download CV](https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link), [LinkedIn](https://www.linkedin.com/in/dmitri-de-freitas-16a540347/), [Contact](/contact). These links render as styled clickable buttons in the chat UI — use them generously to help visitors navigate.
 
 If a question is completely unrelated to Dmitri or this portfolio, politely redirect.
+
+IMPORTANT — NAVIGATION: When a user wants to go somewhere, see something, or requests "show me", "take me to", "open", "go to", "navigate to", "let me see", "pull up" any page or tool — append a nav tag at the very end of your reply in this exact format: [NAV:/path]. The frontend will silently intercept this tag, navigate the user there, and strip the tag from your visible message. NEVER mention the tag in your text. Just include it invisibly at the end.
+
+Navigation tag reference (use the exact path shown):
+- Home / overview: [NAV:/]
+- Profile / about / background: [NAV:/about]
+- Research / projects: [NAV:/projects]
+- Contact: [NAV:/contact]
+- News feed / SEC EDGAR / 10-K / 10-Q / filings / stock news: [NAV:/news]
+- Lab (all tools): [NAV:/lab]
+- Yield curve tool: [NAV:/lab/yield-curve]
+- VaR calculator: [NAV:/lab/var]
+- Distributions explorer: [NAV:/lab/distributions]
+- Stochastic simulator / GBM / Monte Carlo: [NAV:/lab/stochastic]
+- Order book simulator: [NAV:/lab/order-book]
+- Regime detection / HMM: [NAV:/lab/regimes]
+- Technical notes / write-ups: [NAV:/lab/notes]
+- Finance quiz: [NAV:/lab/quiz]
+- Portfolio optimizer: [NAV:/lab/optimizer]
+- Factor exposure / Fama-French: [NAV:/lab/factors]
+- PEAD event study: [NAV:/lab/pead]
+- IV surface / implied volatility: [NAV:/lab/iv-surface]
+- DCF modeler / valuation: [NAV:/lab/dcf]
+- Macro regime HUD / macro dashboard: [NAV:/regime]
+- Coursework / courses: [NAV:/coursework]
+
+Examples:
+User: "let me see the NFLX 10-K" → reply about the news/EDGAR page + [NAV:/news]
+User: "open the yield curve" → short reply + [NAV:/lab/yield-curve]
+User: "take me to projects" → short reply + [NAV:/projects]
+User: "show me the DCF tool" → short reply + [NAV:/lab/dcf]
 
 === KEY LINKS TO USE ===
 Resume/CV PDF: https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link
@@ -438,6 +471,123 @@ Live financial news feed from Bloomberg, Reuters, CNBC, MarketWatch, FT, Yahoo F
 8+ research approaches, 70,000+ data points analyzed, peak model R² 0.816, 4 domains (quant finance, data engineering, ML, trading systems).`
 }
 
+function createTTSApiPlugin() {
+  return {
+    name: 'portfolio-tts-api',
+    configureServer(server) {
+      server.middlewares.use('/hcgi/api/tts', async (req, res) => {
+        if (req.method !== 'POST') return json(res, 405, { error: 'method_not_allowed' })
+        const ip = getIp(req)
+        if (isRateLimited(ip)) return json(res, 429, { error: 'rate_limited' })
+
+        try {
+          const key = process.env.ELEVENLABS_API_KEY
+          if (!key) return json(res, 500, { error: 'missing_api_key' })
+
+          const raw = await readBody(req)
+          const { text } = JSON.parse(raw || '{}')
+          if (!text) return json(res, 400, { error: 'missing_text' })
+
+          const RACHEL_ID = 'EXAVITQu4vr4xnSDxMaL' // Bella — free-tier default voice
+          const elResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${RACHEL_ID}/stream`, {
+            method: 'POST',
+            headers: {
+              'xi-api-key': key,
+              'Content-Type': 'application/json',
+              'Accept': 'audio/mpeg',
+            },
+            body: JSON.stringify({
+              text: String(text).slice(0, 1000),
+              model_id: 'eleven_turbo_v2_5',
+              voice_settings: { stability: 0.4, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true },
+            }),
+          })
+
+          if (!elResp.ok) {
+            const errBody = await elResp.json().catch(() => ({}))
+            console.error('[tts-api] ElevenLabs error:', elResp.status, JSON.stringify(errBody))
+            return json(res, 502, { error: 'upstream_error', detail: errBody })
+          }
+
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'audio/mpeg')
+          res.setHeader('Transfer-Encoding', 'chunked')
+
+          const reader = elResp.body.getReader()
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            res.write(Buffer.from(value))
+          }
+          res.end()
+          return
+        } catch (err) {
+          console.error('[tts-api] error:', err.message)
+          return json(res, 500, { error: 'server_error' })
+        }
+      })
+    },
+  }
+}
+
+function createTranscribeApiPlugin() {
+  return {
+    name: 'portfolio-transcribe-api',
+    configureServer(server) {
+      server.middlewares.use('/hcgi/api/transcribe', async (req, res) => {
+        if (req.method !== 'POST') return json(res, 405, { error: 'method_not_allowed' })
+        const ip = getIp(req)
+        if (isRateLimited(ip)) return json(res, 429, { error: 'rate_limited' })
+
+        try {
+          const key = process.env.GROQ_API_KEY
+          if (!key) return json(res, 500, { error: 'missing_api_key' })
+
+          const raw = await readBody(req, 15_000_000)
+          const parsed = JSON.parse(raw || '{}')
+          const { audio, mimeType = 'audio/webm' } = parsed
+
+          if (!audio) return json(res, 400, { error: 'missing_audio' })
+
+          const base64Data = typeof audio === 'string' ? audio.replace(/^data:[^,]+,/, '') : ''
+          const audioBuffer = Buffer.from(base64Data, 'base64')
+          console.log(`[transcribe-api] received audio bytes=${audioBuffer.length} mimeType=${mimeType}`)
+
+          if (audioBuffer.length > 10_000_000) return json(res, 413, { error: 'audio_too_large' })
+
+          const formData = new FormData()
+          const blob = new Blob([audioBuffer], { type: mimeType })
+          formData.append('file', blob, 'recording.webm')
+          formData.append('model', 'whisper-large-v3-turbo')
+          formData.append('response_format', 'json')
+
+          const groqResp = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${key}` },
+            body: formData,
+          })
+
+          if (!groqResp.ok) {
+            const errBody = await groqResp.json().catch(() => ({}))
+            console.error('[transcribe-api] Groq error:', groqResp.status, JSON.stringify(errBody))
+            return json(res, 502, { error: 'upstream_error' })
+          }
+
+          const data = await groqResp.json()
+          const transcript = data?.text?.trim()
+          if (!transcript) return json(res, 502, { error: 'empty_transcript' })
+
+          console.log(`[transcribe-api] ok ip=${ip} bytes=${audioBuffer.length}`)
+          return json(res, 200, { transcript })
+        } catch (err) {
+          const known = err?.message === 'payload_too_large'
+          return json(res, known ? 413 : 500, { error: known ? 'payload_too_large' : 'server_error' })
+        }
+      })
+    },
+  }
+}
+
 function createChatApiPlugin() {
   return {
     name: 'portfolio-chat-api',
@@ -525,10 +675,12 @@ export default defineConfig(({ mode }) => {
 		...(isDev ? [inlineEditPlugin(), editModeDevPlugin(), selectionModePlugin(), iframeRouteRestorationPlugin(), pocketbaseAuthPlugin()] : []),
 		react(),
 		addTransformIndexHtml,
+		createTranscribeApiPlugin(),
+		createTTSApiPlugin(),
 		createChatApiPlugin(),
 	],
 	server: {
-		port: 3000,
+		port: 3006,
 		cors: true,
 		headers: {
 			'Cross-Origin-Embedder-Policy': 'credentialless',
@@ -548,6 +700,7 @@ export default defineConfig(({ mode }) => {
 		},
 	},
 	build: {
+		sourcemap: false,
 		rollupOptions: {
 			external: [
 				'@babel/parser',

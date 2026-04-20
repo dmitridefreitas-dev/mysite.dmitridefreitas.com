@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 import { useReadingMode } from '@/contexts/ReadingModeContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const REFERENCES = [
   {
@@ -393,6 +394,7 @@ Critical pitfalls:
 
 export default function NotesPage() {
   const { isTechnicalMode } = useReadingMode();
+  const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
   const [selectedRef, setSelectedRef] = useState(null);
 
@@ -410,6 +412,14 @@ export default function NotesPage() {
               10 notes · 2 references · press <span className="text-primary">V</span> to toggle EXEC ↔ QUANT ·
               current: <span className="text-primary">{isTechnicalMode ? 'QUANT' : 'EXEC'}</span>
             </p>
+            <div className="mt-4">
+              <button
+                onClick={() => navigate('/lab/library')}
+                className="px-6 py-2 border border-primary font-mono text-[10px] tracking-widest text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+              >
+                [ENTER ARCHIVE]
+              </button>
+            </div>
           </div>
 
           {/* References section */}

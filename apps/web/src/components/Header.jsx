@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext.jsx';
 import { useReadingMode } from '@/contexts/ReadingModeContext.jsx';
-import { Moon, Sun, Menu, X, Download, Linkedin, Github } from 'lucide-react';
+import { Menu, X, Download, Linkedin, Github } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,11 +13,13 @@ const navLinks = [
   { num: '4', label: 'CONTACT',   path: '/contact' },
   { num: '5', label: 'NEWS',      path: '/news'    },
   { num: '6', label: 'LAB',       path: '/lab'     },
+  { num: '7', label: 'AI',        path: '/ai'      },
 ];
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, toggleBrownMode, cycleTheme } = useTheme();
+  const themeLabel = theme === 'brown' ? 'Theme: Brown' : 'Theme: Dark';
   const { isTechnicalMode, toggleReadingMode } = useReadingMode();
   const location = useLocation();
   const { toast } = useToast();
@@ -34,7 +36,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       {/* Main bar */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-12 md:h-14 gap-4">
+        <div className="flex items-center h-10 md:h-11 gap-4">
 
           {/* Left: function-key nav (desktop) */}
           <nav className="hidden md:flex items-center gap-0 border border-border divide-x divide-border shrink-0">
@@ -42,7 +44,7 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-1.5 px-4 h-8 font-mono text-[11px] tracking-widest transition-colors ${
+                className={`flex items-center gap-1 px-3 h-6 font-mono text-[10px] tracking-widest transition-colors ${
                   isActive(link.path)
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -74,16 +76,16 @@ const Header = () => {
               className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-6 transition-colors tracking-wider"
               title="Toggle reading mode (V)"
             >
-              VIEW:{isTechnicalMode ? 'QUANT' : 'EXEC'}
+              VIEW:{isTechnicalMode ? 'QUANT' : 'SIMPLE'}
             </button>
 
             {/* Theme */}
             <button
-              onClick={toggleTheme}
+              onClick={cycleTheme}
               className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-6 transition-colors tracking-wider"
-              title={`Toggle theme (D)`}
+              title="Cycle theme: Dark → Brown"
             >
-              [{theme === 'light' ? 'D' : 'L'}]
+              {themeLabel}
             </button>
 
             <div className="w-px h-4 bg-border" />
@@ -130,10 +132,11 @@ const Header = () => {
           {/* Mobile: theme + hamburger */}
           <div className="flex md:hidden items-center gap-2 shrink-0">
             <button
-              onClick={toggleTheme}
-              className="font-mono text-[10px] text-muted-foreground border border-border px-2 h-6"
+              onClick={cycleTheme}
+              className="font-mono text-[10px] text-muted-foreground border border-border px-2 h-6 tracking-wider"
+              title="Cycle theme"
             >
-              {theme === 'light' ? <Moon className="h-3 w-3" /> : <Sun className="h-3 w-3" />}
+              {themeLabel}
             </button>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -155,40 +158,67 @@ const Header = () => {
             transition={{ duration: 0.15 }}
             className="md:hidden bg-background border-t border-border"
           >
-            <div className="container mx-auto px-4 py-3 space-y-0 divide-y divide-border">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 py-3 font-mono text-xs tracking-widest ${
-                    isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
-                  }`}
-                >
-                  <span className="opacity-50">[{link.num}]</span>
-                  {link.label}
-                </Link>
-              ))}
-              <div className="py-3 flex items-center justify-between">
-                <button
-                  onClick={toggleReadingMode}
-                  className="font-mono text-[10px] text-muted-foreground border border-border px-2 h-6"
-                >
-                  VIEW:{isTechnicalMode ? 'QUANT' : 'EXEC'}
-                </button>
-                <div className="flex gap-3">
-                  <button onClick={handleLinkedIn} className="font-mono text-[10px] text-muted-foreground">LN</button>
-                  <button onClick={handleGitHub} className="font-mono text-[10px] text-muted-foreground">GH</button>
-                  <a
-                    href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-[10px] text-muted-foreground"
+            <div className="container mx-auto px-4 py-2">
+              {/* Nav links */}
+              <div className="divide-y divide-border">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 py-3.5 font-mono text-xs tracking-widest ${
+                      isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
+                    }`}
                   >
-                    CV.PDF
-                  </a>
+                    <span className="opacity-40 text-[10px] w-6">[{link.num}]</span>
+                    {link.label}
+                    {isActive(link.path) && <span className="ml-auto font-mono text-[9px] text-primary">●</span>}
+                  </Link>
+                ))}
+                <Link to="/lab/notes" onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 py-3.5 font-mono text-xs tracking-widest text-muted-foreground">
+                  <span className="opacity-40 text-[10px] w-6">[8]</span>
+                  WRITEUPS
+                </Link>
+                <Link to="/coursework" onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 py-3.5 font-mono text-xs tracking-widest text-muted-foreground">
+                  <span className="opacity-40 text-[10px] w-6">[C]</span>
+                  COURSEWORK
+                </Link>
+              </div>
+
+              {/* Controls row */}
+              <div className="border-t border-border pt-3 pb-1 flex flex-col gap-3">
+                {/* CV download — prominent */}
+                <a
+                  href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 font-mono text-[11px] tracking-widest border border-border py-2.5 text-foreground hover:bg-muted transition-colors"
+                >
+                  <Download className="h-3 w-3" />
+                  DOWNLOAD CV
+                </a>
+
+                {/* Secondary controls */}
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={toggleReadingMode}
+                    className="font-mono text-[10px] text-muted-foreground border border-border px-3 h-7 tracking-wider"
+                  >
+                    VIEW: {isTechnicalMode ? 'QUANT' : 'EXEC'}
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <button onClick={handleLinkedIn} className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors px-1 py-1">LN</button>
+                    <button onClick={handleGitHub} className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors px-1 py-1">GH</button>
+                  </div>
                 </div>
+
+                {/* ⌘K hint */}
+                <p className="font-mono text-[8px] text-muted-foreground/30 text-center tracking-widest pb-1">
+                  CTRL+K · COMMAND PALETTE
+                </p>
               </div>
             </div>
           </motion.div>

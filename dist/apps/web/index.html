@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 	<head>
+		<!-- Theme: apply saved class before React renders to prevent flash -->
+		<script>(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.classList.add(t);})();</script>
 		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNYS62V5NE"></script>
 		<script>
@@ -12,14 +14,13 @@
 		</script>
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,4 97,93 3,93' fill='%230A2540'/><polygon points='50,24 77,80 23,80' fill='%2322C55E'/></svg>" />
-		<meta name="generator" content="Hostinger Horizons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-		<title>Hostinger Horizons</title>
-		<script type="module" crossorigin src="/assets/index-DJhl_Jwe.js"></script>
-		<link rel="stylesheet" crossorigin href="/assets/index-KyZeQvZb.css">
+		<title>Dmitri De Freitas</title>
+		<script type="module" crossorigin src="/assets/index-cNI6m7Jd.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/index-XpiwsWep.css">
 		<script type="module">
 window.onerror = (message, source, lineno, colno, errorObj) => {
 	const errorDetails = errorObj ? JSON.stringify({
@@ -175,9 +176,11 @@ window.fetch = function(...args) {
 				contentType.includes('application/xhtml+xml');
 
 			if (!response.ok && !isDocumentResponse) {
+					const requestUrl = response.url;
+					// Skip opaque responses (no-cors / cross-origin with status 0) — not actionable
+					if (!requestUrl) return response;
 					const responseClone = response.clone();
 					const errorFromRes = await responseClone.text();
-					const requestUrl = response.url;
 					console.error(`Fetch error from ${requestUrl}: ${errorFromRes}`);
 			}
 

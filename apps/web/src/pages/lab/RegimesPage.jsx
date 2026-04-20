@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, ReferenceArea } from 'recharts';
 
 // ── Data generation ───────────────────────────────────────────────────────────────
 
@@ -174,6 +174,164 @@ const RegimeTooltip = ({ active, payload, label }) => {
     </div>
   );
 };
+
+// ── CUSUM Structural Break Detection ─────────────────────────────────────────────
+function runCUSUM(returns, k, h) {
+  // Page-Hinkley CUSUM for mean shifts
+  // g+ detects upward mean shift, g- detects downward mean shift
+  const n = returns.length;
+  const mu0 = returns.reduce((a, r) => a + r, 0) / n;
+  const gPlus = [0], gMinus = [0];
+  const breaks = [];
+
+  for (let t = 1; t < n; t++) {
+    const x = returns[t];
+    const gpNew = Math.max(0, gPlus[t - 1] + (x - mu0 - k));
+    const gmNew = Math.max(0, gMinus[t - 1] + (mu0 - k - x));
+    gPlus.push(gpNew);
+    gMinus.push(gmNew);
+    if (gpNew >= h || gmNew >= h) {
+      breaks.push({ t, dir: gpNew >= h ? 'up' : 'down' });
+      // reset after detection (CUSUM restarts)
+      gPlus[t] = 0;
+      gMinus[t] = 0;
+    }
+  }
+  return { gPlus, gMinus, breaks, mu0 };
+}
+
+function CUSUMSection({ returns, prices }) {
+  const [kMult, setKMult]   = useState(0.5);
+  const [hMult, setHMult]   = useState(5.0);
+
+  const sigma = useMemo(() => {
+    const n = returns.length;
+    const mu = returns.reduce((a, r) => a + r, 0) / n;
+    return Math.sqrt(returns.reduce((a, r) => a + (r - mu) ** 2, 0) / n);
+  }, [returns]);
+
+  const k = kMult * sigma;
+  const h = hMult * sigma;
+
+  const { gPlus, gMinus, breaks, mu0 } = useMemo(
+    () => runCUSUM(returns, k, h),
+    [returns, k, h]
+  );
+
+  const chartData = useMemo(() => prices.map((p, i) => ({
+    t: i,
+    price: +p.toFixed(3),
+    gPlus:  +(gPlus[i] / sigma).toFixed(3),
+    gMinus: +(gMinus[i] / sigma).toFixed(3),
+    threshold: hMult,
+  })), [prices, gPlus, gMinus, sigma, hMult]);
+
+  const breakSet = new Set(breaks.map(b => b.t));
+
+  return (
+    <div className="mt-10 pt-8 border-t border-border">
+      <p className="font-mono text-[9px] text-primary tracking-widest mb-1">[6b] CUSUM STRUCTURAL BREAKS</p>
+      <h2 className="font-mono text-lg font-bold tracking-tight text-foreground mb-1">Page-Hinkley CUSUM</h2>
+      <p className="font-mono text-[10px] text-muted-foreground mb-6">
+        Sequential change-point detection. Accumulates deviations from the in-sample mean; signals a structural break when the statistic exceeds the decision threshold <em>h</em>.
+        Complements HMM by detecting abrupt, one-time mean shifts rather than persistent latent state transitions.
+      </p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="space-y-4">
+          <div className="border border-border p-4">
+            <p className="font-mono text-[10px] tracking-widest text-foreground mb-3">PARAMETERS</p>
+            {[
+              { label: 'ALLOWANCE k', sub: `${kMult.toFixed(1)}σ = ${(k * 100).toFixed(4)}%`, val: kMult, set: setKMult, min: 0.1, max: 2.0, step: 0.1 },
+              { label: 'THRESHOLD h', sub: `${hMult.toFixed(1)}σ`, val: hMult, set: setHMult, min: 1, max: 15, step: 0.5 },
+            ].map(({ label, sub, val, set, min, max, step }) => (
+              <div key={label} className="mb-4">
+                <div className="flex justify-between mb-0.5">
+                  <span className="font-mono text-[9px] text-foreground">{label}</span>
+                  <span className="font-mono text-[9px] text-primary">{sub}</span>
+                </div>
+                <input type="range" min={min} max={max} step={step} value={val}
+                  onChange={e => set(+e.target.value)}
+                  className="w-full h-1 accent-primary" />
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-border p-4">
+            <p className="font-mono text-[10px] tracking-widest text-foreground mb-3">RESULTS</p>
+            <div className="space-y-1 font-mono text-[9px]">
+              <div className="flex justify-between"><span className="text-muted-foreground">Breaks detected</span><span className="text-primary font-bold">{breaks.length}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Upward shifts</span><span className="text-green-500">{breaks.filter(b => b.dir === 'up').length}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Downward shifts</span><span className="text-red-400">{breaks.filter(b => b.dir === 'down').length}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">μ₀ (daily)</span><span>{(mu0 * 100).toFixed(4)}%</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">σ (daily)</span><span>{(sigma * 100).toFixed(4)}%</span></div>
+            </div>
+          </div>
+
+          <div className="border border-border/40 p-3">
+            <p className="font-mono text-[8px] text-muted-foreground/40 tracking-widest mb-2">LEGEND</p>
+            <div className="space-y-1.5">
+              <div className="flex gap-2 items-center"><div className="w-3 h-0.5 bg-green-500" /><span className="font-mono text-[8px] text-muted-foreground/60">g⁺ (up-shift statistic)</span></div>
+              <div className="flex gap-2 items-center"><div className="w-3 h-0.5 bg-red-400" /><span className="font-mono text-[8px] text-muted-foreground/60">g⁻ (down-shift statistic)</span></div>
+              <div className="flex gap-2 items-center"><div className="w-3 h-0.5 border-t border-dashed border-amber-400" /><span className="font-mono text-[8px] text-muted-foreground/60">h threshold (±)</span></div>
+              <div className="flex gap-2 items-center"><div className="w-2 h-2 bg-amber-400/50 rounded-sm" /><span className="font-mono text-[8px] text-muted-foreground/60">break event</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-3 space-y-4">
+          {/* Price with break lines */}
+          <div className="border border-border p-4">
+            <p className="font-mono text-[10px] tracking-widest text-foreground mb-3">
+              PRICE SERIES — DETECTED BREAK POINTS
+            </p>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 24 }}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
+                <XAxis dataKey="t" tick={{ fontFamily: 'monospace', fontSize: 8 }} />
+                <YAxis tick={{ fontFamily: 'monospace', fontSize: 8 }} tickFormatter={v => `$${v.toFixed(0)}`} />
+                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #333', fontFamily: 'monospace', fontSize: 9 }}
+                  formatter={(v, n) => [`$${v}`, 'Price']} labelFormatter={l => `Day ${l}`} />
+                <Line type="monotone" dataKey="price" stroke="#6366f1" strokeWidth={1.5} dot={false} />
+                {breaks.map((b) => (
+                  <ReferenceLine key={b.t} x={b.t} stroke={b.dir === 'up' ? '#22c55e' : '#ef4444'}
+                    strokeWidth={1.5} strokeDasharray="4 2" opacity={0.7} />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* CUSUM statistic */}
+          <div className="border border-border p-4">
+            <p className="font-mono text-[10px] tracking-widest text-foreground mb-3">
+              CUSUM STATISTICS (units of σ)
+            </p>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: 24 }}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
+                <XAxis dataKey="t" tick={{ fontFamily: 'monospace', fontSize: 8 }} />
+                <YAxis tick={{ fontFamily: 'monospace', fontSize: 8 }} />
+                <Tooltip contentStyle={{ background: '#0a0a0a', border: '1px solid #333', fontFamily: 'monospace', fontSize: 9 }}
+                  formatter={(v, n) => [v.toFixed(3) + 'σ', n === 'gPlus' ? 'g⁺ (up)' : n === 'gMinus' ? 'g⁻ (down)' : 'threshold']}
+                  labelFormatter={l => `Day ${l}`} />
+                <ReferenceLine y={hMult} stroke="#f59e0b" strokeDasharray="4 2" strokeWidth={1.5} opacity={0.6} />
+                {breaks.map((b) => (
+                  <ReferenceLine key={b.t} x={b.t} stroke={b.dir === 'up' ? '#22c55e80' : '#ef444480'}
+                    strokeWidth={1} strokeDasharray="3 2" />
+                ))}
+                <Line type="monotone" dataKey="gPlus" stroke="#22c55e" strokeWidth={1.5} dot={false} name="gPlus" />
+                <Line type="monotone" dataKey="gMinus" stroke="#ef4444" strokeWidth={1.5} dot={false} name="gMinus" />
+              </LineChart>
+            </ResponsiveContainer>
+            <p className="font-mono text-[8px] text-muted-foreground/40 mt-2">
+              Statistic resets to 0 after each detected break. Low k → more sensitive; high h → fewer false positives.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ── Component ────────────────────────────────────────────────────────────────────
 
@@ -391,6 +549,8 @@ export default function RegimesPage() {
               )}
             </div>
           </div>
+
+          <CUSUMSection returns={returns} prices={prices} />
         </div>
       </div>
     </>

@@ -5,11 +5,11 @@ const router = express.Router();
 
 const parser = new Parser({
   timeout: 8000,
-  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DDF-Terminal/1.0; +https://findmitridefreitas.com)' },
+  headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DDF-Terminal/1.0; +https://dmitridefreitas.com)' },
 });
 
 const EDGAR_HEADERS = {
-  'User-Agent': 'DDF-Terminal/1.0 contact@findmitridefreitas.com',
+  'User-Agent': 'DDF-Terminal/1.0 contact@dmitridefreitas.com',
   'Accept': 'application/json',
 };
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 
-const OG_IMAGE = 'https://findmitridefreitas.com/IMG_1948.jpeg';
+const OG_IMAGE = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 
 function MathBlock({ children, block }) {
   return (
@@ -69,8 +69,8 @@ export default function SVICalibrationPage() {
         <title>SVI Volatility Smile Calibration From Scratch — Dmitri De Freitas</title>
         <meta name="description" content="SVI volatility smile calibration Python tutorial — raw SVI parameterization, non-linear least-squares fit, butterfly and calendar arbitrage constraints, executable NumPy/SciPy code." />
         <meta name="keywords" content="SVI calibration python, Gatheral SVI, volatility smile, implied volatility surface, butterfly arbitrage, calendar arbitrage" />
-        <link rel="canonical"    href="https://findmitridefreitas.com/research/svi-calibration" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/research/svi-calibration" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/research/svi-calibration" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/research/svi-calibration" />
         <meta property="og:title"       content="SVI Volatility Smile Calibration From Scratch" />
         <meta property="og:description" content="5-parameter Gatheral SVI fit with arbitrage constraints, implemented in pure NumPy/SciPy." />
         <meta property="og:type"   content="article" />

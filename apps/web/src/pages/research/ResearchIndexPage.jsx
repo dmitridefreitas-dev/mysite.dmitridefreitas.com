@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { BookOpen, ArrowRight } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 
-const OG_IMAGE = 'https://findmitridefreitas.com/IMG_1948.jpeg';
+const OG_IMAGE = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 
 const posts = [
   {
@@ -40,8 +40,8 @@ export default function ResearchIndexPage() {
       <Helmet>
         <title>Research — Dmitri De Freitas</title>
         <meta name="description" content="Research writeups by Dmitri De Freitas — deflated Sharpe ratio, SVI volatility smile calibration, HMM regime detection. Python implementations with formal derivations." />
-        <link rel="canonical"    href="https://findmitridefreitas.com/research" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/research" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/research" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/research" />
         <meta property="og:title"       content="Research — Dmitri De Freitas" />
         <meta property="og:description" content="Formal research writeups on deflated Sharpe ratio, SVI calibration, and HMM regime detection." />
         <meta property="og:type"   content="website" />

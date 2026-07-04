@@ -284,7 +284,7 @@ export default function GlossaryPage() {
       <Helmet>
         <title>DDF·TERMINAL — Glossary</title>
         <meta name="description" content="Quant finance glossary — stochastic calculus, derivatives, portfolio theory, microstructure, fixed income terms with definitions and notation." />
-        <link rel="canonical" href="https://findmitridefreitas.com/glossary" />
+        <link rel="canonical" href="https://dmitridefreitas.com/glossary" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-20">

@@ -211,23 +211,23 @@ const HomePage = () => {
         <title>Dmitri De Freitas — Quantitative Finance &amp; Data Science</title>
         <meta name="description" content="Portfolio of Dmitri De Freitas — quantitative finance practitioner and data scientist. Derivatives pricing, risk attribution, market microstructure, statistical arbitrage. BS DSFE, WashU. Available May 2026." />
         <meta name="keywords"    content="Dmitri De Freitas, quant finance portfolio, financial engineering, WashU, quantitative analyst, algorithmic trading, derivatives, data science" />
-        <link rel="canonical"    href="https://findmitridefreitas.com/" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/" />
         <meta property="og:title"       content="Dmitri De Freitas — Quantitative Finance & Data Science" />
         <meta property="og:description" content="Quantitative finance practitioner. Derivatives pricing, risk attribution, microstructure, statistical arbitrage. 26 live interactive quant tools. Available May 2026." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <meta property="og:image:width"  content="800" />
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
-        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta name="twitter:image"       content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <script type="application/ld+json">{`{
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Dmitri De Freitas",
-  "url": "https://findmitridefreitas.com",
-  "image": "https://findmitridefreitas.com/IMG_1948.jpeg",
+  "url": "https://dmitridefreitas.com",
+  "image": "https://dmitridefreitas.com/IMG_1948.jpeg",
   "jobTitle": "Quantitative Finance & Data Science",
   "alumniOf": [{"@type":"CollegeOrUniversity","name":"Washington University in St. Louis"},{"@type":"CollegeOrUniversity","name":"Drew University"}],
   "knowsAbout": ["Quantitative Finance","Algorithmic Trading","Data Science","Machine Learning","Derivatives Pricing","Risk Management"],

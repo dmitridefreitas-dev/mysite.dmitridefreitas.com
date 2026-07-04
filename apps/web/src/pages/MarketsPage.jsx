@@ -156,7 +156,7 @@ export default function MarketsPage() {
       <Helmet>
         <title>DDF·TERMINAL — Markets</title>
         <meta name="description" content="Cross-asset markets dashboard — yield curve animator, vol complex, FX majors, correlation matrix." />
-        <link rel="canonical" href="https://findmitridefreitas.com/markets" />
+        <link rel="canonical" href="https://dmitridefreitas.com/markets" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-20">

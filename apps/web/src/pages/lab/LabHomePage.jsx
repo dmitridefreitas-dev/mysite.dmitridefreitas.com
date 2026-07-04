@@ -261,22 +261,22 @@ export default function LabHomePage() {
       <Helmet>
         <title>Quant Lab — Dmitri De Freitas</title>
         <meta name="description"        content="25 interactive tools by Dmitri De Freitas — IV surface, SVI calibration, PEAD event study, DCF modeler, risk attribution, Fama-French factors, Monte Carlo, microstructure lab, and more." />
-        <link rel="canonical"           href="https://findmitridefreitas.com/lab" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/lab" />
+        <link rel="canonical"           href="https://dmitridefreitas.com/lab" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/lab" />
         <meta property="og:title"       content="Quant Lab — Dmitri De Freitas" />
         <meta property="og:description" content="25 interactive tools built from scratch: derivatives pricing, volatility surfaces, factor models, microstructure simulation, backtest statistics, and more." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <meta property="og:image:width"  content="800" />
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
-        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta name="twitter:image"       content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <script type="application/ld+json">{`{
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Quant Lab — Dmitri De Freitas",
-  "url": "https://findmitridefreitas.com/lab",
+  "url": "https://dmitridefreitas.com/lab",
   "description": "25 interactive quantitative finance tools built from scratch in the browser",
   "applicationCategory": "FinanceApplication",
   "author": {"@type":"Person","name":"Dmitri De Freitas"},

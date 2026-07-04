@@ -14,7 +14,7 @@ export default function DisclaimersPage() {
       <Helmet>
         <title>DDF·TERMINAL — Data Sources & Disclaimers</title>
         <meta name="description" content="Data sources, delays, and disclaimers for the DDF Terminal site. Nothing here is financial advice." />
-        <link rel="canonical" href="https://findmitridefreitas.com/disclaimers" />
+        <link rel="canonical" href="https://dmitridefreitas.com/disclaimers" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-20">

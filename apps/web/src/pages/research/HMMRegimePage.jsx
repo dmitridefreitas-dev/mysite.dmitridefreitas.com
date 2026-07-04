@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 
-const OG_IMAGE = 'https://findmitridefreitas.com/IMG_1948.jpeg';
+const OG_IMAGE = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 
 function MathBlock({ children, block }) {
   return (
@@ -73,8 +73,8 @@ export default function HMMRegimePage() {
         <title>Hidden Markov Model Regime Detection for Equity Markets — Dmitri De Freitas</title>
         <meta name="description" content="HMM regime detection for equity returns — Baum-Welch EM training, Viterbi decoding, and hmmlearn Python implementation. Bull and bear state inference with transition matrix interpretation." />
         <meta name="keywords" content="HMM regime detection python, hidden markov model equity, baum-welch, viterbi, hmmlearn, regime switching" />
-        <link rel="canonical"    href="https://findmitridefreitas.com/research/hmm-regime-detection" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/research/hmm-regime-detection" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/research/hmm-regime-detection" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/research/hmm-regime-detection" />
         <meta property="og:title"       content="Hidden Markov Model Regime Detection for Equity Markets" />
         <meta property="og:description" content="Bull/bear regime inference for equity markets via Gaussian HMM — Baum-Welch EM and Viterbi decoding in Python." />
         <meta property="og:type"   content="article" />

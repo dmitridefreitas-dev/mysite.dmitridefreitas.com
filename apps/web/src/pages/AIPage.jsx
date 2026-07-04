@@ -271,17 +271,17 @@ export default function AIPage() {
       <Helmet>
         <title>{'AI Services \u2014 Dmitri De Freitas'}</title>
         <meta name="description" content={'AI-powered services from Dmitri De Freitas \u2014 24/7 voice receptionist, chatbots, paid ads, SEO, email/SMS automation, brand design, social media, and analytics.'} />
-        <link rel="canonical" href="https://findmitridefreitas.com/ai" />
+        <link rel="canonical" href="https://dmitridefreitas.com/ai" />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:url"    content="https://findmitridefreitas.com/ai" />
+        <meta property="og:url"    content="https://dmitridefreitas.com/ai" />
         <meta property="og:title"  content={'AI Services \u2014 Dmitri De Freitas'} />
         <meta property="og:description" content="AI voice receptionist, chatbots, paid ads, SEO, and full-funnel growth services." />
-        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <meta property="og:image:width"  content="800" />
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
-        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta name="twitter:image"       content="https://dmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-10 md:pt-11">

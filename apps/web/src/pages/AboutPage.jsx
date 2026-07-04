@@ -173,17 +173,17 @@ const AboutPage = () => {
       <Helmet>
         <title>About — Dmitri De Freitas</title>
         <meta name="description"      content="About Dmitri De Freitas — quantitative finance practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis. GPA 3.7. Available May 2026." />
-        <link rel="canonical"         href="https://findmitridefreitas.com/about" />
-        <meta property="og:url"       content="https://findmitridefreitas.com/about" />
+        <link rel="canonical"         href="https://dmitridefreitas.com/about" />
+        <meta property="og:url"       content="https://dmitridefreitas.com/about" />
         <meta property="og:title"     content="About — Dmitri De Freitas" />
         <meta property="og:description" content="Quantitative finance practitioner. BS Data Science & Financial Engineering, WashU. GPA 3.7. Amphora Investment Management intern. Available May 2026." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <meta property="og:image:width"  content="800" />
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
-        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta name="twitter:image"       content="https://dmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">

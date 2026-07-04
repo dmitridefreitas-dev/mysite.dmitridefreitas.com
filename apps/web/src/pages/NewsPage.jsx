@@ -453,11 +453,11 @@ const NewsPage = () => {
         <meta name="description" content="Live financial and market news feed with SEC EDGAR filing search." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:image"  content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
         <meta property="og:image:width"  content="800" />
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
-        <meta name="twitter:image"       content="https://findmitridefreitas.com/IMG_1948.jpeg" />
+        <meta name="twitter:image"       content="https://dmitridefreitas.com/IMG_1948.jpeg" />
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">

@@ -7,7 +7,7 @@ import SectionHeader from '@/components/SectionHeader.jsx';
 import TerminalBadge from '@/components/TerminalBadge.jsx';
 
 const HEADSHOT    = '/IMG_1948.jpeg';
-const HEADSHOT_OG = 'https://findmitridefreitas.com/IMG_1948.jpeg';
+const HEADSHOT_OG = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 const CV_URL   = 'https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link';
 const LINKEDIN = 'https://www.linkedin.com/in/dmitri-de-freitas-16a540347/';
 
@@ -58,8 +58,8 @@ export default function RecruiterPage() {
       <Helmet>
         <title>For Recruiters — Dmitri De Freitas</title>
         <meta name="description" content="Curated recruiter view — Dmitri De Freitas. Top 5 live quant tools, one-click resume download, OPT status, availability, and direct contact." />
-        <link rel="canonical"    href="https://findmitridefreitas.com/recruiter" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/recruiter" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/recruiter" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/recruiter" />
         <meta property="og:title"       content="For Recruiters — Dmitri De Freitas" />
         <meta property="og:description" content="Curated one-page view for recruiters — top tools, resume, OPT status, availability, contact." />
         <meta property="og:type"   content="website" />

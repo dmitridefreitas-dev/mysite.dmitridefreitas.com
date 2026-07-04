@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Download } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 
-const OG_IMAGE = 'https://findmitridefreitas.com/IMG_1948.jpeg';
+const OG_IMAGE = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 
 function MathBlock({ children, block }) {
   return (
@@ -66,8 +66,8 @@ export default function DeflatedSharpePage() {
         <title>Deflated Sharpe Ratio: A Practitioner&apos;s Guide — Dmitri De Freitas</title>
         <meta name="description" content="Deflated Sharpe Ratio Python implementation — full derivation of PSR, multiple-testing correction via Bailey and Lopez de Prado, executable NumPy/SciPy code." />
         <meta name="keywords" content="deflated sharpe ratio python implementation, probabilistic sharpe ratio, PSR formula, backtest overfitting, multiple testing correction" />
-        <link rel="canonical"    href="https://findmitridefreitas.com/research/deflated-sharpe" />
-        <meta property="og:url"         content="https://findmitridefreitas.com/research/deflated-sharpe" />
+        <link rel="canonical"    href="https://dmitridefreitas.com/research/deflated-sharpe" />
+        <meta property="og:url"         content="https://dmitridefreitas.com/research/deflated-sharpe" />
         <meta property="og:title"       content="Deflated Sharpe Ratio: A Practitioner's Guide" />
         <meta property="og:description" content="Python implementation of the Probabilistic and Deflated Sharpe Ratio — multiple-testing correction for backtest performance." />
         <meta property="og:type"   content="article" />

@@ -34,6 +34,7 @@ const AIPage          = lazyPage(() => import('./pages/AIPage.jsx'));
 const MarketsPage     = lazyPage(() => import('./pages/MarketsPage.jsx'));
 const GlossaryPage    = lazyPage(() => import('./pages/GlossaryPage.jsx'));
 const DisclaimersPage = lazyPage(() => import('./pages/DisclaimersPage.jsx'));
+const NotFoundPage    = lazyPage(() => import('./pages/NotFoundPage.jsx'));
 
 // Research pages
 const ResearchIndexPage  = lazyPage(() => import('./pages/research/ResearchIndexPage.jsx'));
@@ -146,6 +147,7 @@ const MainSite = () => {
               <Route path="/glossary"    element={<WavePageTransition><GlossaryPage /></WavePageTransition>} />
               <Route path="/disclaimers" element={<WavePageTransition><DisclaimersPage /></WavePageTransition>} />
               <Route path="/ai"          element={<WavePageTransition><AIPage /></WavePageTransition>} />
+              <Route path="*"            element={<NotFoundPage />} />
             </Routes>
           </AnimatePresence>
         </Suspense>

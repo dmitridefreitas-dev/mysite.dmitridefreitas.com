@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<!-- Theme: apply saved class before React renders to prevent flash -->
-		<script>(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.classList.add(t);})();</script>
+		<!-- Theme: apply saved class before React renders to prevent flash.
+		     'light' is archived — default and fallback is dark (matches ThemeContext). -->
+		<script>(function(){var t=localStorage.getItem('theme');if(t!=='dark'&&t!=='brown')t='dark';document.documentElement.classList.add(t);})();</script>
 		<!-- Google tag (gtag.js) -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNYS62V5NE"></script>
 		<script>
@@ -21,22 +22,24 @@
 		<meta name="keywords" content="Dmitri De Freitas, quantitative finance, data science, financial engineering, WashU, Washington University, algorithmic trading, derivatives pricing, portfolio optimization, quant analyst" />
 		<meta name="author" content="Dmitri De Freitas" />
 		<meta name="robots" content="index, follow" />
-		<link rel="canonical" href="https://findmitridefreitas.com/" />
+		<link rel="canonical" href="https://dmitridefreitas.com/" />
 
 		<!-- Open Graph -->
 		<meta property="og:type"        content="website" />
-		<meta property="og:url"         content="https://findmitridefreitas.com/" />
+		<meta property="og:url"         content="https://dmitridefreitas.com/" />
 		<meta property="og:title"       content="Dmitri De Freitas — Quantitative Finance &amp; Data Science" />
 		<meta property="og:description" content="Quantitative finance practitioner building production ETL pipelines, real-time trading systems, and interactive financial models. 26 live quant tools. Available May 2026." />
-		<meta property="og:image"       content="https://horizons-cdn.hostinger.com/21974f96-abad-40ec-bff7-0adadb1dfab0/f4feb6c64fe322280c7ed8d4608b1f8a.png" />
+		<meta property="og:image"       content="https://dmitridefreitas.com/og-card.png" />
+		<meta property="og:image:width"  content="1200" />
+		<meta property="og:image:height" content="630" />
 		<meta property="og:site_name"   content="Dmitri De Freitas" />
 		<meta property="og:locale"      content="en_US" />
 
 		<!-- Twitter / X Card -->
-		<meta name="twitter:card"        content="summary" />
+		<meta name="twitter:card"        content="summary_large_image" />
 		<meta name="twitter:title"       content="Dmitri De Freitas — Quantitative Finance &amp; Data Science" />
 		<meta name="twitter:description" content="Quantitative finance practitioner. 26 live quant tools. Available May 2026." />
-		<meta name="twitter:image"       content="https://horizons-cdn.hostinger.com/21974f96-abad-40ec-bff7-0adadb1dfab0/f4feb6c64fe322280c7ed8d4608b1f8a.png" />
+		<meta name="twitter:image"       content="https://dmitridefreitas.com/og-card.png" />
 
 		<!-- Structured data: Person -->
 		<script type="application/ld+json">
@@ -44,7 +47,7 @@
 		  "@context": "https://schema.org",
 		  "@type": "Person",
 		  "name": "Dmitri De Freitas",
-		  "url": "https://findmitridefreitas.com",
+		  "url": "https://dmitridefreitas.com",
 		  "jobTitle": "Quantitative Finance & Data Science",
 		  "description": "Quantitative finance practitioner specializing in derivatives pricing, risk attribution, market microstructure, and statistical arbitrage. BS Data Science & Financial Engineering at Washington University in St. Louis.",
 		  "alumniOf": {
@@ -75,15 +78,16 @@
 		}
 		</script>
 
-		<!-- Favicon -->
-		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,4 97,93 3,93' fill='%230A2540'/><polygon points='50,24 77,80 23,80' fill='%2322C55E'/></svg>" />
+		<!-- Favicon — DDF terminal mark -->
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2305070f'/><rect x='6' y='6' width='88' height='88' fill='none' stroke='%232451b3' stroke-width='4'/><text x='22' y='72' font-family='monospace' font-size='58' font-weight='bold' fill='%23e2e8f0'>D</text><rect x='62' y='58' width='18' height='14' fill='%2322c55e'/></svg>" />
+		<meta name="theme-color" content="#05070f" />
 
 		<!-- Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-		<script type="module" crossorigin src="/assets/index-DYGICHL0.js"></script>
-		<link rel="stylesheet" crossorigin href="/assets/index-CDpPXg-i.css">
+		<script type="module" crossorigin src="/assets/index-CCy8pnuu.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/index-DuD8dexA.css">
 		<script type="module">
 window.onerror = (message, source, lineno, colno, errorObj) => {
 	const errorDetails = errorObj ? JSON.stringify({
@@ -284,6 +288,6 @@ if (window.navigation && window.self !== window.top) {
 </script>
 	</head>
 	<body>
-		<div id="root"></div>
+		<div id="root"></div>
 	</body>
 </html>

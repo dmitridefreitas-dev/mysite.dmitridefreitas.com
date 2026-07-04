@@ -5,7 +5,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import apiServerClient from '@/lib/apiServerClient.js';
 import SectionHeader from '@/components/SectionHeader.jsx';
 import TerminalLoader from '@/components/TerminalLoader.jsx';
 
@@ -58,22 +57,34 @@ const ContactPage = () => {
       return;
     }
 
-    // Render's free tier sleeps after idle — first request can take ~30-60s to
-    // wake it. Allow for that, but never hang forever.
+    // Bots fill the hidden botcheck field — Web3Forms silently discards those.
+    const botcheck = e.target.botcheck?.checked || false;
+
     const abort = new AbortController();
-    const timer = setTimeout(() => abort.abort(), 75_000);
+    const timer = setTimeout(() => abort.abort(), 30_000);
 
     try {
-      const response = await apiServerClient.fetch('/contact/send-email', {
+      // Web3Forms delivers the submission by email — no backend involved, so
+      // it works even while the Render API is asleep. FormData (not JSON)
+      // keeps it a simple CORS request with no preflight.
+      const payload = new FormData();
+      payload.append('access_key', 'a9d18b53-3596-4e76-b700-118522d4d9cd');
+      payload.append('subject', `Portfolio inquiry — ${formData.subject || 'GENERAL'} — ${formData.name}`);
+      payload.append('from_name', 'dmitridefreitas.com contact form');
+      payload.append('name', formData.name);
+      payload.append('email', formData.email);
+      payload.append('message', formData.message);
+      if (botcheck) payload.append('botcheck', 'on');
+
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: payload,
         signal: abort.signal,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'TRANSMISSION_FAILED');
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'TRANSMISSION_FAILED');
       }
 
       setSubmitted(true);
@@ -81,9 +92,7 @@ const ContactPage = () => {
     } catch (error) {
       const friendly =
         error.name === 'AbortError'
-          ? 'The server did not respond (it may be waking up). Please retry in a minute — or email d.defreitas@wustl.edu directly.'
-          : error.message === 'email_not_configured' || error.message === 'send_failed'
-          ? 'The contact service is temporarily unavailable. Please email d.defreitas@wustl.edu directly.'
+          ? 'The request timed out. Please retry — or email d.defreitas@wustl.edu directly.'
           : 'Failed to send. Please retry — or email d.defreitas@wustl.edu directly.';
       toast({
         title: 'TRANSMISSION_ERROR',
@@ -206,6 +215,17 @@ const ContactPage = () => {
                   <TerminalLoader success={false} />
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
+
+                    {/* Honeypot — hidden from humans, bots check it and get discarded */}
+                    <input
+                      type="checkbox"
+                      name="botcheck"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      className="hidden"
+                      style={{ display: 'none' }}
+                      aria-hidden="true"
+                    />
 
                     {/* Name + Email row */}
                     <div className="grid grid-cols-2 gap-4">

@@ -11,13 +11,13 @@ export const quickActions = [
 
 const kb = {
 
-  identity: `Dmitri De Freitas is a quantitative finance practitioner and data scientist. He is completing a BS in Data Science & Financial Engineering at Washington University in St. Louis (WashU), graduating May 2026, with a GPA of 3.7. He is actively seeking full-time roles as a Quantitative Research Analyst, Financial Engineer, Data Scientist, or Algorithmic Trading Developer, available from May 1, 2026. He is currently based in St. Louis, MO, and is open to relocation. Work authorization: US F-1 OPT eligible.`,
+  identity: `Dmitri De Freitas is a quantitative finance practitioner and data scientist. He holds a BS in Data Science & Financial Engineering from Washington University in St. Louis (WashU), conferred May 2026, with a GPA of 3.7. He is actively seeking full-time roles as a Quantitative Research Analyst, Financial Engineer, Data Scientist, or Algorithmic Trading Developer, available from August 1, 2026. He is currently based in St. Louis, MO, and is open to relocation. Work authorization: US F-1 OPT eligible.`,
 
   summary: `He has built production-grade ETL pipelines (80% reduction in manual processing at Amphora Investment Management), developed real-time algorithmic trading systems with sub-second execution latency, and conducted statistical research — 10.9% significant alpha in PEAD analysis, R² 0.816 in predictive housing modeling. Core competencies span quantitative modeling, algorithmic trading, and data engineering.`,
 
   contact: `Email: d.defreitas@wustl.edu | Phone: +1-314-646-9845 | LinkedIn: linkedin.com/in/dmitri-de-freitas-16a540347/ | CV PDF: available on the About page. Contact form at /contact on this site. Response time: 24-48 hours.`,
 
-  availability: `Available full-time from May 1, 2026. Currently in St. Louis, MO. Open to relocation. Work authorization: US F-1 OPT eligible. Target roles: Quantitative Research Analyst, Financial Engineer, Data Scientist, Algorithmic Trading Developer.`,
+  availability: `Available full-time from August 1, 2026. Currently in St. Louis, MO. Open to relocation. Work authorization: US F-1 OPT eligible. Target roles: Quantitative Research Analyst, Financial Engineer, Data Scientist, Algorithmic Trading Developer.`,
 
   education: {
     washu: `Washington University in St. Louis (WashU) — BS Data Science & Financial Engineering, 2024–2026, GPA 3.7. Courses: ACCT 2610 Principles of Financial Accounting; CSE 217A Introduction to Data Science; CSE 247 Data Structures and Algorithms; CSE 3104 Data Manipulation and Management; CSE 4102 Introduction to Artificial Intelligence (IN PROGRESS); CSE 4107 Introduction to Machine Learning; ECON 4011 Intermediate Microeconomic Theory; ENGR 310 Technical Writing; ENGR 4503 Conflict Management and Negotiation; ESE 4150 Optimization (IN PROGRESS); ESE 4261 Statistical Methods for Data Analysis with Applications to Financial Engineering (IN PROGRESS); ESE 4270 Financial Mathematics; FIN 340 Capital Markets & Financial Management; FIN 4410 Investments; FIN 4506 Financial Technology: Methods and Practice (IN PROGRESS); FIN 4510 Options, Futures and Derivative Securities (IN PROGRESS); MSB 5560 Ethics in Biostatistics and Data Science (IN PROGRESS); SDS 3211 Statistics for Data Science I; SDS 439 Linear Statistical Models; SDS 4030 Statistics for Data Science II; SDS 4135 Applied Statistics Practicum; SDS 4140 Advanced Linear Statistical Models (IN PROGRESS). Total: 22 courses.`,
@@ -149,7 +149,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // Availability / roles / hiring
   if (/available|availability|hire|hiring|open to|start|when|full.?time|roles|position|job|work auth|opt|visa/.test(q)) {
-    return `Available full-time from May 1, 2026. Based in St. Louis, MO — open to relocation. Work authorization: US F-1 OPT eligible. Target roles: Quantitative Research Analyst, Financial Engineer, Data Scientist, Algorithmic Trading Developer. ${LINKS.contact}`
+    return `Available full-time from August 1, 2026. Based in St. Louis, MO — open to relocation. Work authorization: US F-1 OPT eligible. Target roles: Quantitative Research Analyst, Financial Engineer, Data Scientist, Algorithmic Trading Developer. ${LINKS.contact}`
   }
 
   // Education — general

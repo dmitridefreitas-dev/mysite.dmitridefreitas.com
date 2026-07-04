@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Download, Mail, Phone, Linkedin, MapPin, ArrowRight } from 'lucide-react';
+import { Download, Mail, Phone, Linkedin, MapPin, ArrowRight, Github } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 import TerminalBadge from '@/components/TerminalBadge.jsx';
 
@@ -10,6 +10,59 @@ const HEADSHOT    = '/IMG_1948.jpeg';
 const HEADSHOT_OG = 'https://dmitridefreitas.com/IMG_1948.jpeg';
 const CV_URL   = 'https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link';
 const LINKEDIN = 'https://www.linkedin.com/in/dmitri-de-freitas-16a540347/';
+const GITHUB   = 'https://github.com/dmitridefreitas-dev';
+
+const experience = [
+  {
+    role: 'Data Scientist (Intern)',
+    org: 'Amphora Investment Management',
+    where: 'Bridgetown, Barbados',
+    when: 'May – Sep 2025',
+    bullets: [
+      'Cut manual data processing 80% with an automated Python/Pandas ETL pipeline across the Interactive Brokers API, Bloomberg, and the firm’s Harmony system, with real-time validation.',
+      'Eliminated hundreds of analyst-hours by automating performance-attribution reporting and portfolio-construction models across 3 institutional data sources.',
+    ],
+  },
+  {
+    role: 'Founder & Manager',
+    org: 'Mobile Hub Barbados',
+    where: 'Bridgetown, Barbados',
+    when: '2022 – 2024',
+    bullets: [
+      'Drove 2+ years of month-over-month revenue growth running a cross-border (Barbados–China) electronics venture on self-built financial, inventory, and cash-flow models.',
+    ],
+  },
+];
+
+const headlineResults = [
+  { value: '80%',     label: 'manual processing cut (Amphora ETL)' },
+  { value: '>1.5',    label: 'est. Sharpe, live crypto engine (4–6 wk)' },
+  { value: '5,000×', label: 'latency cut: Python → AVX-512 SIMD' },
+  { value: '0.816',   label: 'R², housing model (13,580 records)' },
+  { value: '10/110',  label: 'stocks w/ significant PEAD alpha (p<0.05)' },
+  { value: '25',      label: 'quant tools built — no math libraries' },
+];
+
+const skillGroups = [
+  {
+    title: 'PROGRAMMING',
+    items: ['Python · Pandas · NumPy · SciPy · scikit-learn', 'R', 'SQL', 'C++ (Numba / AVX-512)', 'MATLAB · VBA · Bash'],
+  },
+  {
+    title: 'QUANT METHODS',
+    items: ['Stochastic Calculus', 'Monte Carlo Simulation', 'Derivatives Pricing · Black-Scholes', 'Value-at-Risk', 'Volatility Modeling', 'Time Series Analysis', 'Optimization', 'Machine Learning'],
+  },
+  {
+    title: 'PLATFORMS & TOOLS',
+    items: ['Bloomberg Terminal', 'FRED · QuantLib · Backtrader', 'IBKR / Coinbase / Alpaca / Polygon APIs', 'Git · Docker · AWS', 'PostgreSQL', 'Power BI'],
+  },
+];
+
+const coursework = [
+  'Stochastic Calculus', 'Probability', 'Linear Algebra', 'Time Series Analysis',
+  'Optimization', 'Derivatives Pricing', 'Econometrics', 'Machine Learning',
+  'Statistical Learning', 'Data Structures & Algorithms',
+];
 
 const topTools = [
   {
@@ -45,8 +98,9 @@ const topTools = [
 ];
 
 const quickFacts = [
-  { label: 'GPA',           value: '3.7 (WashU) · 3.7 (Drew)' },
-  { label: 'GRADUATION',    value: 'May 2026' },
+  { label: 'DEGREE',        value: 'BS Data Science & Financial Engineering — conferred May 2026' },
+  { label: 'GPA',           value: '3.7 (WashU) · 3.7 (Drew, BA Mathematics)' },
+  { label: 'AVAILABLE',     value: 'August 1, 2026' },
   { label: 'AUTHORIZATION', value: 'F-1 / OPT eligible' },
   { label: 'LOCATION',      value: 'St. Louis, MO · Open to relocation' },
   { label: 'TARGET ROLES',  value: 'Quant Research · Financial Engineer · Data Scientist' },
@@ -86,11 +140,11 @@ export default function RecruiterPage() {
                   DMITRI DE FREITAS
                 </h1>
                 <p className="font-mono text-xs text-muted-foreground mt-2">
-                  BS Data Science &amp; Financial Engineering · Washington University in St. Louis
+                  BS Data Science &amp; Financial Engineering (May 2026) · Washington University in St. Louis
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   <TerminalBadge variant="status">STATUS: SEEKING_ALPHA</TerminalBadge>
-                  <TerminalBadge variant="date">AVAILABLE: 2026-05-01</TerminalBadge>
+                  <TerminalBadge variant="date">AVAILABLE: 2026-08-01</TerminalBadge>
                   <TerminalBadge variant="location">OPT ELIGIBLE</TerminalBadge>
                   <TerminalBadge variant="location">STL · RELO OK</TerminalBadge>
                 </div>
@@ -107,8 +161,48 @@ export default function RecruiterPage() {
                      className="border border-border px-4 py-2 tracking-widest text-foreground hover:bg-muted transition-colors inline-flex items-center gap-2">
                     <Phone className="h-3 w-3" /> +1 314-646-9845
                   </a>
+                  <a href={GITHUB} target="_blank" rel="noopener noreferrer"
+                     className="border border-border px-4 py-2 tracking-widest text-foreground hover:bg-muted transition-colors inline-flex items-center gap-2">
+                    <Github className="h-3 w-3" /> GITHUB
+                  </a>
                 </div>
               </div>
+            </div>
+
+            {/* Headline results strip */}
+            <div className="max-w-4xl mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border border-border divide-x divide-y sm:divide-y-0 divide-border">
+              {headlineResults.map((r) => (
+                <div key={r.label} className="px-3 py-3">
+                  <p className="font-mono text-lg font-bold text-primary leading-none">{r.value}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground mt-1.5 leading-snug">{r.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* EXPERIENCE */}
+        <section className="py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeader number="01" title="EXPERIENCE" />
+            <div className="max-w-4xl space-y-4">
+              {experience.map((job) => (
+                <div key={job.org} className="border border-border p-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                    <h3 className="font-mono text-sm font-bold text-foreground">
+                      {job.role} <span className="text-primary">· {job.org}</span>
+                    </h3>
+                    <span className="font-mono text-[11px] text-muted-foreground">{job.when} · {job.where}</span>
+                  </div>
+                  <ul className="mt-2 space-y-1.5">
+                    {job.bullets.map((b, i) => (
+                      <li key={i} className="font-mono text-xs text-muted-foreground leading-relaxed flex gap-2">
+                        <span className="text-primary shrink-0">·</span> {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -116,9 +210,9 @@ export default function RecruiterPage() {
         {/* TOP 5 TOOLS */}
         <section className="py-12 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="01" title="TOP 5 TOOLS — CURATED" />
+            <SectionHeader number="02" title="TOP 5 TOOLS — CURATED" />
             <p className="text-sm text-muted-foreground mb-6 max-w-2xl font-mono">
-              Five representative tools from the 26 in the Lab. Each one ships as a self-contained interactive
+              Five representative tools from the 25 in the Lab. Each one ships as a self-contained interactive
               page with the underlying math implemented directly — no third-party quant libraries.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -152,10 +246,51 @@ export default function RecruiterPage() {
           </div>
         </section>
 
+        {/* SKILLS */}
+        <section className="py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeader number="03" title="SKILLS SNAPSHOT" />
+            <div className="max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4">
+              {skillGroups.map((g) => (
+                <div key={g.title} className="border border-border p-4">
+                  <p className="font-mono text-[10px] text-primary tracking-widest mb-3">{g.title}</p>
+                  <ul className="space-y-1.5">
+                    {g.items.map((item) => (
+                      <li key={item} className="font-mono text-[11px] text-muted-foreground leading-snug">· {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* COURSEWORK */}
+        <section className="py-12 bg-muted/10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeader number="04" title="RELEVANT COURSEWORK" />
+            <div className="max-w-4xl">
+              <div className="flex flex-wrap gap-2 mb-4">
+                {coursework.map((c) => (
+                  <span key={c} className="font-mono text-[11px] border border-border px-2.5 py-1 text-foreground/80">
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <Link
+                to="/coursework"
+                className="inline-flex items-center gap-2 font-mono text-[11px] text-primary hover:underline underline-offset-4 tracking-widest"
+              >
+                FULL COURSE LIST — 22 COURSES AT WASHU + 17 AT DREW <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* RESUME */}
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="02" title="RESUME" />
+            <SectionHeader number="05" title="RESUME" />
             <div className="max-w-2xl border border-border p-6">
               <p className="font-mono text-xs text-muted-foreground mb-4 leading-relaxed">
                 Full resume (PDF) covers: WashU DSFE coursework, Drew BA Mathematics, Amphora Investment
@@ -176,7 +311,7 @@ export default function RecruiterPage() {
         {/* QUICK FACTS */}
         <section className="py-12 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="03" title="QUICK FACTS" />
+            <SectionHeader number="06" title="QUICK FACTS" />
             <div className="max-w-2xl border border-border divide-y divide-border">
               {quickFacts.map((f) => (
                 <div key={f.label} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 px-4 py-3">
@@ -191,7 +326,7 @@ export default function RecruiterPage() {
         {/* CONTACT */}
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="04" title="CONTACT" />
+            <SectionHeader number="07" title="CONTACT" />
             <div className="max-w-2xl border border-border divide-y divide-border">
               <a href="mailto:d.defreitas@wustl.edu"
                  className="flex items-center justify-between px-4 py-3 hover:bg-muted/30 transition-colors group">

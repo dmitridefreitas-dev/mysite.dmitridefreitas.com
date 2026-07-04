@@ -43,6 +43,21 @@ node src/main.js
 
 API keys (Groq, ElevenLabs, mail) are supplied via a local `.env` / host environment variables — never committed.
 
+## Companion libraries
+
+The core quant implementations are published as standalone, CI-tested Python packages:
+
+- [**svi-volatility-calibration**](https://github.com/dmitridefreitas-dev/svi-volatility-calibration) — raw-SVI smile calibration (quasi-explicit inner solve, from-scratch Nelder–Mead, Gatheral–Jacquier arbitrage checks)
+- [**hmm-regime-detection**](https://github.com/dmitridefreitas-dev/hmm-regime-detection) — Gaussian HMM with Baum–Welch, Viterbi, and log-space forward–backward
+- [**backtest-statistics**](https://github.com/dmitridefreitas-dev/backtest-statistics) — Probabilistic + Deflated Sharpe Ratio, expected-max SR, MinTRL (Bailey & López de Prado)
+
+## Research papers
+
+Working papers typeset from the research behind the tools (in [`papers/`](papers/)):
+
+- *The Deflated Sharpe Ratio in Practice* — multiple-testing-aware Sharpe inference, with a best-of-200-noise Monte Carlo demonstration
+- *Short-Horizon Market Efficiency Following Positive Earnings Surprises* — the PEAD event study (11/110 stocks with significant 3-day alpha)
+
 ## Testing
 
 ```bash

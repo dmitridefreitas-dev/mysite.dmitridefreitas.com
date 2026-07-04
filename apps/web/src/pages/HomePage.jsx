@@ -209,12 +209,12 @@ const HomePage = () => {
     <>
       <Helmet>
         <title>Dmitri De Freitas — Quantitative Finance &amp; Data Science</title>
-        <meta name="description" content="Portfolio of Dmitri De Freitas — quantitative finance practitioner and data scientist. Derivatives pricing, risk attribution, market microstructure, statistical arbitrage. BS DSFE, WashU. Available May 2026." />
+        <meta name="description" content="Portfolio of Dmitri De Freitas — quantitative finance practitioner and data scientist. Derivatives pricing, risk attribution, market microstructure, statistical arbitrage. BS DSFE, WashU. Available August 2026." />
         <meta name="keywords"    content="Dmitri De Freitas, quant finance portfolio, financial engineering, WashU, quantitative analyst, algorithmic trading, derivatives, data science" />
         <link rel="canonical"    href="https://dmitridefreitas.com/" />
         <meta property="og:url"         content="https://dmitridefreitas.com/" />
         <meta property="og:title"       content="Dmitri De Freitas — Quantitative Finance & Data Science" />
-        <meta property="og:description" content="Quantitative finance practitioner. Derivatives pricing, risk attribution, microstructure, statistical arbitrage. 26 live interactive quant tools. Available May 2026." />
+        <meta property="og:description" content="Quantitative finance practitioner. Derivatives pricing, risk attribution, microstructure, statistical arbitrage. 25 live interactive quant tools. Available August 2026." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
@@ -268,7 +268,7 @@ const HomePage = () => {
                 {/* Status badges */}
                 <div className="flex flex-wrap gap-2">
                   <TerminalBadge variant="status">STATUS: SEEKING_ALPHA</TerminalBadge>
-                  <TerminalBadge variant="date">AVAILABLE: 2026-05-01</TerminalBadge>
+                  <TerminalBadge variant="date">AVAILABLE: 2026-08-01</TerminalBadge>
                   <TerminalBadge variant="location">LOCATION: STL</TerminalBadge>
                 </div>
 
@@ -554,7 +554,7 @@ const HomePage = () => {
                 ))}
               </div>
               <div className="font-mono text-xs text-muted-foreground space-y-1">
-                <p>· Full-time positions from <span className="text-foreground">May 2026</span></p>
+                <p>· Full-time positions from <span className="text-foreground">August 2026</span></p>
                 <p>· Currently located in <span className="text-foreground">St. Louis, MO</span></p>
                 <p>· Open to relocation</p>
               </div>

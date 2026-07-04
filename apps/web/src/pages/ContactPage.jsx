@@ -109,11 +109,11 @@ const ContactPage = () => {
     <>
       <Helmet>
         <title>Contact — Dmitri De Freitas</title>
-        <meta name="description"        content="Contact Dmitri De Freitas. Available May 2026 for full-time roles in quantitative research, financial engineering, and data science." />
+        <meta name="description"        content="Contact Dmitri De Freitas. Available August 2026 for full-time roles in quantitative research, financial engineering, and data science." />
         <link rel="canonical"           href="https://dmitridefreitas.com/contact" />
         <meta property="og:url"         content="https://dmitridefreitas.com/contact" />
         <meta property="og:title"       content="Contact — Dmitri De Freitas" />
-        <meta property="og:description" content="Available May 2026 for quantitative research and financial engineering roles. Get in touch." />
+        <meta property="og:description" content="Available August 2026 for quantitative research and financial engineering roles. Get in touch." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
@@ -130,7 +130,7 @@ const ContactPage = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader number="04" title="CONTACT / INQUIRY SUBMISSION TERMINAL" />
             <p className="font-mono text-xs text-muted-foreground max-w-xl">
-              Direct inquiries preferred. Response time: 24–48h. Available for full-time positions starting 2026-05-01.
+              Direct inquiries preferred. Response time: 24–48h. Available for full-time positions starting 2026-08-01.
             </p>
           </div>
         </section>
@@ -150,7 +150,7 @@ const ContactPage = () => {
                     <DotRow label="EMAIL" value="d.defreitas@wustl.edu" href="mailto:d.defreitas@wustl.edu" />
                     <DotRow label="PHONE" value="+1-314-646-9845" href="tel:+13146469845" />
                     <DotRow label="LOCATION" value="St. Louis, MO" />
-                    <DotRow label="AVAILABLE" value="2026-05-01" />
+                    <DotRow label="AVAILABLE" value="2026-08-01" />
                   </div>
                 </div>
 

@@ -6,7 +6,7 @@ const terms = [
   'Derivatives Pricing & Volatility Modeling',
   'Portfolio Optimization & Risk Management',
   'Stochastic Calculus & Interest Rate Modeling',
-  'High-Frequency Trading Systems',
+  'Low-Latency Trading Systems',
   'Backtesting & Execution Algorithms',
   'Data Science & Machine Learning',
   'Predictive Modeling & Statistical Inference',

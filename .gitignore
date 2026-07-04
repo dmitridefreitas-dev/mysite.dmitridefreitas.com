@@ -7,3 +7,7 @@ apps/web/dist/
 tools/shots/
 tools/edge-profile/
 site-deploy.zip
+
+# Private career documents — keep out of the public repo
+Resume - *.pdf
+CAREER-ROADMAP-*.pdf

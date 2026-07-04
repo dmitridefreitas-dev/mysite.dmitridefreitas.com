@@ -391,7 +391,7 @@ Project report TCY-009: https://drive.google.com/file/d/1ZoGA1EgN0x95YwXnjuS9onl
 Project report TRN-010: https://drive.google.com/file/d/1J02SDuD61vPO0l4oF_DJw6j3UA3EHZ28/view
 
 === IDENTITY ===
-Dmitri De Freitas is a quantitative finance practitioner and data scientist. He is completing a BS in Data Science & Financial Engineering at Washington University in St. Louis (WashU), graduating May 2026, GPA 3.7. He is actively seeking full-time roles as a Quantitative Research Analyst, Financial Engineer, Data Scientist, or Algorithmic Trading Developer. Available from May 1, 2026. Currently in St. Louis, MO. Open to relocation. Work authorization: US F-1 OPT eligible.
+Dmitri De Freitas is a quantitative finance practitioner and data scientist. He is holding a BS in Data Science & Financial Engineering at Washington University in St. Louis (WashU), graduated May 2026, GPA 3.7. He is actively seeking full-time roles as a Quantitative Research Analyst, Financial Engineer, Data Scientist, or Algorithmic Trading Developer. Available from August 1, 2026. Currently in St. Louis, MO. Open to relocation. Work authorization: US F-1 OPT eligible.
 
 === CONTACT ===
 Email: d.defreitas@wustl.edu | Phone: +1-314-646-9845 | LinkedIn: linkedin.com/in/dmitri-de-freitas-16a540347/ | CV PDF available on the About page (/about). Contact form at /contact. Response time: 24–48 hours.

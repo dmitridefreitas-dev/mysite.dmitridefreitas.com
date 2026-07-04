@@ -172,11 +172,11 @@ const AboutPage = () => {
     <>
       <Helmet>
         <title>About — Dmitri De Freitas</title>
-        <meta name="description"      content="About Dmitri De Freitas — quantitative finance practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis. GPA 3.7. Available May 2026." />
+        <meta name="description"      content="About Dmitri De Freitas — quantitative finance practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis. GPA 3.7. Available August 2026." />
         <link rel="canonical"         href="https://dmitridefreitas.com/about" />
         <meta property="og:url"       content="https://dmitridefreitas.com/about" />
         <meta property="og:title"     content="About — Dmitri De Freitas" />
-        <meta property="og:description" content="Quantitative finance practitioner. BS Data Science & Financial Engineering, WashU. GPA 3.7. Amphora Investment Management intern. Available May 2026." />
+        <meta property="og:description" content="Quantitative finance practitioner. BS Data Science & Financial Engineering, WashU. GPA 3.7. Amphora Investment Management intern. Available August 2026." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
@@ -209,7 +209,7 @@ const AboutPage = () => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <TerminalBadge variant="status">STATUS: SEEKING_ALPHA</TerminalBadge>
-                  <TerminalBadge variant="date">AVAILABLE: 2026-05-01</TerminalBadge>
+                  <TerminalBadge variant="date">AVAILABLE: 2026-08-01</TerminalBadge>
                   <TerminalBadge variant="location">LOCATION: STL</TerminalBadge>
                 </div>
               </div>
@@ -223,7 +223,7 @@ const AboutPage = () => {
             <SectionHeader number="01" title="EXECUTIVE SUMMARY" />
             <div className="space-y-3 text-sm text-muted-foreground leading-relaxed pl-1">
               <p>
-                Quantitative finance and data science practitioner completing a BS in Data Science &amp; Financial Engineering at Washington University in St. Louis (GPA: 3.7), following a BA in Mathematics from Drew University (GPA: 3.7).
+                Quantitative finance and data science practitioner holding a BS in Data Science &amp; Financial Engineering at Washington University in St. Louis (GPA: 3.7), following a BA in Mathematics from Drew University (GPA: 3.7).
               </p>
               <p>
                 Demonstrated experience building production ETL pipelines (80% reduction in manual processing at Amphora Investment Management), developing real-time algorithmic trading systems with sub-second execution latency, and conducting statistical research yielding rigorous results — 10.9% significant alpha in PEAD analysis, R² 0.816 in predictive housing modeling.
@@ -364,7 +364,7 @@ const AboutPage = () => {
                 <div className="space-y-2">
                   <div className="font-mono text-xs flex gap-3">
                     <span className="text-muted-foreground w-28 shrink-0">START DATE</span>
-                    <span className="text-terminal-green">2026-05-01</span>
+                    <span className="text-terminal-green">2026-08-01</span>
                   </div>
                   <div className="font-mono text-xs flex gap-3">
                     <span className="text-muted-foreground w-28 shrink-0">CURRENT LOC</span>

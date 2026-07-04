@@ -7,15 +7,17 @@
 </IfModule>
 
 <IfModule mod_headers.c>
-	# Cache everything on CDN by default; index.html revalidates so deploys show up
-	Header set Cache-Control "public, s-maxage=604800, max-age=0"
+	# Default: always revalidate. This covers index.html and every SPA route,
+	# so a deploy is visible immediately — no manual CDN purge needed.
+	# (Hashed assets below carry the real long-term caching.)
+	Header set Cache-Control "no-cache, must-revalidate"
 
-	# Hashed build assets are immutable — cache aggressively in the browser
+	# Hashed build assets are immutable — cache aggressively everywhere
 	<If "%{REQUEST_URI} =~ m#^/assets/.*$#">
 		Header set Cache-Control "public, max-age=31536000, immutable"
 	</If>
 
-	# Media rarely changes — cache a week in browser
+	# Media rarely changes — cache a week
 	<If "%{REQUEST_URI} =~ m#\.(mp4|jpe?g|png|webp|pdf)$#">
 		Header set Cache-Control "public, max-age=604800"
 	</If>

@@ -644,7 +644,7 @@ const NewsPage = () => {
               </div>
             ) : (
               /* News importance filters */
-              <div className="flex divide-x divide-border border-x border-border w-fit">
+              <div className="flex flex-wrap divide-x divide-border border-x border-border w-fit">
                 {NEWS_FILTERS.map((f) => (
                   <button
                     key={f}

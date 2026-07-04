@@ -7,19 +7,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 
 const navLinks = [
-  { num: '1', label: 'OVERVIEW',  path: '/'        },
-  { num: '2', label: 'PROFILE',   path: '/about'   },
-  { num: '3', label: 'RESEARCH',  path: '/projects'},
-  { num: '4', label: 'CONTACT',   path: '/contact' },
-  { num: '5', label: 'NEWS',      path: '/news'    },
-  { num: '6', label: 'LAB',       path: '/lab'     },
-  { num: '7', label: 'AI',        path: '/ai'      },
+  { num: '1', label: 'OVERVIEW',  path: '/'         },
+  { num: '2', label: 'PROFILE',   path: '/about'    },
+  { num: '3', label: 'PROJECTS',  path: '/projects' },
+  { num: '4', label: 'RESEARCH',  path: '/research' },
+  { num: '5', label: 'CONTACT',   path: '/contact'  },
+  { num: '6', label: 'NEWS',      path: '/news'     },
+  { num: '7', label: 'LAB',       path: '/lab'      },
+  { num: '8', label: 'AI',        path: '/ai'       },
 ];
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme, toggleBrownMode, cycleTheme } = useTheme();
-  const themeLabel = theme === 'brown' ? 'Theme: Brown' : 'Theme: Dark';
+  const themeLabel = theme === 'brown' ? 'BROWN' : 'DARK';
   const { isTechnicalMode, toggleReadingMode } = useReadingMode();
   const location = useLocation();
   const { toast } = useToast();
@@ -30,7 +31,7 @@ const Header = () => {
     window.open('https://www.linkedin.com/in/dmitri-de-freitas-16a540347/', '_blank');
 
   const handleGitHub = () =>
-    toast({ title: 'GitHub', description: 'Profile link coming soon.' });
+    window.open('https://github.com/dmitridefreitas-dev', '_blank');
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -39,12 +40,12 @@ const Header = () => {
         <div className="flex items-center h-10 md:h-11 gap-4">
 
           {/* Left: function-key nav (desktop) */}
-          <nav className="hidden md:flex items-center gap-0 border border-border divide-x divide-border shrink-0">
+          <nav className="hidden lg:flex items-center gap-0 border border-border divide-x divide-border shrink-0">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-1 px-3 h-6 font-mono text-[10px] tracking-widest transition-colors ${
+                className={`flex items-center gap-1 px-2.5 h-7 font-mono text-[11px] tracking-widest transition-colors ${
                   isActive(link.path)
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -56,8 +57,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Center: identifier */}
-          <div className="flex-1 flex justify-center">
+          {/* Center: identifier (desktop only — mobile has its own centered title) */}
+          <div className="flex-1 hidden lg:flex justify-center">
             <Link to="/" className="shrink-0">
               <span className="font-mono text-xs font-bold tracking-widest text-foreground">
                 DDF<span className="text-primary">·</span>TERMINAL
@@ -69,11 +70,11 @@ const Header = () => {
           </div>
 
           {/* Right: controls */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             {/* Reading mode */}
             <button
               onClick={toggleReadingMode}
-              className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-6 transition-colors tracking-wider"
+              className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-7 transition-colors tracking-wider"
               title="Toggle reading mode (V)"
             >
               VIEW:{isTechnicalMode ? 'QUANT' : 'SIMPLE'}
@@ -82,7 +83,7 @@ const Header = () => {
             {/* Theme */}
             <button
               onClick={cycleTheme}
-              className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-6 transition-colors tracking-wider"
+              className="font-mono text-[10px] text-muted-foreground hover:text-foreground border border-border px-2 h-7 transition-colors tracking-wider"
               title="Cycle theme: Dark → Brown"
             >
               {themeLabel}
@@ -93,35 +94,49 @@ const Header = () => {
             {/* Social */}
             <button
               onClick={handleLinkedIn}
-              className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors"
+              className="h-7 w-7 flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
               title="LinkedIn"
+              aria-label="LinkedIn profile"
             >
-              LN
+              <Linkedin className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={handleGitHub}
-              className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors"
+              className="h-7 w-7 flex items-center justify-center border border-border text-muted-foreground hover:text-primary hover:border-primary/60 transition-colors"
               title="GitHub"
+              aria-label="GitHub profile"
             >
-              GH
+              <Github className="h-3.5 w-3.5" />
             </button>
 
             <div className="w-px h-4 bg-border" />
 
-            {/* Resume */}
+            {/* Recruiter — highlighted entry for the target audience */}
+            <Link
+              to="/recruiter"
+              className={`font-mono text-[11px] font-semibold px-3 h-7 flex items-center transition-colors tracking-wider border ${
+                isActive('/recruiter')
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'text-primary border-primary/60 bg-primary/10 hover:bg-primary/20'
+              }`}
+            >
+              RECRUITER
+            </Link>
+
+            {/* Resume — primary CTA, always visible */}
             <a
               href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-[10px] text-muted-foreground hover:text-primary border border-border px-2 h-6 flex items-center gap-1 transition-colors tracking-wider"
+              className="font-mono text-[11px] font-bold bg-primary text-primary-foreground hover:bg-primary/90 px-3.5 h-7 flex items-center gap-1.5 transition-colors tracking-wider"
             >
-              <Download className="h-2.5 w-2.5" />
-              CV.PDF
+              <Download className="h-3.5 w-3.5" />
+              RESUME
             </a>
           </div>
 
           {/* Mobile: title center (shown only on mobile, nav items are in hamburger) */}
-          <div className="flex-1 flex md:hidden justify-center">
+          <div className="flex-1 flex lg:hidden justify-center">
             <Link to="/">
               <span className="font-mono text-xs font-bold tracking-widest text-foreground">
                 DDF<span className="text-primary">·</span>TERMINAL
@@ -130,7 +145,7 @@ const Header = () => {
           </div>
 
           {/* Mobile: theme + hamburger */}
-          <div className="flex md:hidden items-center gap-2 shrink-0">
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
             <button
               onClick={cycleTheme}
               className="font-mono text-[10px] text-muted-foreground border border-border px-2 h-6 tracking-wider"
@@ -156,7 +171,7 @@ const Header = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.15 }}
-            className="md:hidden bg-background border-t border-border"
+            className="lg:hidden bg-background border-t border-border"
           >
             <div className="container mx-auto px-4 py-2">
               {/* Nav links */}
@@ -177,7 +192,7 @@ const Header = () => {
                 ))}
                 <Link to="/lab/notes" onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-3 py-3.5 font-mono text-xs tracking-widest text-muted-foreground">
-                  <span className="opacity-40 text-[10px] w-6">[8]</span>
+                  <span className="opacity-40 text-[10px] w-6">[W]</span>
                   WRITEUPS
                 </Link>
                 <Link to="/coursework" onClick={() => setIsMobileMenuOpen(false)}
@@ -189,6 +204,15 @@ const Header = () => {
 
               {/* Controls row */}
               <div className="border-t border-border pt-3 pb-1 flex flex-col gap-3">
+                {/* Recruiter — prominent entry for the target audience */}
+                <Link
+                  to="/recruiter"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 font-mono text-[11px] tracking-widest border border-primary bg-primary text-primary-foreground py-2.5 hover:bg-primary/90 transition-colors"
+                >
+                  FOR RECRUITERS →
+                </Link>
+
                 {/* CV download — prominent */}
                 <a
                   href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
@@ -205,18 +229,22 @@ const Header = () => {
                 <div className="flex items-center justify-between">
                   <button
                     onClick={toggleReadingMode}
-                    className="font-mono text-[10px] text-muted-foreground border border-border px-3 h-7 tracking-wider"
+                    className="font-mono text-[11px] text-muted-foreground border border-border px-3 h-8 tracking-wider"
                   >
-                    VIEW: {isTechnicalMode ? 'QUANT' : 'EXEC'}
+                    VIEW: {isTechnicalMode ? 'QUANT' : 'SIMPLE'}
                   </button>
-                  <div className="flex items-center gap-3">
-                    <button onClick={handleLinkedIn} className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors px-1 py-1">LN</button>
-                    <button onClick={handleGitHub} className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors px-1 py-1">GH</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handleLinkedIn} aria-label="LinkedIn profile" className="h-8 w-8 flex items-center justify-center border border-border text-muted-foreground hover:text-primary transition-colors">
+                      <Linkedin className="h-4 w-4" />
+                    </button>
+                    <button onClick={handleGitHub} aria-label="GitHub profile" className="h-8 w-8 flex items-center justify-center border border-border text-muted-foreground hover:text-primary transition-colors">
+                      <Github className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
                 {/* ⌘K hint */}
-                <p className="font-mono text-[8px] text-muted-foreground/30 text-center tracking-widest pb-1">
+                <p className="font-mono text-[9px] text-muted-foreground/60 text-center tracking-widest pb-1">
                   CTRL+K · COMMAND PALETTE
                 </p>
               </div>

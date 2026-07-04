@@ -68,11 +68,11 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
       className="border border-border overflow-hidden"
     >
       {/* Tab bar */}
-      <div className="bg-muted/40 border-b border-border px-4 py-2 flex items-center gap-4">
+      <div className="bg-muted/40 border-b border-border px-4 py-2 flex items-center gap-3 flex-wrap">
         <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest shrink-0">
           SKILL CHAIN
         </span>
-        <div className="flex divide-x divide-border border border-border">
+        <div className="flex divide-x divide-border border border-border overflow-x-auto max-w-full">
           {TABS.map(tab => {
             const count = tab.key === 'ALL'
               ? skillsData.length
@@ -81,7 +81,7 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`font-mono text-[10px] uppercase tracking-widest px-3 h-7 transition-colors ${
+                className={`font-mono text-[10px] uppercase tracking-widest px-3 h-7 transition-colors whitespace-nowrap shrink-0 ${
                   activeTab === tab.key
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -95,8 +95,8 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
         </div>
       </div>
 
-      {/* Column headers */}
-      <div className="flex border-b border-border bg-muted/40">
+      {/* Column headers — hidden on mobile where the chain stacks into one column */}
+      <div className="hidden sm:flex border-b border-border bg-muted/40">
         {/* Calls header — w-20 matches data row name column; text-right puts label flush against TYPE */}
         <div className="flex-1 flex items-center gap-3 px-4 py-2">
           <span className="font-mono text-[9px] text-terminal-green tracking-widest font-bold w-20 shrink-0 text-left">
@@ -120,23 +120,23 @@ const OptionsChain = ({ skillsData, onSkillClick }) => {
         </div>
       </div>
 
-      {/* Rows */}
+      {/* Rows — stacked single column on mobile, calls/puts side-by-side from sm up */}
       <div className="divide-y divide-border/60">
         {rows.map((row, i) => (
-          <div key={i} className="flex">
+          <div key={i} className="flex flex-col sm:flex-row">
             <SkillCell skill={row.call} onClick={onSkillClick} side="call" />
-            <div className="w-px bg-border/60 shrink-0" />
+            <div className="hidden sm:block w-px bg-border/60 shrink-0" />
             <SkillCell skill={row.put} onClick={onSkillClick} side="put" />
           </div>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="bg-muted/20 border-t border-border px-5 py-2 flex items-center justify-between">
-        <span className="font-mono text-[10px] text-muted-foreground/50 tracking-widest">
+      <div className="bg-muted/20 border-t border-border px-5 py-2 flex items-center justify-between gap-2 flex-wrap">
+        <span className="font-mono text-[10px] text-muted-foreground/80 tracking-widest">
           {filtered.length} INSTRUMENTS · {itmRows.length} ITM · {otmRows.length} OTM
         </span>
-        <span className="font-mono text-[10px] text-muted-foreground/40 tracking-widest">
+        <span className="font-mono text-[10px] text-muted-foreground/70 tracking-widest">
           CLICK ANY STRIKE TO EXPAND
         </span>
       </div>

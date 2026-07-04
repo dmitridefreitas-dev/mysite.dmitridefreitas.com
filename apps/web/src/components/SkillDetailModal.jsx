@@ -76,7 +76,7 @@ const SkillDetailModal = ({ isOpen, onClose, skill }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[510px] p-0 border-border bg-background font-mono gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[510px] p-0 border-border bg-background font-mono gap-0 max-h-[90dvh] overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}

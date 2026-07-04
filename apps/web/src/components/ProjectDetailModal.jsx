@@ -44,7 +44,7 @@ const ProjectDetailModal = ({ project, isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
+      <DialogContent className="sm:max-w-2xl max-h-[90dvh] overflow-y-auto bg-card border-border">
         <DialogHeader className="pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-4">
             <div>

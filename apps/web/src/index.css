@@ -13,7 +13,7 @@
     --accent: 213 80% 15%;
     --accent-foreground: 0 0% 100%;
     --muted: 214 15% 95%;
-    --muted-foreground: 215 14% 40%;
+    --muted-foreground: 215 16% 35%;
     --card: 0 0% 100%;
     --card-foreground: 216 28% 7%;
     --border: 214 18% 86%;
@@ -84,11 +84,11 @@
     --accent: 225 68% 44%;
     --accent-foreground: 0 0% 100%;
     --muted: 225 35% 6%;
-    --muted-foreground: 218 12% 48%;
+    --muted-foreground: 218 18% 71%;
     --card: 225 30% 4%;
     --card-foreground: 210 17% 88%;
-    --border: 225 30% 9%;
-    --input: 225 30% 9%;
+    --border: 225 26% 13%;
+    --input: 225 26% 13%;
     --ring: 225 72% 50%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -155,7 +155,7 @@
     --accent: 36 48% 48%;
     --accent-foreground: 22 30% 4%;
     --muted: 22 24% 7%;
-    --muted-foreground: 30 18% 68%;
+    --muted-foreground: 30 20% 74%;
     --card: 22 28% 6%;
     --card-foreground: 36 20% 94%;
     --border: 26 24% 13%;
@@ -240,6 +240,26 @@
     background: hsl(var(--primary) / 0.25);
     color: hsl(var(--foreground));
   }
+}
+
+/* ── Readability floor ───────────────────────────────────────────────
+   The terminal aesthetic uses arbitrary tiny font sizes and heavy opacity
+   on informational text. These unlayered overrides win over the Tailwind
+   utility layer and raise everything to a legible minimum site-wide
+   without touching hundreds of call sites. */
+.text-\[7px\]  { font-size: 9px; }
+.text-\[8px\]  { font-size: 10px; }
+.text-\[9px\]  { font-size: 10px; }
+
+.text-muted-foreground\/20 { color: hsl(var(--muted-foreground) / 0.5); }
+.text-muted-foreground\/30 { color: hsl(var(--muted-foreground) / 0.55); }
+.text-muted-foreground\/40 { color: hsl(var(--muted-foreground) / 0.6); }
+.text-muted-foreground\/50 { color: hsl(var(--muted-foreground) / 0.65); }
+
+/* Keyboard focus — visible ring on every interactive element */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 /* Grid background */

@@ -58,27 +58,40 @@ const ContactPage = () => {
       return;
     }
 
+    // Render's free tier sleeps after idle — first request can take ~30-60s to
+    // wake it. Allow for that, but never hang forever.
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), 75_000);
+
     try {
       const response = await apiServerClient.fetch('/contact/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        signal: abort.signal,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'TRANSMISSION_FAILED');
       }
 
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
+      const friendly =
+        error.name === 'AbortError'
+          ? 'The server did not respond (it may be waking up). Please retry in a minute — or email d.defreitas@wustl.edu directly.'
+          : error.message === 'email_not_configured' || error.message === 'send_failed'
+          ? 'The contact service is temporarily unavailable. Please email d.defreitas@wustl.edu directly.'
+          : 'Failed to send. Please retry — or email d.defreitas@wustl.edu directly.';
       toast({
         title: 'TRANSMISSION_ERROR',
-        description: error.message || 'Failed to send. Please retry or contact directly.',
+        description: friendly,
         variant: 'destructive',
       });
     } finally {
+      clearTimeout(timer);
       setIsSubmitting(false);
     }
   };

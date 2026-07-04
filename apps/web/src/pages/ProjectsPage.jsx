@@ -305,7 +305,7 @@ const ProjectsPage = () => {
         {/* Filter Tabs */}
         <section className="py-0 sticky top-12 md:top-14 bg-background/95 backdrop-blur-sm z-40 border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex divide-x divide-border border-x border-border w-fit">
+            <div className="flex flex-wrap divide-x divide-border border-x border-border w-fit">
               {categories.map((category) => (
                 <button
                   key={category}

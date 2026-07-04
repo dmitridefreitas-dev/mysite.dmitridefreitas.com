@@ -668,7 +668,12 @@ export default defineConfig(({ mode }) => {
 
   return {
 	optimizeDeps: {
-		include: allDeps,
+		// react-plotly.js's MAIN entry require()s "plotly.js/dist/plotly", which this
+		// project does not ship — force-pre-bundling it crashes the dev server. The app
+		// only uses the "/factory" subpath (which takes Plotly as an argument and pulls
+		// in nothing), so pre-bundle that subpath instead of the package root. Pre-bundling
+		// is still required for the CJS→ESM default-export interop the page relies on.
+		include: [...allDeps.filter((d) => d !== 'react-plotly.js'), 'react-plotly.js/factory'],
 	},
 	customLogger: logger,
 	plugins: [

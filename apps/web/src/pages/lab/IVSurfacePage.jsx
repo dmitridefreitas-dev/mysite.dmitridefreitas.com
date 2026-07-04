@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'plotly.js-gl3d-dist-min';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,

@@ -1,4 +1,5 @@
-const API_SERVER_URL = window.location.hostname === 'localhost'
+const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]'];
+const API_SERVER_URL = LOCAL_HOSTS.includes(window.location.hostname)
     ? '/hcgi/api'
     : "https://newsapi-xspv.onrender.com";
 

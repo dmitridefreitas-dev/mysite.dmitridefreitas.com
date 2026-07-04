@@ -39,7 +39,7 @@ const ProjectCard = ({ project, onViewProject }) => {
           <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest block mb-1">
             ABSTRACT
           </span>
-          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
             {abstract}
           </p>
         </div>
@@ -49,7 +49,7 @@ const ProjectCard = ({ project, onViewProject }) => {
           <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest mr-2">
             STACK
           </span>
-          <span className="font-mono text-[10px] text-foreground/70">
+          <span className="font-mono text-[11px] text-foreground/80">
             {project.techStack.slice(0, 3).join(' / ')}
             {project.techStack.length > 3 && ` +${project.techStack.length - 3}`}
           </span>
@@ -62,14 +62,14 @@ const ProjectCard = ({ project, onViewProject }) => {
               KEY METRICS
             </span>
             {previewMetrics.map((m, i) => (
-              <p key={i} className="font-mono text-[10px] text-muted-foreground line-clamp-1">· {m}</p>
+              <p key={i} className="font-mono text-[11px] text-muted-foreground line-clamp-1">· {m}</p>
             ))}
           </div>
         )}
 
         {/* Footer link */}
         <div className="mt-3 pt-2 border-t border-border">
-          <span className="font-mono text-[10px] text-muted-foreground group-hover:text-primary transition-colors tracking-widest">
+          <span className="font-mono text-[11px] text-muted-foreground group-hover:text-primary transition-colors tracking-widest">
             [VIEW FULL REPORT →]
           </span>
         </div>

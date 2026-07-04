@@ -5,9 +5,11 @@ const ROUTES = {
   '1': '/',
   '2': '/about',
   '3': '/projects',
-  '4': '/contact',
-  '5': '/news',
-  '6': '/lab',
+  '4': '/research',
+  '5': '/contact',
+  '6': '/news',
+  '7': '/lab',
+  '8': '/ai',
 };
 
 const isInputFocused = () => {

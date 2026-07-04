@@ -255,11 +255,11 @@ const HomePage = () => {
                       className="w-full h-full object-cover object-top scale-[1.8] -translate-y-4 translate-x-[3px]"
                     />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h1 className="font-mono text-2xl md:text-4xl font-bold tracking-tight text-foreground leading-none flex items-center gap-2">
                       DMITRI DE FREITAS <BlinkingCursor />
                     </h1>
-                    <p className="font-mono text-xs text-muted-foreground mt-2 leading-relaxed">
+                    <p className="font-mono text-sm text-muted-foreground mt-2 leading-relaxed">
                       BS Data Science & Financial Engineering · Washington University in St. Louis
                     </p>
                   </div>
@@ -270,23 +270,47 @@ const HomePage = () => {
                   <TerminalBadge variant="status">STATUS: SEEKING_ALPHA</TerminalBadge>
                   <TerminalBadge variant="date">AVAILABLE: 2026-05-01</TerminalBadge>
                   <TerminalBadge variant="location">LOCATION: STL</TerminalBadge>
-                  <a
-                    href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-[9px] tracking-widest border border-border px-2 py-0.5 text-muted-foreground hover:text-primary hover:border-primary transition-colors flex items-center gap-1"
-                  >
-                    <Download className="h-2.5 w-2.5" />
-                    CV.PDF
-                  </a>
                 </div>
 
                 {/* Executive summary */}
-                <p className="text-sm text-muted-foreground max-w-xl leading-relaxed">
+                <p className="text-base text-muted-foreground max-w-xl leading-relaxed">
                   Quantitative finance practitioner building production-grade ETL pipelines, real-time
                   trading systems, and statistical models. Demonstrated research rigor across
                   institutional data engineering, market microstructure analysis, and predictive modeling.
                 </p>
+
+                {/* Primary CTAs — the three things a visitor came to do */}
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    to="/projects"
+                    className="font-mono text-xs font-bold tracking-widest bg-primary text-primary-foreground px-6 py-3 hover:bg-primary/90 transition-colors"
+                  >
+                    VIEW PROJECTS →
+                  </Link>
+                  <a
+                    href="https://drive.google.com/file/d/1Ff9CtgP3OndC67ARXolrRjH6Y2seE1Sl/view?usp=drive_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-xs font-bold tracking-widest border border-primary text-primary px-6 py-3 hover:bg-primary/10 transition-colors flex items-center gap-2"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    RESUME
+                  </a>
+                  <Link
+                    to="/contact"
+                    className="font-mono text-xs font-bold tracking-widest border border-border text-foreground px-6 py-3 hover:bg-muted transition-colors"
+                  >
+                    CONTACT
+                  </Link>
+                </div>
+
+                {/* Recruiter funnel */}
+                <Link
+                  to="/recruiter"
+                  className="inline-flex items-center gap-2 font-mono text-xs text-primary hover:underline underline-offset-4 tracking-wider"
+                >
+                  RECRUITER? EVERYTHING YOU NEED ON ONE PAGE →
+                </Link>
 
                 {/* Position card */}
                 <div className="border border-border max-w-sm">
@@ -294,87 +318,71 @@ const HomePage = () => {
                   {/* Row 1 — live exposure */}
                   <div className="border-b border-border px-4 py-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-[9px] text-primary tracking-widest flex items-center gap-1.5">
+                      <span className="font-mono text-[10px] text-primary tracking-widest flex items-center gap-1.5">
                         <span className="animate-pulse">●</span> CURRENT EXPOSURE
                       </span>
                       {signalTime ? (
-                        <span className="font-mono text-[8px] text-muted-foreground/50 tabular-nums">
+                        <span className="font-mono text-[10px] text-muted-foreground/70 tabular-nums">
                           {signalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                         </span>
                       ) : (
-                        <span className="font-mono text-[8px] text-muted-foreground/30">FETCHING...</span>
+                        <span className="font-mono text-[10px] text-muted-foreground/60">FETCHING...</span>
                       )}
                     </div>
 
                     <div className="flex items-center gap-4 flex-wrap mb-1.5">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="font-mono text-[8px] text-muted-foreground/70">VIX</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">VIX</span>
                         {vixVal ? (
                           <>
-                            <span className="font-mono text-[11px] font-bold text-foreground tabular-nums">{vixVal}</span>
-                            <span className="font-mono text-[7px] text-terminal-green animate-pulse">●</span>
+                            <span className="font-mono text-xs font-bold text-foreground tabular-nums">{vixVal}</span>
+                            <span className="font-mono text-[8px] text-terminal-green animate-pulse">●</span>
                           </>
                         ) : (
-                          <span className="font-mono text-[10px] text-muted-foreground/30">···</span>
+                          <span className="font-mono text-[10px] text-muted-foreground/60">···</span>
                         )}
                       </div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="font-mono text-[8px] text-muted-foreground/70">10Y</span>
+                        <span className="font-mono text-[10px] text-muted-foreground">10Y</span>
                         {t10yVal ? (
-                          <span className="font-mono text-[11px] font-bold text-foreground tabular-nums">{t10yVal}%</span>
+                          <span className="font-mono text-xs font-bold text-foreground tabular-nums">{t10yVal}%</span>
                         ) : (
-                          <span className="font-mono text-[10px] text-muted-foreground/30">···</span>
+                          <span className="font-mono text-[10px] text-muted-foreground/60">···</span>
                         )}
                       </div>
                     </div>
 
-                    <p className="font-mono text-[9px] text-muted-foreground">
+                    <p className="font-mono text-[10px] text-muted-foreground">
                       SIGNAL{' '}
                       {regime ? (
                         <>
                           <span className={`font-bold ${regime === 'BULL' ? 'text-terminal-green' : 'text-foreground'}`}>
                             {regime === 'BULL' ? 'LONG SPY' : 'FLAT'}
                           </span>
-                          <span className="text-muted-foreground/40 ml-1">(3M momentum)</span>
+                          <span className="text-muted-foreground/70 ml-1">(3M momentum)</span>
                         </>
                       ) : (
-                        <span className="text-muted-foreground/30">COMPUTING...</span>
+                        <span className="text-muted-foreground/60">COMPUTING...</span>
                       )}
                     </p>
                   </div>
 
-                  {/* Row 2 — CTAs */}
-                  <div className="grid grid-cols-4 border-b border-border">
-                    <Link to="/projects"
-                      className="font-mono text-[10px] tracking-widest bg-primary text-primary-foreground px-3 py-2.5 hover:bg-primary/90 transition-colors text-center">
-                      RESEARCH →
-                    </Link>
+                  {/* Row 2 — explore shortcuts (secondary) */}
+                  <div className="grid grid-cols-2">
                     <Link to="/lab"
-                      className="font-mono text-[10px] tracking-widest border-x border-border px-3 py-2.5 text-primary hover:bg-primary/10 transition-colors text-center">
-                      LAB →
-                    </Link>
-                    <Link to="/contact"
-                      className="font-mono text-[10px] tracking-widest border-r border-border px-3 py-2.5 text-foreground hover:bg-muted transition-colors text-center">
-                      CONTACT
+                      className="font-mono text-[10px] tracking-widest border-r border-b border-border px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
+                      RESEARCH LAB →
                     </Link>
                     <Link to="/ai"
-                      className="font-mono text-[10px] tracking-widest px-3 py-2.5 text-terminal-green hover:bg-terminal-green/10 transition-colors text-center">
+                      className="font-mono text-[10px] tracking-widest border-b border-border px-3 py-2 text-terminal-green hover:bg-terminal-green/10 transition-colors text-center">
                       AI DEMO →
                     </Link>
-                  </div>
-
-                  {/* Row 3 — secondary lab links */}
-                  <div className="grid grid-cols-3">
-                    <Link to="/lab/ic-vault"
-                      className="font-mono text-[9px] tracking-widest border-r border-border px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
-                      THESES
-                    </Link>
                     <Link to="/lab/dcf"
-                      className="font-mono text-[9px] tracking-widest border-r border-border px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
+                      className="font-mono text-[10px] tracking-widest border-r border-border px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
                       LIVE DCF
                     </Link>
                     <Link to="/lab/risk"
-                      className="font-mono text-[9px] tracking-widest px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
+                      className="font-mono text-[10px] tracking-widest px-3 py-2 text-muted-foreground hover:text-primary hover:bg-muted/30 transition-colors text-center">
                       RISK + α
                     </Link>
                   </div>
@@ -392,9 +400,9 @@ const HomePage = () => {
                 {recentResearch.map((item) => (
                   <Link key={item.id} to="/projects">
                     <div className="px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors flex items-start justify-between gap-3 group">
-                      <div>
-                        <span className="font-mono text-[9px] text-primary block mb-0.5">{item.id}</span>
-                        <span className="font-mono text-[11px] text-foreground/80 group-hover:text-primary transition-colors leading-snug block">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[10px] text-primary block mb-0.5">{item.id}</span>
+                        <span className="font-mono text-xs text-foreground/90 group-hover:text-primary transition-colors leading-snug block">
                           {item.title}
                         </span>
                       </div>
@@ -405,11 +413,11 @@ const HomePage = () => {
                 {/* Live signal row */}
                 <div className="px-4 py-3 border-b border-border bg-muted/10">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-mono text-[9px] text-primary tracking-widest flex items-center gap-1.5">
+                    <span className="font-mono text-[10px] text-primary tracking-widest flex items-center gap-1.5">
                       <span className="animate-pulse">●</span> LIVE SIGNAL
                     </span>
                     {signalTime && (
-                      <span className="font-mono text-[9px] text-muted-foreground/50">
+                      <span className="font-mono text-[10px] text-muted-foreground/70">
                         {signalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
                     )}
@@ -417,19 +425,19 @@ const HomePage = () => {
                   {marketData ? (
                     <div className="flex items-center gap-2.5 flex-wrap">
                       {regime ? (
-                        <span className={`font-mono text-[10px] font-bold ${regime === 'BULL' ? 'text-terminal-green' : 'text-destructive'}`}>
+                        <span className={`font-mono text-[11px] font-bold ${regime === 'BULL' ? 'text-terminal-green' : 'text-destructive'}`}>
                           REGIME: {regime}
                         </span>
                       ) : (
-                        <span className="font-mono text-[9px] text-muted-foreground/40">COMPUTING...</span>
+                        <span className="font-mono text-[10px] text-muted-foreground/60">COMPUTING...</span>
                       )}
                     </div>
                   ) : (
-                    <span className="font-mono text-[9px] text-muted-foreground/40">FETCHING...</span>
+                    <span className="font-mono text-[10px] text-muted-foreground/60">FETCHING...</span>
                   )}
                 </div>
                 <div className="px-4 py-2 bg-muted/20">
-                  <Link to="/projects" className="font-mono text-[10px] text-muted-foreground hover:text-primary transition-colors tracking-widest">
+                  <Link to="/projects" className="font-mono text-[11px] text-muted-foreground hover:text-primary transition-colors tracking-widest">
                     [VIEW ALL RESEARCH →]
                   </Link>
                 </div>
@@ -517,15 +525,15 @@ const HomePage = () => {
                   transition={{ delay: i * 0.1, duration: 0.35 }}
                   className="flex gap-4 px-4 py-3 hover:bg-muted/30 transition-colors"
                 >
-                  <span className="font-mono text-[10px] text-muted-foreground w-20 shrink-0 pt-0.5 leading-tight">
+                  <span className="font-mono text-[11px] text-muted-foreground w-20 shrink-0 pt-0.5 leading-tight">
                     {item.year}
                   </span>
-                  <span className="font-mono text-[9px] border border-border text-muted-foreground px-1.5 py-0.5 h-fit shrink-0 mt-0.5">
+                  <span className="font-mono text-[10px] border border-border text-muted-foreground px-1.5 py-0.5 h-fit shrink-0 mt-0.5">
                     {item.code}
                   </span>
                   <div>
-                    <p className="font-mono text-xs font-bold text-foreground">{item.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                    <p className="font-mono text-sm font-bold text-foreground">{item.title}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{item.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -572,17 +580,17 @@ const HomePage = () => {
                 <Link to="/lab/notes" className="font-mono text-[9px] text-primary hover:underline tracking-widest">[VIEW ALL →]</Link>
               </div>
               <div className="px-4 py-4">
-                <span className="font-mono text-[8px] text-primary tracking-widest border border-primary/30 px-1.5 py-0.5 mr-2">PAPER · 1993</span>
-                <span className="font-mono text-[8px] text-muted-foreground/50">Jegadeesh & Titman</span>
-                <p className="font-mono text-xs font-bold text-foreground mt-2 mb-1 leading-snug">
+                <span className="font-mono text-[9px] text-primary tracking-widest border border-primary/30 px-1.5 py-0.5 mr-2">PAPER · 1993</span>
+                <span className="font-mono text-[10px] text-muted-foreground/80">Jegadeesh & Titman</span>
+                <p className="font-mono text-sm font-bold text-foreground mt-2 mb-1 leading-snug">
                   Returns to Buying Winners and Selling Losers
                 </p>
-                <p className="font-mono text-[10px] text-muted-foreground leading-relaxed">
+                <p className="font-mono text-xs text-muted-foreground leading-relaxed">
                   Foundational momentum paper. 12-1 strategy generating ~12% annualised above benchmark — directly informs the WML/UMD factor and the Strategy Research tool in the Lab.
                 </p>
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {['MOMENTUM', 'MARKET EFFICIENCY', 'EQUITIES'].map(t => (
-                    <span key={t} className="font-mono text-[8px] tracking-widest text-primary/60 border border-primary/20 px-1.5 py-0.5">{t}</span>
+                    <span key={t} className="font-mono text-[9px] tracking-widest text-primary/70 border border-primary/20 px-1.5 py-0.5">{t}</span>
                   ))}
                 </div>
               </div>

@@ -20,7 +20,7 @@ const CompetencyModal = ({ isOpen, onClose, competency }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] p-0 border-border bg-background overflow-hidden gap-0">
+      <DialogContent className="sm:max-w-[500px] p-0 border-border bg-background max-h-[90dvh] overflow-y-auto gap-0">
         <VisuallyHidden>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

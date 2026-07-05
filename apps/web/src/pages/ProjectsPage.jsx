@@ -141,15 +141,16 @@ const ProjectsPage = () => {
     {
       id: 16, reportId: 'AI-016',
       title: 'UTrucking AI — Voice Assistant & Revenue Analytics',
-      shortDescription: 'Production voice-AI phone assistant + revenue audit for a student storage company',
-      technicalShortDescription: 'Retell voice AI → Python (FastMCP/Starlette) backend on Render; quoting, scheduling, and billing-leakage engines validated on 654 real invoices.',
+      shortDescription: 'Built and deployed 4 tools for a storage company: AI phone agent, instant quote engine, capacity scheduler, billing-leakage guard',
+      technicalShortDescription: 'Retell voice agent + three tested engines (quote / availability / billing-audit) on a Python FastMCP/Starlette backend on Render — validated against 654 real invoices.',
       simpleDescription: 'Built a real, deployed AI phone assistant for a university student storage and moving company: it answers calls naturally, looks up customer orders, verifies identity before sharing anything, gives instant quotes, and steers bookings toward open days. Behind it sits a full analysis of the business — where revenue comes from, what leaks, and what a price change would earn.',
       technicalDescription: 'End-to-end production AI system: a Retell (GPT-backed) voice agent with custom function calling and identity guardrails, wired to a Python FastMCP/Starlette backend deployed on Render, reading live Google Sheets dispatch and invoice data. Pure, tested business engines — instant quoting (price book learned from historical invoices, validated 100% against recorded totals), capacity-aware scheduling (revenue is 74% concentrated in 5 days), and billing-leakage detection (~$1,056 flagged) — exposed as both HTTP endpoints and MCP tools. A data-science revenue audit of ~1,660 dispatch records and 654 invoices produced the executive deck, and every PDF deliverable regenerates from source via an automated Markdown + Graphviz + matplotlib pipeline. Public repo curated: customer data and secrets removed.',
-      techStack: ['Python', 'Retell Voice AI', 'FastMCP', 'Starlette', 'Pandas', 'Render'],
+      techStack: ['Retell Voice AI', 'Python', 'FastMCP', 'Starlette', 'Pandas', 'Render'],
       category: 'AI',
       metrics: [
-        '$87,782 invoiced in a 13-day sprint analyzed — 74% concentrated in 5 days',
+        'Built: voice agent · quotes · scheduler · billing guard',
         'Quote engine validated 100% against 654 recorded invoice totals',
+        '$87,782 invoiced in a 13-day sprint analyzed — 74% concentrated in 5 days',
         '~$1,056 billing leakage flagged; identity gate before any data shared',
         'Pricing insight: +$2/box = +$5,186 (+5.9%) on low-elasticity demand',
       ],
@@ -434,7 +435,7 @@ const ProjectsPage = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader number="03" title="RESEARCH CATALOG" />
             <p className="text-sm text-muted-foreground max-w-2xl">
-              {filteredProjects.length} projects across quantitative finance, AI systems, data engineering,
+              {filteredProjects.length} project{filteredProjects.length === 1 ? '' : 's'} across quantitative finance, AI systems, data engineering,
               and statistical modeling. Each entry includes methodology, data sources, and performance metrics.
             </p>
           </div>

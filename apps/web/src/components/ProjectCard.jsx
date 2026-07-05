@@ -9,8 +9,8 @@ const ProjectCard = ({ project, onViewProject }) => {
     ? project.technicalShortDescription
     : project.shortDescription;
 
-  // Take first 2 metrics for the preview
-  const previewMetrics = project.metrics ? project.metrics.slice(0, 2) : [];
+  // Take first 3 metrics for the preview
+  const previewMetrics = project.metrics ? project.metrics.slice(0, 3) : [];
 
   return (
     <motion.div

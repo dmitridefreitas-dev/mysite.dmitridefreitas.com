@@ -24,6 +24,20 @@ const FILTER_CATEGORIES = [
 
 const allTools = [
   {
+    num: 'W', path: '/lab/wasm-engine', icon: Cpu, depth: 'ADV',
+    label: 'WASM MATCHING ENGINE',
+    desc: 'The C++20 FastBook engine (14.1M ops/s native, differentially fuzzed) compiled to WebAssembly. Trade against the real engine in your browser and race it against a JavaScript baseline.',
+    tags: ['C++', 'WASM', 'MICROSTRUCTURE'],
+    category: 'AI & SYSTEMS',
+  },
+  {
+    num: 'L', path: '/lab/order-flow', icon: Activity, depth: 'ADV',
+    label: 'LIVE ORDER FLOW',
+    desc: "Real Binance L2 depth, synchronized with the exchange's documented snapshot+diff algorithm. Cumulative depth curves and Cont-Kukanov-Stoikov order-flow imbalance, live.",
+    tags: ['MICROSTRUCTURE', 'WEBSOCKETS', 'LIVE DATA'],
+    category: 'AI & SYSTEMS',
+  },
+  {
     num: 'V', path: '/lab/iv-surface', icon: LineChart, depth: 'ADV',
     label: 'IV SURFACE',
     desc: 'Implied Volatility Surface for any optionable ticker. Vol smile per expiry, ATM term structure, and skew metrics across the entire options chain.',
@@ -260,11 +274,11 @@ export default function LabHomePage() {
     <>
       <Helmet>
         <title>Quant Lab — Dmitri De Freitas</title>
-        <meta name="description"        content="25 interactive tools by Dmitri De Freitas — IV surface, SVI calibration, PEAD event study, DCF modeler, risk attribution, Fama-French factors, Monte Carlo, microstructure lab, and more." />
+        <meta name="description"        content="27 interactive tools by Dmitri De Freitas — IV surface, SVI calibration, PEAD event study, DCF modeler, risk attribution, Fama-French factors, Monte Carlo, microstructure lab, and more." />
         <link rel="canonical"           href="https://dmitridefreitas.com/lab" />
         <meta property="og:url"         content="https://dmitridefreitas.com/lab" />
         <meta property="og:title"       content="Quant Lab — Dmitri De Freitas" />
-        <meta property="og:description" content="25 interactive tools built from scratch: derivatives pricing, volatility surfaces, factor models, microstructure simulation, backtest statistics, and more." />
+        <meta property="og:description" content="27 interactive tools built from scratch: derivatives pricing, volatility surfaces, factor models, microstructure simulation, backtest statistics, and more." />
         <meta property="og:type"   content="website" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:image"  content="https://dmitridefreitas.com/IMG_1948.jpeg" />
@@ -277,7 +291,7 @@ export default function LabHomePage() {
   "@type": "WebApplication",
   "name": "Quant Lab — Dmitri De Freitas",
   "url": "https://dmitridefreitas.com/lab",
-  "description": "25 interactive quantitative finance tools built from scratch in the browser",
+  "description": "27 interactive quantitative finance tools built from scratch in the browser",
   "applicationCategory": "FinanceApplication",
   "author": {"@type":"Person","name":"Dmitri De Freitas"},
   "offers": {"@type":"Offer","price":"0","priceCurrency":"USD"}

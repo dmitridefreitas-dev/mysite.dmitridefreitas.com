@@ -69,6 +69,8 @@ const OptionsAnalyticsPage    = lazyPage(() => import('./pages/lab/OptionsAnalyt
 const FixedIncomeAdvPage      = lazyPage(() => import('./pages/lab/FixedIncomeAdvPage.jsx'));
 const MLFinancePage           = lazyPage(() => import('./pages/lab/MLFinancePage.jsx'));
 const LatencyPage             = lazyPage(() => import('./pages/lab/LatencyPage.jsx'));
+const LiveOrderFlowPage       = lazyPage(() => import('./pages/lab/LiveOrderFlowPage.jsx'));
+const WasmEnginePage          = lazyPage(() => import('./pages/lab/WasmEnginePage.jsx'));
 
 const RouteFallback = () => (
   <div className="flex items-center justify-center min-h-screen font-mono text-xs text-muted-foreground">
@@ -208,6 +210,8 @@ function App() {
                   <Route path="fixed-income-adv"  element={<FixedIncomeAdvPage />} />
                   <Route path="ml-finance"        element={<MLFinancePage />} />
                   <Route path="latency"           element={<LatencyPage />} />
+                  <Route path="order-flow"        element={<LiveOrderFlowPage />} />
+                  <Route path="wasm-engine"       element={<WasmEnginePage />} />
                   <Route path="sim"           element={<Navigate to="/lab/stochastic" replace />} />
                 </Route>
 

@@ -37,6 +37,8 @@ const kb = {
 
   projects: {
     matchingEngine: `CPP-017 — "C++ Matching Engine — Two Books, Differentially Fuzzed". A C++20 price-time-priority limit-order-book engine built twice: a std::map reference that serves as the correctness oracle, and a cache-aware optimized engine (contiguous price ladder, object pool with LIFO free list, intrusive doubly-linked FIFO queues). A differential fuzzer feeds identical random order streams to both engines and asserts equal fills, return values, and book snapshots after every operation — under ASan/UBSan in a gcc+clang CI matrix. TSC-timed benchmarks on a replayed LOBSTER AMZN day (269,748 messages): v1 honestly measured a sparse-ladder p99 tail regression and a hash-map chokepoint; v2 fixed exactly those (occupancy bitmap + open-addressed IdMap with backward-shift deletion), reaching 14.1M ops/s (2.1x the reference), p50 ~30ns vs ~105ns, tail better than the tree everywhere — with the v1 baseline preserved as the receipt. Tech: C++20, CMake, GoogleTest, sanitizers, rdtsc. Code + PDF report: github.com/dmitridefreitas-dev/matching-engine.`,
+    quantKit: `JS-018 — "quant-kit". Zero-dependency TypeScript quant library on npm extracting the math behind the site's lab tools: Black-Scholes + analytic Greeks, implied-vol solver with no-arbitrage bounds, CRR binomial trees (European + American), seeded reproducible Monte Carlo with antithetic variates, VaR/Expected Shortfall (historical/parametric/Monte Carlo), quasi-explicit Nelson-Siegel calibration, Kelly sizing. 32 tests pinned to Hull reference values; cross-validated against the Python options library (same 8.9412). Code: github.com/dmitridefreitas-dev/quant-kit.`,
+    orderFlow: `OFV-019 — "Order-Flow Visualizer". Live Binance L2 microstructure in dependency-free TypeScript: the exchange's documented snapshot+diff sync algorithm as a unit-tested state machine (stale-drop, straddle rule, gap→resync), a binary-search order book trusted via a 20,000-op differential test, Cont-Kukanov-Stoikov order-flow imbalance with hand-computed vectors, canvas depth rendering. Live on the site at /lab/order-flow. Code: github.com/dmitridefreitas-dev/orderflow-visualizer.`,
     utruckingAi: `AI-016 — "UTrucking AI — Voice Assistant & Revenue Analytics". A real, deployed AI system for a university student storage & moving company: Retell (GPT-backed) voice phone assistant with custom function calling, identity verification before sharing data, and fuzzy order lookup across two data sources; Python FastMCP/Starlette backend on Render reading live Google Sheets. Tested business engines: instant quoting (price book learned from invoices, validated 100% against 654 recorded totals), capacity-aware scheduling (revenue 74% concentrated in 5 days), billing-leakage detection (~$1,056 flagged). Revenue audit: ~1,660 dispatch records, $87,782 in a 13-day sprint, +$2/box = +$5,186 pricing insight. Tech: Retell AI, Python, FastMCP, Starlette, pandas, Render. Code + reports: github.com/dmitridefreitas-dev/utrucking-ai.`,
     optionsLib: `OPT-011 — "Options Pricing Library". Three cross-validated option-pricing engines built from scratch: Black-Scholes-Merton closed form, Cox-Ross-Rubinstein binomial tree (European + American exercise), and Monte Carlo with antithetic variates. Full Greeks (analytic + bump-and-reprice), Brent implied-vol solver, IV-surface construction. 174-test suite; put-call parity holds to ~1e-14; convergence rates match theory. Tech: Python, NumPy, pytest. Code + PDF report: github.com/dmitridefreitas-dev/options-pricing-lib.`,
     backtester: `BTE-012 — "Honest Backtester". A daily backtest engine whose honesty rules are enforced by tests: no same-bar execution, costs charged on every unit of turnover, walk-forward selection with provably disjoint windows. Study: daily mean reversion on SPY (1993–2026, 8,412 days) — best in-sample Sharpe 0.54 gross collapses to 0.04 out-of-sample at 5 bps; the signal decayed after 2016 at every cost level; buy-and-hold beat all 16 configurations. Tech: Python, Pandas. Code + PDF report: github.com/dmitridefreitas-dev/honest-backtester.`,
@@ -66,7 +68,7 @@ const kb = {
   },
 
   lab: {
-    overview: `The portfolio includes an interactive Research Lab at /lab — 25 quantitative finance tools built from scratch with all computation client-side. Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
+    overview: `The portfolio includes an interactive Research Lab at /lab — 27 quantitative finance tools built from scratch with all computation client-side. Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
     tools: [
       `[1] YIELD CURVE (/lab/yield-curve): Fit Nelson-Siegel, cubic spline, and linear interpolation to US Treasury yields. Explore term structure dynamics. Tags: Fixed Income, Rates.`,
       `[2] VAR CALCULATOR (/lab/var): Compute Value-at-Risk via historical simulation, parametric (variance-covariance), and Monte Carlo side by side. Tags: Risk, Portfolio.`,
@@ -109,6 +111,10 @@ const LINKS = {
   // Project reports
   rCpp:      '[CPP-017 Report](https://github.com/dmitridefreitas-dev/matching-engine/blob/main/analysis/matching-engine-report.pdf)',
   cCpp:      '[CPP-017 Code](https://github.com/dmitridefreitas-dev/matching-engine)',
+  rQk:       '[JS-018 quant-kit](https://github.com/dmitridefreitas-dev/quant-kit)',
+  rOfv:      '[OFV-019 Order-Flow Visualizer](https://github.com/dmitridefreitas-dev/orderflow-visualizer)',
+  lOf:       '[Live Order Flow](/lab/order-flow)',
+  lWasm:     '[WASM Matching Engine](/lab/wasm-engine)',
   rOpt:      '[OPT-011 Report](https://github.com/dmitridefreitas-dev/options-pricing-lib/blob/main/notebooks/options-pricing-lib-report.pdf)',
   cOpt:      '[OPT-011 Code](https://github.com/dmitridefreitas-dev/options-pricing-lib)',
   rBte:      '[BTE-012 Report](https://github.com/dmitridefreitas-dev/honest-backtester/blob/main/notebooks/honest-backtester-report.pdf)',
@@ -198,12 +204,21 @@ export function getFallbackReply(userInput, history = []) {
 
   // All projects
   if (/all project|all research|list.*project|full.*catalog|every project/.test(q)) {
-    return `17 projects. Newest seven (2026, code on GitHub): CPP-017 (C++ Matching Engine), AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
+    return `19 projects. Newest nine (2026, code on GitHub): JS-018 (quant-kit TypeScript library on npm), OFV-019 (Live Order-Flow Visualizer), CPP-017 (C++ Matching Engine), AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
   }
 
   // Specific projects
   if (/cpp.?017|matching.?engine|limit.?order.?book|\blob\b|c\+\+.*(engine|book|project|repo)|price.?time.?priority|differential.?fuzz/.test(q)) {
     return `CPP-017: C++ Matching Engine — a price-time-priority limit order book built twice (std::map reference vs cache-aware ladder/pool/intrusive-list engine), differentially fuzzed until indistinguishable, TSC-benchmarked on a replayed LOBSTER AMZN day: 14.1M ops/s (2.1x reference), p50 ~30ns vs ~105ns, tail regression found in v1 and fixed with receipts in v2, ASan/UBSan in CI. ${LINKS.rCpp} ${LINKS.cCpp}`
+  }
+  if (/js.?018|quant.?kit|typescript.*librar|npm.*(package|librar)/.test(q)) {
+    return `JS-018: quant-kit — a zero-dependency TypeScript quant library (Black-Scholes + Greeks, implied vol, binomial trees, seeded Monte Carlo, VaR/ES, Nelson-Siegel, Kelly), 32 tests pinned to textbook values, cross-validated against the Python options library. ${LINKS.rQk}`
+  }
+  if (/ofv.?019|order.?flow|binance|depth.*(stream|sync)|l2|imbalance|microstructure.*(live|visual)/.test(q)) {
+    return `OFV-019: Order-Flow Visualizer — live Binance L2 depth with the exchange's documented sync algorithm as a tested state machine, a differentially-tested order book, and Cont-Kukanov-Stoikov OFI. Watch it live: ${LINKS.lOf} · ${LINKS.rOfv}`
+  }
+  if (/wasm|webassembly|browser.*engine|emscripten/.test(q)) {
+    return `The C++ matching engine is compiled to WebAssembly — you can trade against the real engine in your browser and race it against a JavaScript baseline (~10M ops/s in-browser vs 14.1M native). ${LINKS.lWasm} · ${LINKS.cCpp}`
   }
   if (/ai.?016|utrucking|voice.?(ai|assistant|agent)|retell|phone.?assistant|storage.?compan/.test(q)) {
     return `AI-016: UTrucking AI — a deployed voice phone assistant (Retell + GPT) with identity verification and order lookup, backed by Python/FastMCP on Render. Quote engine validated 100% vs 654 real invoices; ~$1,056 billing leakage flagged; $87,782 sprint revenue audited. [Code + Reports](https://github.com/dmitridefreitas-dev/utrucking-ai)`
@@ -256,7 +271,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // General project question
   if (/project|research|built|portfolio/.test(q)) {
-    return `Featured: CPP-017 (C++ matching engine ${LINKS.cCpp}), OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 17.`
+    return `Featured: CPP-017 (C++ matching engine ${LINKS.cCpp}), OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 19.`
   }
 
   // Skills
@@ -266,7 +281,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // Lab tools
   if (/lab|interactive|tool|yield curve|var|value at risk|stochastic|order book|regime|optimizer|factor|iv surface|dcf|modeler/.test(q)) {
-    return `The Research Lab (/lab) has 25 tools, including: ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lIv} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
+    return `The Research Lab (/lab) has 27 tools, including: ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lIv} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
   }
 
   // Quiz
@@ -297,7 +312,7 @@ export function getFallbackReply(userInput, history = []) {
   // Generic fallback
   const fallbacks = [
     `Ask me about Dmitri's projects, coursework, skills, or experience. ${LINKS.cv} ${LINKS.projects}`,
-    `I can answer questions about any of the 17 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
+    `I can answer questions about any of the 19 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
     `Not sure I caught that — try asking about a specific project, skill, or lab tool. ${LINKS.projects} ${LINKS.lab}`,
     `Ask about the quant trading system, housing model, Lab tools, or target roles. ${LINKS.cv} ${LINKS.linkedin}`,
   ]

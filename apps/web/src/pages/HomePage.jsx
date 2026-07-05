@@ -604,7 +604,7 @@ const HomePage = () => {
             <SectionHeader number="08" title="RESEARCH CATALOG" />
             <p className="text-sm text-muted-foreground mb-6 max-w-xl">
               Full project catalog with methodology, data sources, and performance metrics.
-              15 projects across quantitative finance, data engineering, and statistical modeling.
+              16 projects across quantitative finance, AI systems, data engineering, and statistical modeling.
             </p>
             <Link
               to="/projects"

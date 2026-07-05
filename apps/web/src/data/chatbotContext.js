@@ -256,7 +256,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // General project question
   if (/project|research|built|portfolio/.test(q)) {
-    return `Featured: OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 16.`
+    return `Featured: CPP-017 (C++ matching engine ${LINKS.cCpp}), OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 17.`
   }
 
   // Skills
@@ -297,7 +297,7 @@ export function getFallbackReply(userInput, history = []) {
   // Generic fallback
   const fallbacks = [
     `Ask me about Dmitri's projects, coursework, skills, or experience. ${LINKS.cv} ${LINKS.projects}`,
-    `I can answer questions about any of the 16 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
+    `I can answer questions about any of the 17 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
     `Not sure I caught that — try asking about a specific project, skill, or lab tool. ${LINKS.projects} ${LINKS.lab}`,
     `Ask about the quant trading system, housing model, Lab tools, or target roles. ${LINKS.cv} ${LINKS.linkedin}`,
   ]

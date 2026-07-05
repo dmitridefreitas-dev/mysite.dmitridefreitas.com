@@ -67,11 +67,34 @@ const ProjectCard = ({ project, onViewProject }) => {
           </div>
         )}
 
-        {/* Footer link */}
-        <div className="mt-3 pt-2 border-t border-border">
-          <span className="font-mono text-[11px] text-muted-foreground group-hover:text-primary transition-colors tracking-widest">
-            [VIEW FULL REPORT →]
-          </span>
+        {/* Footer links — real anchors; card click still opens the modal */}
+        <div className="mt-3 pt-2 border-t border-border flex items-center justify-between gap-2 flex-wrap">
+          {project.reportLink && project.reportLink !== '#' ? (
+            <a
+              href={project.reportLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[11px] text-muted-foreground hover:text-primary transition-colors tracking-widest"
+            >
+              [VIEW FULL REPORT →]
+            </a>
+          ) : (
+            <span className="font-mono text-[11px] text-muted-foreground group-hover:text-primary transition-colors tracking-widest">
+              [VIEW FULL REPORT →]
+            </span>
+          )}
+          {project.codeLink && project.codeLink !== '#' && (
+            <a
+              href={project.codeLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[11px] text-primary hover:underline underline-offset-4 transition-colors tracking-widest"
+            >
+              [{project.codeLink.includes('github.com') ? 'GITHUB' : 'CODE'} →]
+            </a>
+          )}
         </div>
       </div>
     </motion.div>

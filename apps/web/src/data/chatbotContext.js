@@ -179,7 +179,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // All projects
   if (/all project|all research|list.*project|full.*catalog|every project/.test(q)) {
-    return `10 projects: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
+    return `15 projects. Newest five (2026, code on GitHub): OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
   }
 
   // Specific projects
@@ -257,7 +257,7 @@ export function getFallbackReply(userInput, history = []) {
   // Generic fallback
   const fallbacks = [
     `Ask me about Dmitri's projects, coursework, skills, or experience. ${LINKS.cv} ${LINKS.projects}`,
-    `I can answer questions about any of the 10 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
+    `I can answer questions about any of the 15 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
     `Not sure I caught that — try asking about a specific project, skill, or lab tool. ${LINKS.projects} ${LINKS.lab}`,
     `Ask about the quant trading system, housing model, Lab tools, or target roles. ${LINKS.cv} ${LINKS.linkedin}`,
   ]

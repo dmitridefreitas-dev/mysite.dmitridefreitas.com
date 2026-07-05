@@ -24,6 +24,29 @@ const ProjectsPage = () => {
 
   const projects = [
     {
+      id: 17, reportId: 'CPP-017',
+      title: 'C++ Matching Engine — Two Books, Differentially Fuzzed',
+      shortDescription: 'A limit-order-book engine built twice — readable reference vs cache-aware optimized — with honest benchmarks on a replayed market-data day',
+      technicalShortDescription: 'C++20 price-time-priority LOB: std::map oracle vs price-ladder/object-pool/intrusive-list engine, differential fuzzing, TSC-timed benchmarks on a LOBSTER AMZN replay, ASan/UBSan in CI.',
+      simpleDescription: 'Built the core software that runs inside every stock exchange — the "matching engine" that pairs buyers with sellers — twice: once written to be obviously correct, once written to be fast. Hundreds of thousands of random order sequences prove the fast one behaves identically to the simple one, and speed is measured on a real day of Amazon order traffic with all caveats stated.',
+      technicalDescription: 'C++20 price-time-priority limit-order-book matching engine (limit/market orders, cancels, priority-preserving reduces, partial fills) built twice on purpose: a std::map + std::list reference that serves as the correctness oracle, and an optimized engine using a contiguous price ladder, an object pool with a LIFO free list, and intrusive doubly-linked FIFO queues. A differential fuzzer feeds identical random streams to both engines and asserts equal fills, return values, and book snapshots plus invariants after every operation — under ASan/UBSan in a gcc+clang CI matrix. Benchmarked on a replayed LOBSTER AMZN day and synthetic flow, single core, warmup excluded, TSC-timed: 1.44-1.49x median throughput and roughly half the p50 latency — and the honest finding that the ladder’s p99 tail is slightly worse than the tree’s on sparse wide-tick books, with the bitmap-summary fix named.',
+      techStack: ['C++20', 'CMake', 'GoogleTest', 'ASan/UBSan', 'LOBSTER replay', 'rdtsc benchmarking'],
+      category: 'Quantitative',
+      metrics: [
+        '12.2M ops/s median (1.49x reference); p50 latency ~50ns vs ~90ns',
+        'Differential fuzz: 25 seeds x 20k ops + 200k-op session, per-op equality',
+        'ASan/UBSan on every CI run (gcc + clang matrix), green badge',
+        'Honest tail finding: sparse-ladder p99 regression on the LOBSTER replay, measured and explained',
+      ],
+      dataSources: [
+        'LOBSTER AMZN 2012-06-21 sample (269,748 messages)',
+        'Deterministic synthetic flow (seeded, cross-platform reproducible)',
+        'AMD Ryzen 7 7730U, pinned single core, median of 3 runs',
+      ],
+      reportLink: 'https://github.com/dmitridefreitas-dev/matching-engine/blob/main/analysis/matching-engine-report.pdf',
+      codeLink: 'https://github.com/dmitridefreitas-dev/matching-engine',
+    },
+    {
       id: 11, reportId: 'OPT-011',
       title: 'Options Pricing Library — Three Engines, Cross-Validated',
       shortDescription: 'Black-Scholes, binomial tree, and Monte Carlo pricers that agree to theoretical error bounds',

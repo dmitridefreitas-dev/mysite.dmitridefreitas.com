@@ -36,6 +36,7 @@ const kb = {
   },
 
   projects: {
+    matchingEngine: `CPP-017 — "C++ Matching Engine — Two Books, Differentially Fuzzed". A C++20 price-time-priority limit-order-book engine built twice: a std::map reference that serves as the correctness oracle, and a cache-aware optimized engine (contiguous price ladder, object pool with LIFO free list, intrusive doubly-linked FIFO queues). A differential fuzzer feeds identical random order streams to both engines and asserts equal fills, return values, and book snapshots after every operation — under ASan/UBSan in a gcc+clang CI matrix. TSC-timed benchmarks on a replayed LOBSTER AMZN day (269,748 messages) and synthetic flow: 1.44–1.49x median throughput (12.2M ops/s), p50 latency ~50ns vs ~90ns — and the honestly-reported finding that the ladder's p99 tail is slightly worse on sparse wide-tick books, with the bitmap-summary fix named. Tech: C++20, CMake, GoogleTest, sanitizers, rdtsc. Code + PDF report: github.com/dmitridefreitas-dev/matching-engine.`,
     utruckingAi: `AI-016 — "UTrucking AI — Voice Assistant & Revenue Analytics". A real, deployed AI system for a university student storage & moving company: Retell (GPT-backed) voice phone assistant with custom function calling, identity verification before sharing data, and fuzzy order lookup across two data sources; Python FastMCP/Starlette backend on Render reading live Google Sheets. Tested business engines: instant quoting (price book learned from invoices, validated 100% against 654 recorded totals), capacity-aware scheduling (revenue 74% concentrated in 5 days), billing-leakage detection (~$1,056 flagged). Revenue audit: ~1,660 dispatch records, $87,782 in a 13-day sprint, +$2/box = +$5,186 pricing insight. Tech: Retell AI, Python, FastMCP, Starlette, pandas, Render. Code + reports: github.com/dmitridefreitas-dev/utrucking-ai.`,
     optionsLib: `OPT-011 — "Options Pricing Library". Three cross-validated option-pricing engines built from scratch: Black-Scholes-Merton closed form, Cox-Ross-Rubinstein binomial tree (European + American exercise), and Monte Carlo with antithetic variates. Full Greeks (analytic + bump-and-reprice), Brent implied-vol solver, IV-surface construction. 174-test suite; put-call parity holds to ~1e-14; convergence rates match theory. Tech: Python, NumPy, pytest. Code + PDF report: github.com/dmitridefreitas-dev/options-pricing-lib.`,
     backtester: `BTE-012 — "Honest Backtester". A daily backtest engine whose honesty rules are enforced by tests: no same-bar execution, costs charged on every unit of turnover, walk-forward selection with provably disjoint windows. Study: daily mean reversion on SPY (1993–2026, 8,412 days) — best in-sample Sharpe 0.54 gross collapses to 0.04 out-of-sample at 5 bps; the signal decayed after 2016 at every cost level; buy-and-hold beat all 16 configurations. Tech: Python, Pandas. Code + PDF report: github.com/dmitridefreitas-dev/honest-backtester.`,
@@ -106,6 +107,8 @@ const LINKS = {
   coursework:'[Full Coursework](/coursework)',
   news:      '[News & EDGAR](/news)',
   // Project reports
+  rCpp:      '[CPP-017 Report](https://github.com/dmitridefreitas-dev/matching-engine/blob/main/analysis/matching-engine-report.pdf)',
+  cCpp:      '[CPP-017 Code](https://github.com/dmitridefreitas-dev/matching-engine)',
   rOpt:      '[OPT-011 Report](https://github.com/dmitridefreitas-dev/options-pricing-lib/blob/main/notebooks/options-pricing-lib-report.pdf)',
   cOpt:      '[OPT-011 Code](https://github.com/dmitridefreitas-dev/options-pricing-lib)',
   rBte:      '[BTE-012 Report](https://github.com/dmitridefreitas-dev/honest-backtester/blob/main/notebooks/honest-backtester-report.pdf)',
@@ -195,10 +198,13 @@ export function getFallbackReply(userInput, history = []) {
 
   // All projects
   if (/all project|all research|list.*project|full.*catalog|every project/.test(q)) {
-    return `16 projects. Newest six (2026, code on GitHub): AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
+    return `17 projects. Newest seven (2026, code on GitHub): CPP-017 (C++ Matching Engine), AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
   }
 
   // Specific projects
+  if (/cpp.?017|matching.?engine|limit.?order.?book|\blob\b|c\+\+.*(engine|book|project|repo)|price.?time.?priority|differential.?fuzz/.test(q)) {
+    return `CPP-017: C++ Matching Engine — a price-time-priority limit order book built twice (std::map reference vs cache-aware ladder/pool/intrusive-list engine), differentially fuzzed until indistinguishable, TSC-benchmarked on a replayed LOBSTER AMZN day: 1.44-1.49x median throughput, p50 ~50ns vs ~90ns, ASan/UBSan in CI. ${LINKS.rCpp} ${LINKS.cCpp}`
+  }
   if (/ai.?016|utrucking|voice.?(ai|assistant|agent)|retell|phone.?assistant|storage.?compan/.test(q)) {
     return `AI-016: UTrucking AI — a deployed voice phone assistant (Retell + GPT) with identity verification and order lookup, backed by Python/FastMCP on Render. Quote engine validated 100% vs 654 real invoices; ~$1,056 billing leakage flagged; $87,782 sprint revenue audited. [Code + Reports](https://github.com/dmitridefreitas-dev/utrucking-ai)`
   }

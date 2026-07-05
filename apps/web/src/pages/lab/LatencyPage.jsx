@@ -517,6 +517,13 @@ export default function LatencyPage() {
               <p key={i} className="font-mono text-[9px] text-muted-foreground/40 leading-relaxed">[{i+1}] {n}</p>
             ))}
           </div>
+          <p className="font-mono text-[9px] text-muted-foreground/60 leading-relaxed mt-4 max-w-3xl">
+            Real code behind these numbers:{' '}
+            <a href="https://github.com/dmitridefreitas-dev/matching-engine" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground transition-colors">
+              CPP-017 — C++ limit-order-book matching engine
+            </a>
+            {' '}— two implementations differentially fuzzed until indistinguishable, TSC-timed benchmarks on a replayed LOBSTER day (p50 ~50ns/op), ASan/UBSan in CI.
+          </p>
         </div>
       </div>
       </div>

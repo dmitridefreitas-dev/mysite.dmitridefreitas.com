@@ -36,6 +36,11 @@ const kb = {
   },
 
   projects: {
+    optionsLib: `OPT-011 — "Options Pricing Library". Three cross-validated option-pricing engines built from scratch: Black-Scholes-Merton closed form, Cox-Ross-Rubinstein binomial tree (European + American exercise), and Monte Carlo with antithetic variates. Full Greeks (analytic + bump-and-reprice), Brent implied-vol solver, IV-surface construction. 174-test suite; put-call parity holds to ~1e-14; convergence rates match theory. Tech: Python, NumPy, pytest. Code + PDF report: github.com/dmitridefreitas-dev/options-pricing-lib.`,
+    backtester: `BTE-012 — "Honest Backtester". A daily backtest engine whose honesty rules are enforced by tests: no same-bar execution, costs charged on every unit of turnover, walk-forward selection with provably disjoint windows. Study: daily mean reversion on SPY (1993–2026, 8,412 days) — best in-sample Sharpe 0.54 gross collapses to 0.04 out-of-sample at 5 bps; the signal decayed after 2016 at every cost level; buy-and-hold beat all 16 configurations. Tech: Python, Pandas. Code + PDF report: github.com/dmitridefreitas-dev/honest-backtester.`,
+    regimeHmm: `RGM-014 — "HMM Regime Detection & the Lookahead Ladder". From-scratch 2-state Gaussian HMM (~200 lines): Baum-Welch EM, scaled forward-backward, filtered vs smoothed inference, Viterbi. Fit to SPY 1993–2026: calm (+24% drift, 10.8% vol) vs turbulent (−15%, 29.2%). Key result: the same allocation rule scores Sharpe 0.78 evaluated honestly (filtered, causal) and 1.74 with smoothed (lookahead) probabilities — regime scaling halves volatility and cuts max drawdown from −55% to −17%. Tech: Python, NumPy. Code + PDF report: github.com/dmitridefreitas-dev/regime-detection.`,
+    survival: `SRV-013 — "Survival Analysis of Semiconductor Drawdowns". Kaplan-Meier and log-rank implemented from scratch (match lifelines to 1e-9), 174 right-censored drawdown-recovery episodes from 30 years of semi + SPY prices, ticker-clustered Cox regressions. Findings: the apparent "semis recover faster" gap is a threshold artifact (severity-matched log-rank p ≈ 0.87); concurrent market stress cuts recovery hazard ~24% per 10 points of SPY drawdown (p ≈ 1e-4); a deliberately invalid post-baseline covariate manufactures hazard ratio ≈ 54 — the survival-analysis version of lookahead bias, demonstrated on purpose. Tech: Python. Code + PDF report: github.com/dmitridefreitas-dev/designwin-survival.`,
+    optionsEtl: `ODP-015 — "Options-Chain ETL Pipeline". Scheduled options-data infrastructure: target-DTE chain fetching (fixes the daily-expiration term-structure trap), one-row-per-contract schema where one-sided quotes never become fake prices, append-only date-partitioned storage, and tested derived features — ATM IV term structure, 95/105 skew, expected move, IV rank. ~5,600 contracts per daily snapshot (SPY, QQQ), 21 offline tests, deployed on Task Scheduler at the close. Tech: Python, Pandas. Code + PDF report: github.com/dmitridefreitas-dev/options-data-pipeline.`,
     pead: `PEAD-001 — "Statistical Analysis of Short-Term Market Efficiency Following Positive Earnings Surprises". Tests the Post-Earnings Announcement Drift (PEAD) hypothesis. Only 10.9% of stocks showed statistically significant alpha, suggesting markets are highly efficient and price in new information quickly. Tech: Python, Quantitative Models. Data: Compustat (historical earnings), CRSP (daily stock returns and market cap), I/B/E/S (analyst earnings estimates). Report available.`,
     etl: `ETL-002 — "Institutional Data Integration Engine". Built at Amphora Investment Management. Automated Python/Pandas ETL pipelines integrating IBKR, Harmony, and Bloomberg Data License. 80% reduction in manual processing time. Real-time data validation and error handling. Scalable pipeline architecture. Tech: Python, Pandas, REST API, Excel/VBA, Power BI.`,
     trading: `TRAD-003 — "Quantitative Trading Deck". Real-time cryptocurrency trading system using asyncio WebSocket client with automated execution logic. Sub-second trade execution latency. Multi-exchange connectivity. Asynchronous order management system. Tech: Python, WebSockets, Asyncio. Data: Binance WebSocket API, Coinbase Pro API, Kraken REST API. Both report and code available.`,
@@ -59,7 +64,7 @@ const kb = {
   },
 
   lab: {
-    overview: `The portfolio includes an interactive Research Lab at /lab — 14 quantitative finance tools built from scratch with all computation client-side. Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
+    overview: `The portfolio includes an interactive Research Lab at /lab — 25 quantitative finance tools built from scratch with all computation client-side. Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
     tools: [
       `[1] YIELD CURVE (/lab/yield-curve): Fit Nelson-Siegel, cubic spline, and linear interpolation to US Treasury yields. Explore term structure dynamics. Tags: Fixed Income, Rates.`,
       `[2] VAR CALCULATOR (/lab/var): Compute Value-at-Risk via historical simulation, parametric (variance-covariance), and Monte Carlo side by side. Tags: Risk, Portfolio.`,
@@ -100,6 +105,16 @@ const LINKS = {
   coursework:'[Full Coursework](/coursework)',
   news:      '[News & EDGAR](/news)',
   // Project reports
+  rOpt:      '[OPT-011 Report](https://github.com/dmitridefreitas-dev/options-pricing-lib/blob/main/notebooks/options-pricing-lib-report.pdf)',
+  cOpt:      '[OPT-011 Code](https://github.com/dmitridefreitas-dev/options-pricing-lib)',
+  rBte:      '[BTE-012 Report](https://github.com/dmitridefreitas-dev/honest-backtester/blob/main/notebooks/honest-backtester-report.pdf)',
+  cBte:      '[BTE-012 Code](https://github.com/dmitridefreitas-dev/honest-backtester)',
+  rRgm:      '[RGM-014 Report](https://github.com/dmitridefreitas-dev/regime-detection/blob/main/notebooks/regime-detection-report.pdf)',
+  cRgm:      '[RGM-014 Code](https://github.com/dmitridefreitas-dev/regime-detection)',
+  rSrv:      '[SRV-013 Report](https://github.com/dmitridefreitas-dev/designwin-survival/blob/main/notebooks/designwin-survival-report.pdf)',
+  cSrv:      '[SRV-013 Code](https://github.com/dmitridefreitas-dev/designwin-survival)',
+  rOdp:      '[ODP-015 Report](https://github.com/dmitridefreitas-dev/options-data-pipeline/blob/main/notebooks/options-data-pipeline-report.pdf)',
+  cOdp:      '[ODP-015 Code](https://github.com/dmitridefreitas-dev/options-data-pipeline)',
   rPead:     '[PEAD-001 Report](https://drive.google.com/file/d/1KMCov59hzqVeszJgeXmMe1eGDp_Ckqde/view)',
   rEtl:      '[ETL-002 Report](https://drive.google.com/drive/folders/1UOnr5dxz01tNMoN0dowL7zSadmxg76WL)',
   rTrad:     '[TRAD-003 Report](https://drive.google.com/file/d/1y8MlzRKhUrgumKxb7Jw680nIQHm-M0kW/view)',
@@ -183,6 +198,21 @@ export function getFallbackReply(userInput, history = []) {
   }
 
   // Specific projects
+  if (/opt.?011|options?.?pricing|black.?scholes.*librar|binomial.*engine|pricing.*librar|cross.?validat.*pric/.test(q)) {
+    return `OPT-011: Options Pricing Library — Black-Scholes, CRR binomial tree (incl. American), and Monte Carlo, cross-validated against each other with 174 tests. Full Greeks, implied-vol solver, IV surfaces. Put-call parity to ~1e-14. ${LINKS.rOpt} ${LINKS.cOpt}`
+  }
+  if (/bte.?012|honest.?backtest|mean.?reversion|backtest.*engine|walk.?forward/.test(q)) {
+    return `BTE-012: Honest Backtester — an engine with lookahead/cost/selection honesty enforced by tests. Study: SPY daily mean reversion looks great gross (Sharpe 0.54) and dies honestly (0.04 walk-forward OOS at 5 bps). Buy-and-hold beat every configuration. ${LINKS.rBte} ${LINKS.cBte}`
+  }
+  if (/rgm.?014|lookahead.?ladder|hidden.?markov.*project|hmm.*(spy|project|repo)|regime.*(detect|project|repo|github)/.test(q)) {
+    return `RGM-014: From-scratch 2-state Gaussian HMM on 33 years of SPY. The lookahead ladder: same rule scores Sharpe 0.78 honestly vs 1.74 with smoothed (future-peeking) probabilities. Regime scaling halves vol and cuts max drawdown −55% → −17%. ${LINKS.rRgm} ${LINKS.cRgm} There's also a live interactive version: ${LINKS.lReg}`
+  }
+  if (/srv.?013|survival|kaplan|log.?rank|cox|design.?win|semiconductor|drawdown.*recover/.test(q)) {
+    return `SRV-013: Survival analysis of semiconductor drawdowns — from-scratch Kaplan-Meier/log-rank (match lifelines to 1e-9), clustered Cox on 174 right-censored episodes. Market stress cuts recovery hazard ~24% per 10pts of SPY drawdown; the "semis recover faster" gap was a threshold artifact. ${LINKS.rSrv} ${LINKS.cSrv}`
+  }
+  if (/odp.?015|options.?data|chain.*etl|iv.?rank|term.?structure.*pipe|options.*pipeline/.test(q)) {
+    return `ODP-015: Options-Chain ETL Pipeline — scheduled fetch/tidy/store/derive infrastructure with append-only storage and tested features (ATM IV term structure, skew, expected move, IV rank). ~5,600 contracts/day across SPY & QQQ. ${LINKS.rOdp} ${LINKS.cOdp}`
+  }
   if (/pead|post.?earnings|announcement drift|market efficiency|earnings surprise/.test(q)) {
     return `PEAD-001: Statistical Analysis of Short-Term Market Efficiency. Only 10.9% of stocks showed significant alpha — suggesting markets are highly efficient post-earnings. Data: Compustat, CRSP, I/B/E/S. ${LINKS.rPead} ${LINKS.projects}`
   }
@@ -216,7 +246,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // General project question
   if (/project|research|built|portfolio/.test(q)) {
-    return `Featured: ETL-002 (Amphora data pipelines ${LINKS.rEtl}), TRAD-003 (crypto trading ${LINKS.rTrad}), ML-005 (housing model ${LINKS.rHousing}), PEAD-001 (market efficiency ${LINKS.rPead}). ${LINKS.projects} for all 10.`
+    return `Featured: OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 15.`
   }
 
   // Skills
@@ -226,7 +256,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // Lab tools
   if (/lab|interactive|tool|yield curve|var|value at risk|stochastic|order book|regime|optimizer|factor|iv surface|dcf|modeler/.test(q)) {
-    return `The Research Lab (/lab) has 14 tools: ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lIv} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
+    return `The Research Lab (/lab) has 25 tools, including: ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lIv} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
   }
 
   // Quiz

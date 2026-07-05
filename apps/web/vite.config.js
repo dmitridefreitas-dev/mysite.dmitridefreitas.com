@@ -458,7 +458,7 @@ Quantitative & Finance: Bloomberg Terminal (BQL, B-PIPE API), FRED API, QuantLib
 Development & DevOps: Git, GitHub, VS Code, Docker, Jupyter, Linux/Unix.
 Cloud & Infrastructure: AWS, Google Cloud, Azure, REST APIs, WebSockets.
 
-=== RESEARCH LAB — 14 INTERACTIVE TOOLS at /lab ===
+=== RESEARCH LAB — 25 INTERACTIVE TOOLS at /lab (highlights below) ===
 [1] Yield Curve (/lab/yield-curve): Nelson-Siegel, cubic spline, linear interpolation on US Treasury yields. Term structure dynamics.
 [2] VaR Calculator (/lab/var): Historical simulation, parametric, and Monte Carlo VaR side by side.
 [3] Distributions (/lab/distributions): PDF/CDF explorer for 8 probability distributions with draggable parameters.

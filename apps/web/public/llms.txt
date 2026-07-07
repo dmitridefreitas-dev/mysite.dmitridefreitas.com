@@ -1,0 +1,35 @@
+# Dmitri De Freitas — Quantitative Finance & Data Science
+
+> Portfolio of Dmitri De Freitas: quantitative finance practitioner. BS Data Science & Financial Engineering, Washington University in St. Louis (May 2026); BA Mathematics, Drew University. Available for full-time quantitative research / financial engineering / data science roles from August 2026 (St. Louis, open to relocation). Contact: d.defreitas@wustl.edu. GitHub: https://github.com/dmitridefreitas-dev. This is a JavaScript single-page app — the URLs below are the canonical content map.
+
+## Working papers (typeset PDFs, hosted on this domain)
+
+- [The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias](https://dmitridefreitas.com/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf): PSR, expected-maximum Sharpe, and DSR (Bailey & López de Prado) assembled, implemented, and stress-tested. Interactive companion: https://dmitridefreitas.com/lab/backtest-stats
+- [Short-Horizon Market Efficiency Following Positive Earnings Surprises: A PEAD Event Study](https://dmitridefreitas.com/papers/PEAD-Event-Study-Working-Paper.pdf): market-model abnormal returns around earnings announcements; only 10.9% of names show significant alpha. Interactive companion: https://dmitridefreitas.com/lab/pead
+
+## Flagship work (each with receipts)
+
+- [IV Surface + correctness proof](https://dmitridefreitas.com/lab/iv-surface): live implied-volatility surface plus an in-browser reproduction of Gatheral & Jacquier (2014), "Arbitrage-Free SVI Volatility Surfaces" — the raw-to-jump-wings map matches all five printed values to 7 significant figures, the Vogt butterfly arbitrage is detected via g(k), and the paper's Example 5.1 repair is re-run live.
+- [C++ matching engine in WebAssembly](https://dmitridefreitas.com/lab/wasm-engine): C++20 price-time-priority engine, differentially fuzzed against a std::map oracle under ASan/UBSan. Native tail latency on a LOBSTER AMZN replay: p50 30ns / p99 330ns / p99.9 510ns per op, 14.1M ops/s (2.1x reference). Source: https://github.com/dmitridefreitas-dev/matching-engine
+- [Live order flow](https://dmitridefreitas.com/lab/order-flow): real Binance L2 depth synchronized with the exchange's documented snapshot+diff algorithm; Cont-Kukanov-Stoikov order-flow imbalance. Source: https://github.com/dmitridefreitas-dev/orderflow-visualizer
+- [Backtest statistics](https://dmitridefreitas.com/lab/backtest-stats): Probabilistic/Deflated Sharpe Ratio calculators and a p-hacking Monte Carlo — companion to the DSR working paper. Library: https://github.com/dmitridefreitas-dev/backtest-statistics
+
+## Site map
+
+- [Projects](https://dmitridefreitas.com/projects): 19 research projects with methodology, metrics, reports, and GitHub links
+- [Research notes](https://dmitridefreitas.com/research): deflated Sharpe, SVI calibration, HMM regime detection
+- [Quant Lab](https://dmitridefreitas.com/lab): 27 interactive tools, all math implemented from scratch, client-side
+- [Recruiter one-pager](https://dmitridefreitas.com/recruiter): experience, skills, resume, contact
+- [About](https://dmitridefreitas.com/about)
+- [Contact](https://dmitridefreitas.com/contact)
+
+## Selected GitHub repositories (all public, CI-tested)
+
+- https://github.com/dmitridefreitas-dev/matching-engine — C++20 LOB engine, differential fuzzing, TSC benchmarks
+- https://github.com/dmitridefreitas-dev/quant-kit — zero-dependency TypeScript quant library (npm)
+- https://github.com/dmitridefreitas-dev/orderflow-visualizer — Binance L2 sync state machine
+- https://github.com/dmitridefreitas-dev/svi-volatility-calibration — SVI calibration with Gatheral-Jacquier no-arbitrage checks
+- https://github.com/dmitridefreitas-dev/backtest-statistics — PSR/DSR/MinTRL (Bailey & López de Prado)
+- https://github.com/dmitridefreitas-dev/hmm-regime-detection — Gaussian HMM from scratch
+- https://github.com/dmitridefreitas-dev/options-pricing-lib — three cross-validated pricing engines, 174 tests
+- https://github.com/dmitridefreitas-dev/honest-backtester — lookahead/cost/selection honesty enforced by tests

@@ -68,6 +68,26 @@ export default function ResearchIndexPage() {
         <meta property="og:image:height" content="800" />
         <meta name="twitter:card"        content="summary" />
         <meta name="twitter:image"       content={OG_IMAGE} />
+        <script type="application/ld+json">{`[
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias",
+    "author": {"@type": "Person", "name": "Dmitri De Freitas", "url": "https://dmitridefreitas.com"},
+    "datePublished": "2026-07",
+    "url": "https://dmitridefreitas.com/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf",
+    "about": ["Sharpe ratio", "multiple testing", "backtest overfitting", "quantitative finance"]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Short-Horizon Market Efficiency Following Positive Earnings Surprises: A Post-Earnings-Announcement-Drift Event Study",
+    "author": {"@type": "Person", "name": "Dmitri De Freitas", "url": "https://dmitridefreitas.com"},
+    "datePublished": "2026-07",
+    "url": "https://dmitridefreitas.com/papers/PEAD-Event-Study-Working-Paper.pdf",
+    "about": ["post-earnings announcement drift", "market efficiency", "event study", "empirical asset pricing"]
+  }
+]`}</script>
       </Helmet>
 
       <div className="min-h-screen pt-12 md:pt-14 pb-16">

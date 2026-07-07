@@ -28,7 +28,7 @@
 		<meta property="og:type"        content="website" />
 		<meta property="og:url"         content="https://dmitridefreitas.com/" />
 		<meta property="og:title"       content="Dmitri De Freitas — Quantitative Finance &amp; Data Science" />
-		<meta property="og:description" content="Quantitative finance practitioner building production ETL pipelines, real-time trading systems, and interactive financial models. 25 live quant tools. Available August 2026." />
+		<meta property="og:description" content="Quantitative finance practitioner. Working papers, a C++ matching engine with measured tail latency, an SVI correctness proof against Gatheral–Jacquier (2014), and 27 live quant tools. Available August 2026." />
 		<meta property="og:image"       content="https://dmitridefreitas.com/og-card.png" />
 		<meta property="og:image:width"  content="1200" />
 		<meta property="og:image:height" content="630" />
@@ -38,7 +38,7 @@
 		<!-- Twitter / X Card -->
 		<meta name="twitter:card"        content="summary_large_image" />
 		<meta name="twitter:title"       content="Dmitri De Freitas — Quantitative Finance &amp; Data Science" />
-		<meta name="twitter:description" content="Quantitative finance practitioner. 25 live quant tools. Available August 2026." />
+		<meta name="twitter:description" content="Quantitative finance practitioner. Working papers + 27 live quant tools with correctness proofs and receipts. Available August 2026." />
 		<meta name="twitter:image"       content="https://dmitridefreitas.com/og-card.png" />
 
 		<!-- Structured data: Person -->
@@ -48,12 +48,18 @@
 		  "@type": "Person",
 		  "name": "Dmitri De Freitas",
 		  "url": "https://dmitridefreitas.com",
+		  "image": "https://dmitridefreitas.com/IMG_1948.jpeg",
 		  "jobTitle": "Quantitative Finance & Data Science",
 		  "description": "Quantitative finance practitioner specializing in derivatives pricing, risk attribution, market microstructure, and statistical arbitrage. BS Data Science & Financial Engineering at Washington University in St. Louis.",
-		  "alumniOf": {
-		    "@type": "CollegeOrUniversity",
-		    "name": "Washington University in St. Louis"
-		  },
+		  "email": "d.defreitas@wustl.edu",
+		  "sameAs": [
+		    "https://www.linkedin.com/in/dmitri-de-freitas-16a540347/",
+		    "https://github.com/dmitridefreitas-dev"
+		  ],
+		  "alumniOf": [
+		    { "@type": "CollegeOrUniversity", "name": "Washington University in St. Louis" },
+		    { "@type": "CollegeOrUniversity", "name": "Drew University" }
+		  ],
 		  "knowsAbout": [
 		    "Quantitative Finance",
 		    "Derivatives Pricing",
@@ -89,6 +95,27 @@
 	</head>
 	<body>
 		<div id="root"></div>
+		<!-- Fallback for crawlers and clients that do not execute JavaScript
+		     (most AI crawlers: GPTBot, ClaudeBot, PerplexityBot). Mirrors the
+		     homepage summary; the React app replaces #root when JS runs. -->
+		<noscript>
+			<main style="font-family:monospace;max-width:720px;margin:2rem auto;padding:0 1rem;color:#e2e8f0;background:#05070f">
+				<h1>Dmitri De Freitas — Quantitative Finance &amp; Data Science</h1>
+				<p>BS Data Science &amp; Financial Engineering, Washington University in St. Louis (May 2026). BA Mathematics, Drew University. Available for full-time quantitative research / financial engineering / data science roles from August 2026. Based in St. Louis, open to relocation. Contact: d.defreitas@wustl.edu.</p>
+				<h2>Working papers (PDF, hosted on this site)</h2>
+				<ul>
+					<li><a href="/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf">The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias</a></li>
+					<li><a href="/papers/PEAD-Event-Study-Working-Paper.pdf">Short-Horizon Market Efficiency Following Positive Earnings Surprises: A PEAD Event Study</a></li>
+				</ul>
+				<h2>Selected work</h2>
+				<ul>
+					<li>C++20 matching engine, differentially fuzzed, p50 30ns / p99 330ns / p99.9 510ns per op on a LOBSTER replay — compiled to WebAssembly at /lab/wasm-engine. Source: github.com/dmitridefreitas-dev/matching-engine</li>
+					<li>SVI volatility correctness proof reproducing Gatheral–Jacquier (2014) in-browser at /lab/iv-surface</li>
+					<li>Live Binance L2 order-flow synchronization at /lab/order-flow</li>
+					<li>27 interactive quant tools at /lab · 19 research projects at /projects · GitHub: github.com/dmitridefreitas-dev</li>
+				</ul>
+			</main>
+		</noscript>
 		<script type="module" src="/src/main.jsx"></script>
 	</body>
 </html>

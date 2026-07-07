@@ -7,6 +7,7 @@ import {
   CartesianGrid, ResponsiveContainer, Legend,
 } from 'recharts';
 import { useTheme } from '@/contexts/ThemeContext.jsx';
+import SVIProofSection from '@/components/SVIProofSection.jsx';
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -183,7 +184,8 @@ export default function IVSurfacePage() {
             <p className="font-mono text-[9px] text-primary tracking-widest mb-1">[V] IV SURFACE</p>
             <h1 className="font-mono text-xl font-bold tracking-tight text-foreground">Implied Volatility Surface</h1>
             <p className="font-mono text-[10px] text-muted-foreground mt-1">
-              Interactive 3D vol surface · ATM term structure · 25Δ skew · Drag to rotate
+              Interactive 3D vol surface · ATM term structure · 25Δ skew · Includes a live correctness proof
+              against Gatheral–Jacquier (2014) below
             </p>
           </div>
 
@@ -377,6 +379,9 @@ export default function IVSurfacePage() {
               </p>
             </div>
           )}
+
+          {/* Correctness proof — pure client-side, independent of the live API */}
+          <SVIProofSection />
         </div>
       </div>
     </>

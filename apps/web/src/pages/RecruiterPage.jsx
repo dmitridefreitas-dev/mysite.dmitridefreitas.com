@@ -212,8 +212,9 @@ export default function RecruiterPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <SectionHeader number="02" title="TOP 5 TOOLS — CURATED" />
             <p className="text-sm text-muted-foreground mb-6 max-w-2xl font-mono">
-              Five representative tools from the 25 in the Lab. Each one ships as a self-contained interactive
-              page with the underlying math implemented directly — no third-party quant libraries.
+              Five representative tools from the 27 in the Lab — led by four flagships with receipts:
+              a correctness proof against a published result, measured tail-latency distributions, live
+              exchange-synchronized data, and a working-paper companion. No third-party quant libraries.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {topTools.map((tool, i) => (
@@ -242,6 +243,21 @@ export default function RecruiterPage() {
                   </Link>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Working papers — the writing behind the tools */}
+            <div className="mt-6 border border-primary/40 bg-primary/5 p-4 max-w-4xl">
+              <p className="font-mono text-[9px] text-primary tracking-widest mb-2">WORKING PAPERS · TYPESET PDF · 60-SECOND READS FOR SCREENERS</p>
+              <div className="space-y-1.5">
+                <a href="/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf" target="_blank" rel="noopener noreferrer"
+                  className="block font-mono text-[11px] text-foreground hover:text-primary transition-colors">
+                  · The Deflated Sharpe Ratio in Practice — multiple-testing bias in strategy selection [PDF →]
+                </a>
+                <a href="/papers/PEAD-Event-Study-Working-Paper.pdf" target="_blank" rel="noopener noreferrer"
+                  className="block font-mono text-[11px] text-foreground hover:text-primary transition-colors">
+                  · Short-Horizon Market Efficiency After Earnings Surprises — a PEAD event study [PDF →]
+                </a>
+              </div>
             </div>
           </div>
         </section>

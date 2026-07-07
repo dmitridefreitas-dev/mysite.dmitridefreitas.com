@@ -114,10 +114,29 @@ const ProjectDetailModal = ({ project, isOpen, onClose }) => {
             </div>
           )}
 
-          {/* 05. ARTIFACTS */}
+          {/* 05. DESIGN NOTES — what was actually hard */}
+          {project.designNotes && project.designNotes.length > 0 && (
+            <div>
+              <SectionLabel number="05" title="DESIGN NOTES — WHAT WAS ACTUALLY HARD" />
+              <div className="pl-3 space-y-3">
+                {project.designNotes.map((note, i) => (
+                  <div key={i} className="border-l-2 border-primary/40 pl-3">
+                    <p className="font-mono text-[11px] font-bold text-foreground mb-0.5">
+                      {note.title}
+                    </p>
+                    <p className="font-mono text-[11px] text-muted-foreground leading-relaxed">
+                      {note.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ARTIFACTS */}
           {(hasReport || hasCode) && (
             <div>
-              <SectionLabel number="05" title="ARTIFACTS" />
+              <SectionLabel number={project.designNotes?.length ? '06' : '05'} title="ARTIFACTS" />
               <div className="pl-3 flex gap-4 flex-wrap">
                 {hasReport && (
                   <a

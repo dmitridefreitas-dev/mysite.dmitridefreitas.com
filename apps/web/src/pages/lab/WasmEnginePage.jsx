@@ -141,6 +141,78 @@ function runJsBenchmark(operations, seed) {
 }
 
 const N_BENCH_OPS = 200_000;
+const N_WARMUP_OPS = 20_000;
+
+// ── Native benchmark receipts ─────────────────────────────────────────────────
+// Verbatim from github.com/dmitridefreitas-dev/matching-engine README and
+// results/ CSVs: AMD Ryzen 7 7730U, clang++ (LLVM-MinGW) -O2, single thread
+// pinned to one core, warmup replay excluded, median of 3 runs, TSC-timed per
+// operation (~5–10ns rdtsc-pair cost included). FastBook = optimized engine,
+// MapBook = std::map reference oracle. Latencies in nanoseconds.
+const NATIVE = {
+  flows: [
+    {
+      key: 'lobster',
+      label: 'LOBSTER REPLAY — AMZN, 261K OPS',
+      sub: '269,748 messages · 2012-06-21 sample day · real order flow',
+      fast: { p50: 30, p90: 120, p99: 330, p999: 510, mops: 14.1, speedup: '2.08×' },
+      map:  { p50: 110, p90: 190, p99: 360, p999: 881, mops: 6.8 },
+    },
+    {
+      key: 'synthetic',
+      label: 'SYNTHETIC FLOW — 1M OPS',
+      sub: '55/25/10/10 submit/cancel/market/reduce · seeded, reproducible',
+      fast: { p50: 30, p90: 150, p99: 460, p999: 1300, mops: 11.9, speedup: '2.16×' },
+      map:  { p50: 100, p90: 350, p99: 1072, p999: 3900, mops: 5.5 },
+    },
+  ],
+  maxNs: 3900, // shared log scale across panels
+};
+
+const fmtNs = (ns) => (ns >= 1000 ? `${(ns / 1000).toFixed(1)} µs` : `${ns} ns`);
+// log-scale bar width so 30ns and 3.9µs are comparable on one axis
+const barPct = (ns) => Math.max(3, (Math.log10(ns / 10) / Math.log10(NATIVE.maxNs / 10)) * 100);
+
+function PercentileLadder({ flow }) {
+  const rows = [
+    ['p50', flow.fast.p50, flow.map.p50],
+    ['p90', flow.fast.p90, flow.map.p90],
+    ['p99', flow.fast.p99, flow.map.p99],
+    ['p99.9', flow.fast.p999, flow.map.p999],
+  ];
+  return (
+    <div className="border border-border p-4">
+      <p className="font-mono text-[10px] text-foreground font-bold tracking-widest">{flow.label}</p>
+      <p className="font-mono text-[9px] text-muted-foreground/70 mb-3">{flow.sub}</p>
+      <div className="space-y-2.5">
+        {rows.map(([pct, fast, map]) => (
+          <div key={pct} className="font-mono text-[10px]">
+            <p className="text-muted-foreground tracking-widest text-[9px] mb-1">{pct}</p>
+            {[
+              ['FastBook', fast, 'bg-primary', 'text-primary'],
+              ['std::map ref', map, 'bg-muted-foreground/40', 'text-muted-foreground'],
+            ].map(([name, ns, barColor, txtColor]) => (
+              <div key={name} className="flex items-center gap-2 mb-0.5">
+                <div className="flex-1 h-2.5 bg-muted/20">
+                  <div className={`h-2.5 ${barColor}`} style={{ width: `${barPct(ns)}%` }} />
+                </div>
+                <span className={`w-14 text-right tabular-nums ${txtColor}`}>{fmtNs(ns)}</span>
+                <span className="w-20 text-muted-foreground/60 text-[9px]">{name}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 pt-2 border-t border-border flex justify-between font-mono text-[10px]">
+        <span className="text-muted-foreground">throughput</span>
+        <span className="tabular-nums">
+          <span className="text-primary font-bold">{flow.fast.mops}M ops/s</span>
+          <span className="text-muted-foreground"> ({flow.fast.speedup}) vs {flow.map.mops}M</span>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 const WasmEnginePage = () => {
   const modRef = useRef(null);
@@ -213,6 +285,10 @@ const WasmEnginePage = () => {
     // Let the UI paint before the busy loop.
     setTimeout(() => {
       try {
+        // Warmup pass for both engines: JS gets JIT-compiled, WASM gets any
+        // lazy compilation out of the way. Warmup results are discarded.
+        modRef.current.runBenchmark(N_WARMUP_OPS, 7);
+        runJsBenchmark(N_WARMUP_OPS, 7);
         const wasm = modRef.current.runBenchmark(N_BENCH_OPS, 42);
         const js = runJsBenchmark(N_BENCH_OPS, 42);
         setBench({ wasm, js });
@@ -237,8 +313,9 @@ const WasmEnginePage = () => {
           </h1>
           <p className="font-mono text-[11px] text-muted-foreground mt-1 max-w-2xl">
             This is the actual C++20 FastBook engine — differentially fuzzed against a reference implementation,
-            14.1M ops/s native — compiled to WebAssembly and running in your browser right now. Same code,
-            same maker-price semantics, zero servers.
+            p50 30ns / p99 330ns / p99.9 510ns per op on a replayed AMZN market-data day — compiled to
+            WebAssembly and running in your browser right now. Same code, same maker-price semantics, zero servers.
+            Full latency distributions and methodology below.
           </p>
         </div>
 
@@ -347,13 +424,89 @@ const WasmEnginePage = () => {
                     WASM {(bench.wasm.opsPerSec / bench.js.opsPerSec).toFixed(1)}× faster on this run.
                     Same 55/25/10/10 op mix and book dynamics for both engines (streams are
                     shape-identical, not bit-identical — the C++ flow generator uses mt19937_64).
-                    Native on a pinned core: 14.1M ops/s.
+                    A discarded {N_WARMUP_OPS.toLocaleString()}-op warmup pass runs first so the JS engine
+                    is JIT-compiled before timing. Native distributions below.
                   </p>
                 </div>
               )}
             </div>
           </div>
         )}
+
+        {/* ── Native tail latency — the receipts ─────────────────────────── */}
+        <div className="mt-6 border border-primary/40">
+          <div className="border-b border-primary/40 bg-primary/5 px-4 py-3">
+            <p className="font-mono text-[9px] text-primary tracking-widest mb-1">
+              NATIVE ENGINE · MEASURED, NOT AVERAGED
+            </p>
+            <h2 className="font-mono text-sm font-bold text-foreground">
+              Tail Latency — p50 / p90 / p99 / p99.9
+            </h2>
+            <p className="font-mono text-[10px] text-muted-foreground mt-1 leading-relaxed max-w-3xl">
+              A single throughput number hides the only thing that matters in a matching engine: the tail.
+              These are per-operation latency distributions for the optimized engine (FastBook) against the
+              std::map reference it is differentially fuzzed against — on real replayed order flow and on
+              synthetic flow. Log-scale bars.
+            </p>
+          </div>
+
+          <div className="p-4 space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {NATIVE.flows.map((flow) => <PercentileLadder key={flow.key} flow={flow} />)}
+            </div>
+
+            {/* The bottleneck story */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="border border-border p-4">
+                <p className="font-mono text-[9px] text-primary tracking-widest mb-2">
+                  WHAT THE TAIL REVEALED — v1 → v2, WITH RECEIPTS
+                </p>
+                <div className="font-mono text-[10px] text-muted-foreground leading-relaxed space-y-2">
+                  <p>
+                    v1&rsquo;s honest benchmark report flagged two problems its own average hid:
+                    on the sparse LOBSTER book the best-level rescan walked long runs of empty price
+                    ticks (a p99 tail <em>regression</em> vs the tree it was supposed to beat), and every
+                    operation funneled through one shared <span className="text-foreground">std::unordered_map</span> ID
+                    lookup.
+                  </p>
+                  <p>
+                    v2 fixed exactly those two things and nothing else:
+                    an <span className="text-foreground">occupancy bitmap</span> scans 64 price ticks per
+                    machine instruction (find-first-set) instead of walking them, and an
+                    open-addressed <span className="text-foreground">IdMap with linear probing and
+                    backward-shift deletion</span> replaced the hash map.
+                  </p>
+                  <div className="border border-border/60 bg-muted/10 px-3 py-2 space-y-0.5 tabular-nums">
+                    <p>LOBSTER p99&nbsp;&nbsp;&nbsp;<span className="text-muted-foreground/60">380 ns</span> → <span className="text-primary font-bold">330 ns</span></p>
+                    <p>LOBSTER p99.9&nbsp;<span className="text-muted-foreground/60">751 ns</span> → <span className="text-primary font-bold">510 ns</span></p>
+                    <p>throughput&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-muted-foreground/60">10.7M</span> → <span className="text-primary font-bold">14.1M ops/s</span></p>
+                    <p>p50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halved to <span className="text-primary font-bold">30 ns</span></p>
+                  </div>
+                  <p className="text-muted-foreground/70">
+                    The v1 baseline is preserved in the repo (results/benchmarks_v1_baseline.csv) so the
+                    before/after is checkable, not narrated.
+                  </p>
+                </div>
+              </div>
+
+              {/* Methodology */}
+              <div className="border border-border p-4">
+                <p className="font-mono text-[9px] text-primary tracking-widest mb-2">
+                  MEASUREMENT METHODOLOGY
+                </p>
+                <ul className="font-mono text-[10px] text-muted-foreground leading-relaxed space-y-1.5">
+                  <li>· AMD Ryzen 7 7730U (Windows 11) · clang++ (LLVM-MinGW) -O2</li>
+                  <li>· Single thread pinned to one core; full warmup replay excluded from timing</li>
+                  <li>· TSC-timed per operation — the ~5–10 ns rdtsc-pair cost is <span className="text-foreground">included</span> in every figure, not subtracted</li>
+                  <li>· Median of 3 runs (min–max whiskers in the repo); identical op streams fed to both engines</li>
+                  <li>· No GC or JIT to control for — native C++; the in-browser race above is a separate measurement with a discarded {N_WARMUP_OPS.toLocaleString()}-op JIT warmup pass per engine</li>
+                  <li>· Correctness gated before speed: differential fuzz (25 seeds × 20k ops + a 200k-op session) asserting per-op equality of fills, returns, and book state — under ASan/UBSan in a gcc+clang CI matrix</li>
+                  <li>· Full distributions, notebook, and PDF report in the repo below</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-5 font-mono text-[11px]">
           <a href="https://github.com/dmitridefreitas-dev/matching-engine" target="_blank" rel="noopener noreferrer"

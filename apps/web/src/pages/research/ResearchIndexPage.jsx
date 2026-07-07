@@ -2,10 +2,27 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, ArrowRight } from 'lucide-react';
+import { BookOpen, ArrowRight, FileText } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
 
 const OG_IMAGE = 'https://dmitridefreitas.com/IMG_1948.jpeg';
+
+const workingPapers = [
+  {
+    title: 'The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias',
+    abstract: 'A backtested Sharpe ratio is a random variable, and the largest of many random variables is large by construction. Assembles, implements, and stress-tests the Bailey–López de Prado inference framework: PSR, expected maximum Sharpe, and DSR.',
+    pdf: '/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf',
+    companion: '/lab/backtest-stats',
+    date: 'JUL 2026',
+  },
+  {
+    title: 'Short-Horizon Market Efficiency Following Positive Earnings Surprises: A PEAD Event Study',
+    abstract: 'Tests whether the short-horizon component of post-earnings-announcement drift survives in modern data. Market-model abnormal returns around announcement dates; only 10.9% of names show statistically significant alpha.',
+    pdf: '/papers/PEAD-Event-Study-Working-Paper.pdf',
+    companion: '/lab/pead',
+    date: 'JUL 2026',
+  },
+];
 
 const posts = [
   {
@@ -64,8 +81,47 @@ export default function ResearchIndexPage() {
           </div>
         </section>
 
+        {/* Working papers — typeset PDFs, first thing on the page */}
+        <section className="py-10 border-b border-border">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="font-mono text-[10px] text-primary tracking-widest mb-4">WORKING PAPERS · TYPESET PDF</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl">
+              {workingPapers.map((paper, i) => (
+                <motion.a
+                  key={paper.pdf}
+                  href={paper.pdf}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07, duration: 0.4 }}
+                  className="block border border-border hover:border-primary transition-colors group"
+                >
+                  <div className="border-b border-border bg-muted/30 px-4 py-2 flex items-center justify-between">
+                    <span className="font-mono text-[9px] text-primary tracking-widest flex items-center gap-1.5">
+                      <FileText className="h-3 w-3" /> {paper.date} · PDF
+                    </span>
+                    <span className="font-mono text-[9px] text-muted-foreground group-hover:text-primary transition-colors">READ →</span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug mb-2">
+                      {paper.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">{paper.abstract}</p>
+                    <span className="font-mono text-[9px] text-muted-foreground/70 tracking-widest">
+                      INTERACTIVE COMPANION: {paper.companion}
+                    </span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="py-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="font-mono text-[10px] text-primary tracking-widest mb-4">TECHNICAL NOTES · HTML</p>
             <div className="grid grid-cols-1 gap-4 max-w-4xl">
               {posts.map((post, i) => (
                 <motion.div

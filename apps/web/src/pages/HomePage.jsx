@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Code2, TrendingUp, Database, Bot, Download } from 'lucide-react';
+import { Code2, TrendingUp, Database, Bot, Download, FileText, BookOpen } from 'lucide-react';
 import FinanceTicker from '@/components/FinanceTicker.jsx';
 import MarketDataPanel from '@/components/MarketDataPanel.jsx';
 import ProjectCard from '@/components/ProjectCard.jsx';
@@ -166,6 +166,34 @@ const timeline = [
 ];
 
 const targetRoles = ['Quantitative Research Analyst', 'Financial Engineer', 'Data Scientist'];
+
+// ── Selected writing — the papers come before the tools ─────────────────────
+const workingPapers = [
+  {
+    title: 'The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias',
+    abstract:
+      'A backtested Sharpe ratio is a random variable, and the largest of many random variables is large by construction. Assembles, implements, and stress-tests the Bailey–López de Prado inference framework: PSR, expected maximum Sharpe, and DSR.',
+    pdf: '/papers/Deflated-Sharpe-Ratio-Working-Paper.pdf',
+    companion: '/lab/backtest-stats',
+    companionLabel: 'INTERACTIVE COMPANION: /lab/backtest-stats',
+    tags: ['BACKTEST INFERENCE', 'MULTIPLE TESTING', 'PSR / DSR'],
+  },
+  {
+    title: 'Short-Horizon Market Efficiency Following Positive Earnings Surprises: A PEAD Event Study',
+    abstract:
+      'Tests whether the short-horizon component of post-earnings-announcement drift — among the oldest anomalies in empirical asset pricing — survives in modern data. Market-model abnormal returns around announcement dates; only 10.9% of names show significant alpha.',
+    pdf: '/papers/PEAD-Event-Study-Working-Paper.pdf',
+    companion: '/lab/pead',
+    companionLabel: 'INTERACTIVE COMPANION: /lab/pead',
+    tags: ['EVENT STUDY', 'MARKET EFFICIENCY', 'PEAD'],
+  },
+];
+
+const researchNotes = [
+  { slug: 'deflated-sharpe', title: "Deflated Sharpe Ratio: A Practitioner's Guide", read: '12 min' },
+  { slug: 'svi-calibration', title: 'SVI Volatility Smile Calibration From Scratch', read: '10 min' },
+  { slug: 'hmm-regime-detection', title: 'HMM Regime Detection for Equity Markets', read: '11 min' },
+];
 
 
 const HomePage = () => {
@@ -450,10 +478,79 @@ const HomePage = () => {
         <FinanceTicker />
         <MarketDataPanel />
 
-        {/* ── 02. FEATURED RESEARCH ───────────────────────────────────── */}
+        {/* ── 02. SELECTED WRITING ────────────────────────────────────── */}
+        <section className="py-14">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <SectionHeader number="02" title="SELECTED WRITING" />
+            <p className="text-sm text-muted-foreground mb-8 max-w-2xl">
+              Working papers and technical notes. The tools on this site exist to make these
+              arguments interactive — the writing is the work.
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+              {workingPapers.map((paper, i) => (
+                <motion.a
+                  key={paper.pdf}
+                  href={paper.pdf}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07, duration: 0.4 }}
+                  className="block border border-border hover:border-primary transition-colors group"
+                >
+                  <div className="border-b border-border bg-muted/30 px-4 py-2 flex items-center justify-between">
+                    <span className="font-mono text-[9px] text-primary tracking-widest flex items-center gap-1.5">
+                      <FileText className="h-3 w-3" /> WORKING PAPER · PDF
+                    </span>
+                    <span className="font-mono text-[9px] text-muted-foreground group-hover:text-primary transition-colors">
+                      READ →
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-mono text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug mb-2">
+                      {paper.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                      {paper.abstract}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {paper.tags.map((t) => (
+                        <span key={t} className="font-mono text-[8px] tracking-widest text-primary/70 border border-primary/30 px-1.5 py-0.5">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="font-mono text-[9px] text-muted-foreground/70 tracking-widest">
+                      {paper.companionLabel}
+                    </span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+            {/* research notes strip */}
+            <div className="border border-border divide-y divide-border">
+              {researchNotes.map((note) => (
+                <Link
+                  key={note.slug}
+                  to={`/research/${note.slug}`}
+                  className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30 transition-colors group"
+                >
+                  <span className="font-mono text-xs text-foreground/90 group-hover:text-primary transition-colors flex items-center gap-2 min-w-0">
+                    <BookOpen className="h-3 w-3 text-primary shrink-0" />
+                    <span className="truncate">{note.title}</span>
+                  </span>
+                  <span className="font-mono text-[9px] text-muted-foreground shrink-0 ml-3">{note.read} →</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── 03. FEATURED RESEARCH ───────────────────────────────────── */}
         <section className="py-14 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="02" title="FEATURED RESEARCH" />
+            <SectionHeader number="03" title="FEATURED RESEARCH" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {featuredProjects.map((project, i) => (
                 <motion.div
@@ -471,10 +568,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 03. TECHNICAL EXPERTISE ─────────────────────────────────── */}
+        {/* ── 04. TECHNICAL EXPERTISE ─────────────────────────────────── */}
         <section className="py-14">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="03" title="TECHNICAL EXPERTISE" />
+            <SectionHeader number="04" title="TECHNICAL EXPERTISE" />
             <p className="text-sm text-muted-foreground mb-8 max-w-2xl">
               {isTechnicalMode
                 ? 'Skill chain sorted by role-relevance (Δ). ITM = active production deployment. Click any strike for full spec.'
@@ -484,10 +581,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 04. CORE COMPETENCIES ───────────────────────────────────── */}
+        {/* ── 05. CORE COMPETENCIES ───────────────────────────────────── */}
         <section className="py-14 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="04" title="CORE COMPETENCIES" />
+            <SectionHeader number="05" title="CORE COMPETENCIES" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {competencies.map((c, i) => (
                 <motion.div
@@ -511,10 +608,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 05. EDUCATION & EXPERIENCE ──────────────────────────────── */}
+        {/* ── 06. EDUCATION & EXPERIENCE ──────────────────────────────── */}
         <section className="py-14">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="05" title="EDUCATION & EXPERIENCE" />
+            <SectionHeader number="06" title="EDUCATION & EXPERIENCE" />
             <div className="max-w-3xl space-y-0 divide-y divide-border border border-border">
               {timeline.map((item, i) => (
                 <motion.div
@@ -541,10 +638,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 06. AVAILABILITY & TARGET ROLES ─────────────────────────── */}
+        {/* ── 07. AVAILABILITY & TARGET ROLES ─────────────────────────── */}
         <section className="py-14 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="06" title="AVAILABILITY & TARGET ROLES" />
+            <SectionHeader number="07" title="AVAILABILITY & TARGET ROLES" />
             <div className="max-w-3xl space-y-4">
               <div className="flex flex-wrap gap-2 mb-4">
                 {targetRoles.map((role, i) => (
@@ -570,10 +667,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 07. CURRENT READING ─────────────────────────────────────── */}
+        {/* ── 08. CURRENT READING ─────────────────────────────────────── */}
         <section className="py-14">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="07" title="CURRENT READING" />
+            <SectionHeader number="08" title="CURRENT READING" />
             <div className="max-w-2xl border border-border">
               <div className="bg-muted/40 border-b border-border px-4 py-2 flex items-center justify-between">
                 <span className="font-mono text-[9px] text-muted-foreground tracking-widest uppercase">Latest Note</span>
@@ -598,10 +695,10 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── 08. RESEARCH CATALOG ────────────────────────────────────── */}
+        {/* ── 09. RESEARCH CATALOG ────────────────────────────────────── */}
         <section className="py-14 bg-muted/10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader number="08" title="RESEARCH CATALOG" />
+            <SectionHeader number="09" title="RESEARCH CATALOG" />
             <p className="text-sm text-muted-foreground mb-6 max-w-xl">
               Full project catalog with methodology, data sources, and performance metrics.
               19 projects across quantitative finance, AI systems, data engineering, and statistical modeling.

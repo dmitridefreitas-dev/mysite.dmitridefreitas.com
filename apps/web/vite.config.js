@@ -438,7 +438,7 @@ JS-018 "quant-kit": Zero-dependency TypeScript quant library on npm — Black-Sc
 
 OFV-019 "Order-Flow Visualizer": Live Binance L2 microstructure in dependency-free TypeScript — the documented snapshot+diff sync algorithm as a unit-tested state machine, binary-search order book with a 20,000-op differential test, Cont-Kukanov-Stoikov order-flow imbalance, canvas depth rendering. Live at /lab/order-flow. Code: https://github.com/dmitridefreitas-dev/orderflow-visualizer
 
-CPP-017 "C++ Matching Engine — Two Books, Differentially Fuzzed": C++20 price-time-priority limit-order-book engine built twice — a std::map reference (the correctness oracle) and a cache-aware optimized engine (contiguous price ladder, object pool, intrusive doubly-linked FIFO queues). Differential fuzzing asserts identical fills, return values, and snapshots across hundreds of thousands of randomized ops, under ASan/UBSan in a gcc+clang CI matrix. TSC-timed benchmarks on a replayed LOBSTER AMZN day (269,748 messages): 1.44-1.49x median throughput (12.2M ops/s), p50 ~50ns vs ~90ns, with the sparse-ladder p99 tail regression reported honestly. Report + code: https://github.com/dmitridefreitas-dev/matching-engine
+CPP-017 "C++ Matching Engine — Two Books, Differentially Fuzzed": C++20 price-time-priority limit-order-book engine built twice — a std::map reference (the correctness oracle) and a cache-aware optimized engine (contiguous price ladder, object pool, intrusive doubly-linked FIFO queues). Differential fuzzing asserts identical fills, return values, and snapshots across hundreds of thousands of randomized ops, under ASan/UBSan in a gcc+clang CI matrix. TSC-timed benchmarks on a replayed LOBSTER AMZN day (269,748 messages): v1 honestly measured a sparse-ladder p99 tail regression and a hash-map chokepoint; v2 fixed exactly those two (occupancy bitmap, open-addressed IdMap with backward-shift deletion) — 14.1M ops/s (2.1x the reference) with full tail receipts: p50 30ns / p99 330ns / p99.9 510ns per op, tail better than the tree everywhere, v1 baseline preserved. Full percentile ladders and methodology on /lab/wasm-engine. Report + code: https://github.com/dmitridefreitas-dev/matching-engine
 
 AI-016 "UTrucking AI — Voice Assistant & Revenue Analytics": Production system for a university student storage company — Retell (GPT) voice phone assistant with identity verification and fuzzy order lookup, Python FastMCP/Starlette backend on Render, Google Sheets live data. Tested engines: instant quoting (validated 100% vs 654 real invoices), capacity-aware scheduling (revenue 74% concentrated in 5 days), billing-leakage detection (~$1,056 flagged). Revenue audit of ~1,660 dispatch records: $87,782 in a 13-day sprint. Report + code: https://github.com/dmitridefreitas-dev/utrucking-ai
 
@@ -481,7 +481,9 @@ Quantitative & Finance: Bloomberg Terminal (BQL, B-PIPE API), FRED API, QuantLib
 Development & DevOps: Git, GitHub, VS Code, Docker, Jupyter, Linux/Unix.
 Cloud & Infrastructure: AWS, Google Cloud, Azure, REST APIs, WebSockets.
 
-=== RESEARCH LAB — 27 INTERACTIVE TOOLS at /lab (highlights below; also /lab/order-flow live L2 depth and /lab/wasm-engine, the C++ engine compiled to WebAssembly) ===
+=== RESEARCH LAB at /lab — 4 FLAGSHIPS + 23-TOOL INDEX (27 total) ===
+FLAGSHIPS (each with receipts): /lab/iv-surface (live 3D IV surface PLUS a correctness proof reproducing Gatheral–Jacquier 2014 in the browser — jump-wings map to 7 significant figures, the Vogt butterfly arbitrage detected via g(k), Example 5.1 repair re-run live with Nelder-Mead); /lab/wasm-engine (the C++ engine compiled to WebAssembly with native tail-latency receipts: p50 30ns / p99 330ns / p99.9 510ns on a LOBSTER replay, v1→v2 fix history and methodology on-page); /lab/order-flow (live Binance L2 depth via the exchange's documented snapshot+diff sync algorithm, Cont-Kukanov-Stoikov OFI); /lab/backtest-stats (PSR/Deflated Sharpe calculators + p-hacking Monte Carlo — companion to the DSR working paper).
+OTHER TOOLS (index highlights):
 [1] Yield Curve (/lab/yield-curve): Nelson-Siegel, cubic spline, linear interpolation on US Treasury yields. Term structure dynamics.
 [2] VaR Calculator (/lab/var): Historical simulation, parametric, and Monte Carlo VaR side by side.
 [3] Distributions (/lab/distributions): PDF/CDF explorer for 8 probability distributions with draggable parameters.
@@ -494,8 +496,14 @@ Cloud & Infrastructure: AWS, Google Cloud, Azure, REST APIs, WebSockets.
 [O] Portfolio Optimizer (/lab/optimizer): Mean-variance optimization via Monte Carlo. Any tickers. Efficient frontier, tangency portfolio, Sharpe ratio.
 [F] Factor Exposure (/lab/factors): Fama-French 3-factor OLS regression. Alpha, beta loadings, t-stats, R², cumulative return vs FF3-fitted.
 [P] PEAD Event Study (/lab/pead): Market-model adjusted cumulative abnormal returns from −20 to +60 days around any earnings date.
-[V] IV Surface (/lab/iv-surface): Implied volatility surface for any optionable ticker. Vol smile, ATM term structure, skew metrics.
+[V] IV Surface (/lab/iv-surface): Implied volatility surface for any optionable ticker. Vol smile, ATM term structure, skew metrics. Includes the Gatheral–Jacquier correctness proof (see flagships above).
 [M] DCF Modeler (/lab/dcf): Automated 3-statement model + 5-year DCF for any ticker. Live fundamentals, adjustable WACC/growth/margins.
+
+=== WRITING — WORKING PAPERS & RESEARCH NOTES ===
+Two typeset working papers (PDF, served on-site and featured on the homepage):
+1. "The Deflated Sharpe Ratio in Practice: Guarding Strategy Selection Against Multiple-Testing Bias" — /papers/Deflated-Sharpe-Ratio-Working-Paper.pdf (interactive companion /lab/backtest-stats).
+2. "Short-Horizon Market Efficiency Following Positive Earnings Surprises: A PEAD Event Study" — /papers/PEAD-Event-Study-Working-Paper.pdf (interactive companion /lab/pead).
+Three technical notes at /research: Deflated Sharpe practitioner's guide (/research/deflated-sharpe), SVI calibration from scratch (/research/svi-calibration), HMM regime detection (/research/hmm-regime-detection).
 
 === NEWS PAGE (/news) ===
 Live financial news feed from Bloomberg, Reuters, CNBC, MarketWatch, FT, Yahoo Finance, Investing.com, The Guardian. Auto-refreshes every 60 seconds. Filter by importance (HIGH/MED/LOW). Also supports stock ticker search for company-specific news and SEC EDGAR filings (10-K, 10-Q, 8-K, proxy statements, S-1, etc.).

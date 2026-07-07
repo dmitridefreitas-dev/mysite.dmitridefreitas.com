@@ -68,7 +68,7 @@ const kb = {
   },
 
   lab: {
-    overview: `The portfolio includes an interactive Research Lab at /lab — 27 quantitative finance tools built from scratch with all computation client-side. Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
+    overview: `The portfolio includes an interactive Research Lab at /lab — 4 flagship instruments with receipts plus a 23-tool index (27 total), all built from scratch with computation client-side. The flagships: /lab/iv-surface (3D IV surface + a live correctness proof reproducing Gatheral–Jacquier 2014 — jump-wings map to 7 significant figures, Vogt butterfly arbitrage via g(k), Example 5.1 repair re-run with Nelder-Mead), /lab/wasm-engine (the C++ matching engine in WebAssembly with native tail-latency receipts: p50 30ns / p99 330ns / p99.9 510ns on a LOBSTER replay), /lab/order-flow (live Binance L2 depth via the documented snapshot+diff sync algorithm), /lab/backtest-stats (PSR/Deflated Sharpe — companion to the DSR working paper). Navigate by pressing [1]–[9] or [O] [F] [P] [V] [M], or [ESC] to return to the main site.`,
     tools: [
       `[1] YIELD CURVE (/lab/yield-curve): Fit Nelson-Siegel, cubic spline, and linear interpolation to US Treasury yields. Explore term structure dynamics. Tags: Fixed Income, Rates.`,
       `[2] VAR CALCULATOR (/lab/var): Compute Value-at-Risk via historical simulation, parametric (variance-covariance), and Monte Carlo side by side. Tags: Risk, Portfolio.`,
@@ -281,7 +281,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // Lab tools
   if (/lab|interactive|tool|yield curve|var|value at risk|stochastic|order book|regime|optimizer|factor|iv surface|dcf|modeler/.test(q)) {
-    return `The Research Lab (/lab) has 27 tools, including: ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lIv} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
+    return `The Research Lab (/lab) has 4 flagships with receipts — the IV surface with a live Gatheral–Jacquier correctness proof ${LINKS.lIv}, the C++ matching engine in WASM with tail-latency distributions, live Binance order flow, and Deflated Sharpe statistics — plus a 23-tool index (27 total): ${LINKS.lYield} ${LINKS.lVar} ${LINKS.lStoch} ${LINKS.lOpt} ${LINKS.lDcf} ${LINKS.lPead} ${LINKS.lFactor} ${LINKS.lNotes} ${LINKS.lQuiz} and more. ${LINKS.lab}`
   }
 
   // Quiz

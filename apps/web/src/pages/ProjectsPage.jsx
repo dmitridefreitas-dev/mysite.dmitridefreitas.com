@@ -33,7 +33,7 @@ const ProjectsPage = () => {
       techStack: ['C++20', 'CMake', 'GoogleTest', 'ASan/UBSan', 'LOBSTER replay', 'rdtsc benchmarking'],
       category: 'Quantitative',
       metrics: [
-        '14.1M ops/s on the LOBSTER replay (2.1x reference); p50 ~30ns vs ~105ns',
+        'p50 30ns · p99 330ns · p99.9 510ns per op on the LOBSTER replay; 14.1M ops/s (2.1x reference)',
         'Compiled to WASM: ~10M ops/s in-browser — try it live at /lab/wasm-engine',
         'Differential fuzz: 25 seeds x 20k ops + 200k-op session, per-op equality',
         'ASan/UBSan on every CI run (gcc + clang matrix), green badge',
@@ -46,6 +46,20 @@ const ProjectsPage = () => {
       ],
       reportLink: 'https://github.com/dmitridefreitas-dev/matching-engine/blob/main/analysis/matching-engine-report.pdf',
       codeLink: 'https://github.com/dmitridefreitas-dev/matching-engine',
+      designNotes: [
+        {
+          title: 'The average hid a tail regression.',
+          body: 'v1 beat the std::map reference ~2x on mean throughput — and lost to it at p99 on the real LOBSTER replay. Real books are sparse: after the best level emptied, the price-ladder rescan walked hundreds of vacant ticks while the tree simply took the next node. Percentiles caught what the average never would. Fix: a 1-bit-per-tick occupancy bitmap scanned 64 ticks per find-first-set instruction — p99.9 went 751 to 510ns.',
+        },
+        {
+          title: 'One hash map was the whole bottleneck.',
+          body: "Every operation funnels through order-ID lookup, and std::unordered_map's chained buckets mean a pointer chase plus allocation churn on the hottest path. Replaced with an open-addressed table using linear probing and backward-shift deletion (no tombstones to rot the probe chains). p50 halved to 30ns.",
+        },
+        {
+          title: 'Correctness is a property of the pair, not the engine.',
+          body: 'You cannot unit-test your way to trusting an optimized order book — the failure modes are interactions: a partial fill during a reduce, a cancel on a half-filled order at an emptying level. So the readable std::map engine is the oracle, and a differential fuzzer feeds both engines identical random streams (25 seeds x 20k ops + a 200k session) asserting equal fills, return values, and full book snapshots after every operation, under ASan/UBSan in CI. The fast engine is only believed because the slow one vouches for it.',
+        },
+      ],
     },
     {
       id: 11, reportId: 'OPT-011',
@@ -92,6 +106,20 @@ const ProjectsPage = () => {
       ],
       reportLink: 'https://github.com/dmitridefreitas-dev/honest-backtester/blob/main/notebooks/honest-backtester-report.pdf',
       codeLink: 'https://github.com/dmitridefreitas-dev/honest-backtester',
+      designNotes: [
+        {
+          title: 'Lookahead sneaks in through indexing, not intent.',
+          body: 'The classic same-bar sin — computing a signal from today\'s close and trading at today\'s close — never looks like cheating in code; it looks like an off-by-one. The engine makes it unrepresentable: same-bar execution raises, and signals must satisfy a prefix property (signal[t] depends only on data[0..t]) enforced by a test that recomputes signals on truncated histories and asserts equality.',
+        },
+        {
+          title: 'Costs are not a sensitivity check — they are the result.',
+          body: 'Every unit of turnover is charged, with no silent way to toggle it off. The headline finding (in-sample Sharpe 0.54 collapsing to 0.04 out-of-sample at 5 bps) only exists because the engine refuses to produce the frictionless number without labeling it.',
+        },
+        {
+          title: 'Picking the best cell is itself a strategy — so test the picking.',
+          body: 'A 16-cell parameter grid selected in-sample is a strategy choice that must be validated like one. Walk-forward selection re-picks yearly on trailing windows, with fold disjointness and ordering asserted by tests, not assumed. The deliverable is a trustworthy "no" — and knowing the signal decayed after 2016 at every cost level, including zero.',
+        },
+      ],
     },
     {
       id: 13, reportId: 'RGM-014',
@@ -207,6 +235,20 @@ const ProjectsPage = () => {
       ],
       reportLink: 'https://github.com/dmitridefreitas-dev/orderflow-visualizer#readme',
       codeLink: 'https://github.com/dmitridefreitas-dev/orderflow-visualizer',
+      designNotes: [
+        {
+          title: 'You cannot just apply the diffs.',
+          body: "Binance's depth stream is deltas against a book you do not have yet. The naive approach — subscribe and apply as they arrive — silently corrupts: you must buffer events while the REST snapshot is in flight, drop diffs that predate it (u <= lastUpdateId), and the first event you apply must straddle the snapshot (U <= lastUpdateId+1 <= u). Get any of it wrong and your book drifts from the exchange's with no error message, ever. That silence is why the sync logic is an explicit, injectable state machine with unit tests instead of inline WebSocket handlers.",
+        },
+        {
+          title: 'A sequence gap means start over — and you have to notice.',
+          body: 'If the pu/U chain breaks on a missed message there is no repair protocol: the only correct move is tearing the book down and resynchronizing from a fresh snapshot. Detecting the gap, buffering during the new snapshot flight, and not double-applying straddling events is where every casual implementation quietly goes wrong.',
+        },
+        {
+          title: 'The fast book is only trusted because a slow one agrees.',
+          body: 'A sorted-array book with binary search is quick but easy to get subtly wrong (insertion index vs found index, ask ordering). A 20,000-operation differential test against a naive Map-based reference asserts exact equality on every level. Same philosophy as the C++ engine: speed claims require an oracle. Bonus failure mode found in production: binance.com returns HTTP 451 to US clients — automatic failover to binance.us, same API surface.',
+        },
+      ],
     },
     {
       id: 16, reportId: 'AI-016',

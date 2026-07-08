@@ -310,7 +310,7 @@ export default function RecruiterPage() {
             <div className="max-w-2xl border border-border p-6">
               <p className="font-mono text-xs text-muted-foreground mb-4 leading-relaxed">
                 Full resume (PDF) covers: WashU DSFE coursework, Drew BA Mathematics, Amphora Investment
-                Management internship, 19 research projects, full technical stack, and target roles.
+                Management internship, 20 research projects, full technical stack, and target roles.
               </p>
               <a
                 href={CV_URL}

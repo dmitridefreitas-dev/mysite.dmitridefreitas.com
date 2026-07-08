@@ -138,6 +138,16 @@ const ProjectDetailModal = ({ project, isOpen, onClose }) => {
             <div>
               <SectionLabel number={project.designNotes?.length ? '06' : '05'} title="ARTIFACTS" />
               <div className="pl-3 flex gap-4 flex-wrap">
+                {project.demoLink && (
+                  <a
+                    href={project.demoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-[11px] font-bold text-terminal-green hover:underline underline-offset-4 transition-colors tracking-widest"
+                  >
+                    [LIVE DEMO →]
+                  </a>
+                )}
                 {hasReport && (
                   <a
                     href={project.reportLink}

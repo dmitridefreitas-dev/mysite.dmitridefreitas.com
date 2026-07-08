@@ -69,6 +69,17 @@ const ProjectCard = ({ project, onViewProject }) => {
 
         {/* Footer links — real anchors; card click still opens the modal */}
         <div className="mt-3 pt-2 border-t border-border flex items-center justify-between gap-2 flex-wrap">
+          {project.demoLink && (
+            <a
+              href={project.demoLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-mono text-[11px] font-bold text-terminal-green hover:underline underline-offset-4 transition-colors tracking-widest"
+            >
+              [LIVE DEMO →]
+            </a>
+          )}
           {project.reportLink && project.reportLink !== '#' ? (
             <a
               href={project.reportLink}

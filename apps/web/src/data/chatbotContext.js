@@ -204,10 +204,13 @@ export function getFallbackReply(userInput, history = []) {
 
   // All projects
   if (/all project|all research|list.*project|full.*catalog|every project/.test(q)) {
-    return `19 projects. Newest nine (2026, code on GitHub): JS-018 (quant-kit TypeScript library on npm), OFV-019 (Live Order-Flow Visualizer), CPP-017 (C++ Matching Engine), AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
+    return `20 projects. Newest ten (2026, code on GitHub): RDR-020 (Thesis Radar — [live demo](https://dmitridefreitas-dev.github.io/thesis-radar/)), JS-018 (quant-kit TypeScript library on npm), OFV-019 (Live Order-Flow Visualizer), CPP-017 (C++ Matching Engine), AI-016 (UTrucking Voice AI + Revenue Analytics), OPT-011 (Options Pricing Library), BTE-012 (Honest Backtester), RGM-014 (HMM Regime Detection), SRV-013 (Semiconductor Survival Analysis), ODP-015 (Options-Chain ETL). Earlier ten: PEAD-001 (Market Efficiency), ETL-002 (Data Integration), TRAD-003 (Trading Deck), TERM-004 (Trading Terminal), ML-005 (Housing Model), CLM-006 (Climate), NFL-007 (NFL Predictions), BIO-008 (Biomechanics), TCY-009 (Hurricanes), TRN-010 (Tornadoes). ${LINKS.projects}`
   }
 
   // Specific projects
+  if (/rdr.?020|thesis.?radar|idea.?engine|news.?catalyst|swing.?trade|rotation.*(thesis|gauge|dashboard)/.test(q)) {
+    return `RDR-020: Thesis Radar — a live news dashboard + options idea engine built around the AI-hardware→software rotation thesis. ~18 RSS feeds → decay-weighted catalyst scores (48h window, 12h half-life) fused with SMA/RSI setups into ranked long-call ideas snapped to real listed contracts (55–100 DTE, live bid/ask/OI/IV). Try it in your browser: [live demo](https://dmitridefreitas-dev.github.io/thesis-radar/) · [write-up PDF](https://github.com/dmitridefreitas-dev/thesis-radar/blob/main/docs/thesis-radar-writeup.pdf) · [code](https://github.com/dmitridefreitas-dev/thesis-radar)`
+  }
   if (/cpp.?017|matching.?engine|limit.?order.?book|\blob\b|c\+\+.*(engine|book|project|repo)|price.?time.?priority|differential.?fuzz/.test(q)) {
     return `CPP-017: C++ Matching Engine — a price-time-priority limit order book built twice (std::map reference vs cache-aware ladder/pool/intrusive-list engine), differentially fuzzed until indistinguishable, TSC-benchmarked on a replayed LOBSTER AMZN day: 14.1M ops/s (2.1x reference), p50 ~30ns vs ~105ns, tail regression found in v1 and fixed with receipts in v2, ASan/UBSan in CI. ${LINKS.rCpp} ${LINKS.cCpp}`
   }
@@ -271,7 +274,7 @@ export function getFallbackReply(userInput, history = []) {
 
   // General project question
   if (/project|research|built|portfolio/.test(q)) {
-    return `Featured: CPP-017 (C++ matching engine ${LINKS.cCpp}), OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 19.`
+    return `Featured: CPP-017 (C++ matching engine ${LINKS.cCpp}), OPT-011 (options pricing library ${LINKS.cOpt}), BTE-012 (honest backtester ${LINKS.cBte}), RGM-014 (HMM regimes ${LINKS.cRgm}), ETL-002 (Amphora data pipelines ${LINKS.rEtl}), ML-005 (housing model ${LINKS.rHousing}). ${LINKS.projects} for all 20.`
   }
 
   // Skills
@@ -312,7 +315,7 @@ export function getFallbackReply(userInput, history = []) {
   // Generic fallback
   const fallbacks = [
     `Ask me about Dmitri's projects, coursework, skills, or experience. ${LINKS.cv} ${LINKS.projects}`,
-    `I can answer questions about any of the 19 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
+    `I can answer questions about any of the 20 research projects, all coursework, technical skills, or availability. ${LINKS.contact}`,
     `Not sure I caught that — try asking about a specific project, skill, or lab tool. ${LINKS.projects} ${LINKS.lab}`,
     `Ask about the quant trading system, housing model, Lab tools, or target roles. ${LINKS.cv} ${LINKS.linkedin}`,
   ]

@@ -16,7 +16,7 @@
 
 ## Site map
 
-- [Projects](https://dmitridefreitas.com/projects): 19 research projects with methodology, metrics, reports, and GitHub links
+- [Projects](https://dmitridefreitas.com/projects): 20 research projects with methodology, metrics, reports, and GitHub links
 - [Research notes](https://dmitridefreitas.com/research): deflated Sharpe, SVI calibration, HMM regime detection
 - [Quant Lab](https://dmitridefreitas.com/lab): 27 interactive tools, all math implemented from scratch, client-side
 - [Recruiter one-pager](https://dmitridefreitas.com/recruiter): experience, skills, resume, contact
@@ -25,6 +25,7 @@
 
 ## Selected GitHub repositories (all public, CI-tested)
 
+- https://github.com/dmitridefreitas-dev/thesis-radar — news-catalyst × technicals options idea engine; live in-browser demo at https://dmitridefreitas-dev.github.io/thesis-radar/
 - https://github.com/dmitridefreitas-dev/matching-engine — C++20 LOB engine, differential fuzzing, TSC benchmarks
 - https://github.com/dmitridefreitas-dev/quant-kit — zero-dependency TypeScript quant library (npm)
 - https://github.com/dmitridefreitas-dev/orderflow-visualizer — Binance L2 sync state machine

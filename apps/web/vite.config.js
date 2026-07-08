@@ -368,6 +368,9 @@ Quant libraries: https://github.com/dmitridefreitas-dev/svi-volatility-calibrati
 C++ Matching Engine (CPP-017): https://github.com/dmitridefreitas-dev/matching-engine
 quant-kit TypeScript library (JS-018): https://github.com/dmitridefreitas-dev/quant-kit
 Order-Flow Visualizer (OFV-019): https://github.com/dmitridefreitas-dev/orderflow-visualizer
+Thesis Radar (RDR-020, news-catalyst options idea engine): https://github.com/dmitridefreitas-dev/thesis-radar
+Thesis Radar live demo (static, in-browser): https://dmitridefreitas-dev.github.io/thesis-radar/
+Thesis Radar write-up PDF: https://github.com/dmitridefreitas-dev/thesis-radar/blob/main/docs/thesis-radar-writeup.pdf
 Portfolio website source: https://github.com/dmitridefreitas-dev/mysite.dmitridefreitas.com
 RULE: If a URL does not appear verbatim in this prompt, DO NOT output it. Never construct repo names from project titles.
 
@@ -433,10 +436,12 @@ Duke of Edinburgh's International Award (2021) — Bronze Award. Completed exped
 
 Science Club President, Harrison College (2020–2021). Organized STEM events and competitions, mentored junior members.
 
-=== ALL 19 PROJECTS ===
+=== ALL 20 PROJECTS ===
 JS-018 "quant-kit": Zero-dependency TypeScript quant library on npm — Black-Scholes + Greeks, implied vol with no-arbitrage bounds, CRR binomial trees (Euro+American), seeded reproducible Monte Carlo, VaR/ES three ways, quasi-explicit Nelson-Siegel calibration, Kelly. 32 tests pinned to Hull values; cross-validated vs the Python options library (same 8.9412 reference). Code: https://github.com/dmitridefreitas-dev/quant-kit
 
 OFV-019 "Order-Flow Visualizer": Live Binance L2 microstructure in dependency-free TypeScript — the documented snapshot+diff sync algorithm as a unit-tested state machine, binary-search order book with a 20,000-op differential test, Cont-Kukanov-Stoikov order-flow imbalance, canvas depth rendering. Live at /lab/order-flow. Code: https://github.com/dmitridefreitas-dev/orderflow-visualizer
+
+RDR-020 "Thesis Radar — News-Catalyst x Technicals Options Idea Engine": Real-time dashboard mechanizing discretionary swing-trade idea generation around an explicit macro thesis (AI hardware -> software rotation + energy/geopolitics). ~18 keyless RSS feeds -> deduped, alias-tagged, sentiment-scored news; per-ticker catalyst score (48h window, 12h half-life decay, capped 8). 67 tickers / 5 buckets with SMA20/50, RSI(14) setups (pullback-in-uptrend, momentum); ideas ranked by technical + 1.6 x catalyst, snapped to real listed option contracts (monthly expiry 55-100 DTE nearest 75, live bid/ask/OI/IV via Yahoo chain, labeled heuristic fallback). Rotation gauge from pooled basket returns. Python FastAPI + vanilla JS. LIVE DEMO in the browser (real frontend + frozen real snapshot, no server): https://dmitridefreitas-dev.github.io/thesis-radar/ . Code: https://github.com/dmitridefreitas-dev/thesis-radar
 
 CPP-017 "C++ Matching Engine — Two Books, Differentially Fuzzed": C++20 price-time-priority limit-order-book engine built twice — a std::map reference (the correctness oracle) and a cache-aware optimized engine (contiguous price ladder, object pool, intrusive doubly-linked FIFO queues). Differential fuzzing asserts identical fills, return values, and snapshots across hundreds of thousands of randomized ops, under ASan/UBSan in a gcc+clang CI matrix. TSC-timed benchmarks on a replayed LOBSTER AMZN day (269,748 messages): v1 honestly measured a sparse-ladder p99 tail regression and a hash-map chokepoint; v2 fixed exactly those two (occupancy bitmap, open-addressed IdMap with backward-shift deletion) — 14.1M ops/s (2.1x the reference) with full tail receipts: p50 30ns / p99 330ns / p99.9 510ns per op, tail better than the tree everywhere, v1 baseline preserved. Full percentile ladders and methodology on /lab/wasm-engine. Report + code: https://github.com/dmitridefreitas-dev/matching-engine
 
